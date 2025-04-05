@@ -118,3 +118,30 @@
     @apply bg-background text-foreground;
   }
 }
+
+@theme {
+  /* main theme */
+  --color-main: #1677ff;
+  --color-subMain: #4096ff;
+  --color-mainHover: #0958d9;
+  --color-danger: #ff4a4a;
+  --color-textNormal: #8f8c8c;
+  --color-textLight: #b7b5b5;
+  --color-textDark: #5c5a5a;
+  --color-bgLight: #f0f0f0;
+  --color-bgNormal: #d9d9d9;
+  --color-bgDark: #a6a6a6;
+
+  /* color for main page with skill section */
+  --color-greenText: #04a459;
+  --color-greenBgLight: #c6e5e3;
+  --color-greenBorder: #88b4b1;
+
+  --color-redText: #cb5454;
+  --color-redBgLight: #fec2c2;
+  --color-redBorder: #d37e7e;
+
+  --color-yellowText: #bf6c2b;
+  --color-yellowBgLight: #fffbeb;
+  --color-yellowBorder: #bf6c2b;
+}
