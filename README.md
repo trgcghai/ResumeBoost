@@ -122,7 +122,7 @@
 
 1. Clone repository:
    ```bash
-   git clone https://github.com/username/resumeboost.git
+   git clone https://github.com/trgcghai/resumeboost.git
    cd resumeboost
    ```
 2. Cài đặt dependencies:
@@ -149,11 +149,6 @@
      ```
 
 5. Truy cập ứng dụng tại: `http://localhost:5173` (hoặc port mặc định của Vite).
-
-## Tính năng mở rộng (dự kiến)
-
-- **Hỗ trợ đa ngôn ngữ**: Phân tích CV/JD bằng tiếng Anh, Đức, Pháp, v.v. (Google Translate API hoặc OpenAI).
-- **Xuất PDF đẹp hơn**: Tích hợp `puppeteer` để tạo file PDF chuyên nghiệp.
 
 ## Đóng góp
 
