@@ -1,18 +1,18 @@
-import "./App.css";
-function App() {
+import React from 'react';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import AppRoutes from './routes/AppRoutes';
+
+const App: React.FC = () => {
   return (
-    <>
-      <div className="text-textNormal w-[100px] h-[100px] bg-bgLight">
-        Hello world
-      </div>
-      <div className="text-textLight w-[100px] h-[100px] bg-bgDark">
-        Hello world
-      </div>
-      <div className="text-textDark w-[100px] h-[100px] bg-bgNormal">
-        Hello world
-      </div>
-    </>
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main className="flex-grow px-4 py-6 bg-gray-100">
+        <AppRoutes />
+      </main>
+      <Footer />
+    </div>
   );
-}
+};
 
 export default App;
