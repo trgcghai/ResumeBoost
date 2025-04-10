@@ -1,3 +1,5 @@
+import { NavLink } from "react-router-dom";
+
 const Home = () => {
     return (
       <div className="max-w-2xl mx-auto bg-white p-6 rounded shadow">
@@ -24,7 +26,18 @@ const Home = () => {
           />
         </div>
   
+        <NavLink
+        to={"/details"}
+        className={({ isActive }) =>
+          isActive
+            ? "text-white bg-blue-500 rounded px-3 hover:scale-105"
+            : "text-gray-500 px-3"
+        }
+        >
+
         <button className="w-full bg-blue-500 text-white py-2 rounded hover:scale-105">Phân tích ngay</button>
+        </NavLink>
+       
       </div>
     );
   };
