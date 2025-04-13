@@ -31,7 +31,7 @@ const SidebarItem = ({
   );
 };
 
-const Navbar = () => {
+const AdminSidebar = () => {
   return (
     <div className="w-64 bg-white border-r min-h-screen py-6 px-2">
       <nav className="space-y-2">
@@ -51,4 +51,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default AdminSidebar;

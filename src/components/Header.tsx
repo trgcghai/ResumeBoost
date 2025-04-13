@@ -1,6 +1,6 @@
-import { NavLink } from 'react-router-dom';
-import { useAppContext } from '../context/AppContext';
-import { User } from 'lucide-react'; // dùng biểu tượng nếu thích
+import { NavLink } from "react-router-dom";
+import { useAppContext } from "../context/AppContext";
+import { User } from "lucide-react"; // dùng biểu tượng nếu thích
 
 const Header = () => {
   const { user } = useAppContext();
@@ -14,8 +14,8 @@ const Header = () => {
             to="/"
             className={({ isActive }) =>
               isActive
-                ? 'text-white bg-blue-500 rounded px-3 hover:scale-105'
-                : 'text-gray-500 px-3'
+                ? "text-white bg-blue-500 rounded px-4 py-1.5 hover:bg-mainHover"
+                : "text-gray-500 px-4 py-1.5"
             }
           >
             Home
@@ -24,8 +24,8 @@ const Header = () => {
             to="/profile"
             className={({ isActive }) =>
               isActive
-                ? 'text-white bg-blue-500 px-3 rounded hover:scale-105'
-                : 'text-gray-700 px-3'
+                ? "text-white bg-blue-500 rounded px-4 py-1.5 hover:bg-mainHover"
+                : "text-gray-700 px-4 py-1.5"
             }
           >
             Profile
@@ -42,10 +42,12 @@ const Header = () => {
               alt="avatar"
               className="w-8 h-8 rounded-full border border-gray-300"
             />
-            <span className="text-sm font-medium text-gray-700">{user.name}</span>
+            <span className="text-sm font-medium text-gray-700">
+              {user.name}
+            </span>
           </div>
         ) : (
-          <button className="flex items-center gap-2 bg-blue-500 text-white px-4 py-1.5 rounded hover:scale-105">
+          <button className="flex items-center gap-2 bg-blue-500 text-white px-4 py-1.5 rounded hover:bg-mainHover cursor-pointer">
             <User size={18} />
             Đăng nhập
           </button>
