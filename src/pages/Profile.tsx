@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import CustomBreadcrumb from "@/components/CustomBreadcrumb";
 
 interface CV {
   id: string;
@@ -48,54 +49,57 @@ const Profile: React.FC = () => {
   const [scoreFilter, setScoreFilter] = useState("all");
 
   return (
-    <div className="p-6 bg-white shadow rounded-lg">
-      {/* Overview Section */}
-      <Overview />
+    <>
+      <CustomBreadcrumb />
+      <div className="p-6 bg-white shadow rounded-lg">
+        {/* Overview Section */}
+        <Overview />
 
-      {/* CV List Section */}
-      <div>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold">Danh sách CV của bạn</h2>
+        {/* CV List Section */}
+        <div>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold">Danh sách CV của bạn</h2>
 
-          {/* Search Bar */}
-          <div className="">
-            <input
-              type="text"
-              placeholder="Tìm kiếm CV"
-              className="p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-main"
-            />
+            {/* Search Bar */}
+            <div className="">
+              <input
+                type="text"
+                placeholder="Tìm kiếm CV"
+                className="p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-main"
+              />
+            </div>
+          </div>
+
+          {/* Filter Bar */}
+          <div className="flex space-x-4 mb-6">
+            <Select value={scoreFilter} onValueChange={setScoreFilter}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Lọc theo điểm" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tất cả</SelectItem>
+                <SelectItem value="high">Điểm cao (90+)</SelectItem>
+                <SelectItem value="average">Điểm trung bình (70-90)</SelectItem>
+                <SelectItem value="low">Điểm thấp (&lt;70)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* CV Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {cvs.map((cv) => (
+              <Card
+                key={cv.id}
+                id={cv.id}
+                title={cv.title}
+                uploadTime={cv.uploadTime}
+                score={cv.score}
+              />
+            ))}
           </div>
         </div>
-
-        {/* Filter Bar */}
-        <div className="flex space-x-4 mb-6">
-          <Select value={scoreFilter} onValueChange={setScoreFilter}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Lọc theo điểm" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tất cả</SelectItem>
-              <SelectItem value="high">Điểm cao (90+)</SelectItem>
-              <SelectItem value="average">Điểm trung bình (70-90)</SelectItem>
-              <SelectItem value="low">Điểm thấp (&lt;70)</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* CV Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {cvs.map((cv) => (
-            <Card
-              key={cv.id}
-              id={cv.id}
-              title={cv.title}
-              uploadTime={cv.uploadTime}
-              score={cv.score}
-            />
-          ))}
-        </div>
       </div>
-    </div>
+    </>
   );
 };
 

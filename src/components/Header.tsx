@@ -16,7 +16,7 @@ const Header = () => {
             className={({ isActive }) =>
               isActive
                 ? "text-white bg-main rounded px-4 py-1.5 hover:bg-mainHover"
-                : "text-gray-500 px-4 py-1.5"
+                : "text-textDark px-4 py-1.5"
             }
           >
             Home

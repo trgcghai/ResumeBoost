@@ -1,43 +1,28 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import SkillsTab from "@/components/SkillsTab";
+import AnalysisTab from "@/components/AnalysisTab";
+import SuggestionsTab from "@/components/SuggestionsTab";
+import CustomBreadcrumb from "@/components/CustomBreadcrumb";
 
 // Define the component as a functional component with TypeScript
 const DetailCV: React.FC = () => {
   return (
     <div className="">
-      {/* Back Button */}
-      <NavLink to="/" className="text-main flex items-center mb-4">
-        <svg
-          className="w-4 h-4 mr-2"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M15 19l-7-7 7-7"
-          />
-        </svg>
-        Quay lại trang chủ
-      </NavLink>
+      <CustomBreadcrumb />
 
       {/* Main Title */}
       <h1 className="text-2xl font-bold mb-6">ĐÁNH GIÁ CHI TIẾT CV</h1>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        {/* Left Section: CV Upload and Details */}
-        <div className="col-span-2">
+      <div className="flex items-stretch gap-6">
+        {/* Left Section: CV Uploaded */}
+        <div className="w-1/2 border rounded-lg p-4 flex flex-col gap-4">
           {/* CV Upload Section */}
-          <div className="border rounded-lg p-4">
-            <h2 className="text-lg font-semibold mb-4">CV của bạn</h2>
-            <div className="bg-bgNormal h-[600px] flex items-center justify-center rounded-lg"></div>
-          </div>
+          <h2 className="text-lg font-semibold">CV của bạn</h2>
+          <div className="bg-bgNormal rounded-lg flex-1 p-2">Your cv</div>
         </div>
 
         {/* Right Section: Overall Evaluation */}
-        <div className="bg-white rounded-lg p-6 col-span-2 border">
+        <div className="bg-white rounded-lg p-6 w-1/2 border">
           <h2 className="text-lg font-semibold mb-4">Đánh giá tổng quan</h2>
           <div className="flex justify-center mb-4">
             <div className="relative">
@@ -100,50 +85,50 @@ const DetailCV: React.FC = () => {
           {/* CV Details Section */}
           <div>
             <h2 className="text-lg font-semibold mb-4">Đánh giá chi tiết</h2>
-            <div className="flex space-x-4">
-              <NavLink
-                to="skills"
-                className={({ isActive }) =>
-                  `px-4 py-2 rounded hover:scale-105 ${
-                    isActive
-                      ? "bg-main text-white"
-                      : "bg-bgNormal text-textDark"
-                  }`
-                }
-              >
-                Kỹ năng
-              </NavLink>
 
-              <NavLink
-                to="analysis"
-                className={({ isActive }) =>
-                  `px-4 py-2 rounded hover:scale-105 ${
-                    isActive
-                      ? "bg-main text-white"
-                      : "bg-bgNormal text-textDark"
-                  }`
-                }
-              >
-                Phân tích
-              </NavLink>
+            <Tabs defaultValue="skills" className="w-full">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger
+                  value="skills"
+                  className="data-[state=active]:bg-main data-[state=active]:text-white"
+                >
+                  Kỹ năng
+                </TabsTrigger>
+                <TabsTrigger
+                  value="analysis"
+                  className="data-[state=active]:bg-main data-[state=active]:text-white"
+                >
+                  Phân tích
+                </TabsTrigger>
+                <TabsTrigger
+                  value="suggestions"
+                  className="data-[state=active]:bg-main data-[state=active]:text-white"
+                >
+                  Gợi ý
+                </TabsTrigger>
+              </TabsList>
 
-              <NavLink
-                to="suggestions"
-                className={({ isActive }) =>
-                  `px-4 py-2 rounded hover:scale-105 ${
-                    isActive
-                      ? "bg-main text-white"
-                      : "bg-bgNormal text-textDark"
-                  }`
-                }
+              <TabsContent
+                value="skills"
+                className="mt-4 border p-4 rounded-lg"
               >
-                Gợi ý
-              </NavLink>
-            </div>
-          </div>
+                <SkillsTab />
+              </TabsContent>
 
-          <div className="mt-6">
-            <Outlet />
+              <TabsContent
+                value="analysis"
+                className="mt-4 border p-4 rounded-lg"
+              >
+                <AnalysisTab />
+              </TabsContent>
+
+              <TabsContent
+                value="suggestions"
+                className="mt-4 border p-4 rounded-lg"
+              >
+                <SuggestionsTab />
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
       </div>

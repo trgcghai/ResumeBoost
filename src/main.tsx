@@ -35,24 +35,6 @@ const router = createBrowserRouter([
       {
         path: "details/:id",
         element: <DetailCV />,
-        children: [
-          {
-            index: true,
-            element: <SkillsTab />,
-          },
-          {
-            path: "skills",
-            element: <SkillsTab />,
-          },
-          {
-            path: "analysis",
-            element: <AnalysisTab />,
-          },
-          {
-            path: "suggestions",
-            element: <SuggestionsTab />,
-          },
-        ],
       },
       {
         path: "details",
