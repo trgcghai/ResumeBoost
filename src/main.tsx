@@ -125,7 +125,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <AppProvider>
       <RouterProvider router={router} />
-      {/* <App /> */}
     </AppProvider>
   </React.StrictMode>
 );

@@ -15,7 +15,7 @@ const DetailCV: React.FC = () => {
   return (
     <div className="container mx-auto p-6">
       {/* Back Button */}
-      <NavLink to="/" className="text-blue-500 flex items-center mb-4">
+      <NavLink to="/" className="text-main flex items-center mb-4">
         <svg
           className="w-4 h-4 mr-2"
           fill="none"
@@ -40,9 +40,9 @@ const DetailCV: React.FC = () => {
         {/* Left Section: CV Upload and Details */}
         <div className="col-span-2">
           {/* CV Upload Section */}
-          <div className="border-2 border-blue-500 rounded-lg p-4 mb-6">
+          <div className="border-2 border-main rounded-lg p-4 mb-6">
             <h2 className="text-lg font-semibold mb-4">CV của bạn</h2>
-            <div className="bg-gray-200 h-120 flex items-center justify-center">
+            <div className="bg-bgNormal h-120 flex items-center justify-center">
               {cvFile ? (
                 <p>{cvFile.name}</p>
               ) : (
@@ -63,7 +63,7 @@ const DetailCV: React.FC = () => {
           <h2 className="text-lg font-semibold mb-4">Đánh giá tổng quan</h2>
           <div className="flex justify-center mb-4">
             <div className="relative">
-              <div className="w-24 h-24 rounded-full border-4 border-blue-500 flex items-center justify-center">
+              <div className="w-24 h-24 rounded-full border-4 border-main flex items-center justify-center">
                 <span className="text-2xl font-bold">100</span>
               </div>
             </div>
@@ -74,9 +74,9 @@ const DetailCV: React.FC = () => {
                 <span>Mức độ phù hợp</span>
                 <span>40</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5">
+              <div className="w-full bg-bgNormal rounded-full h-2.5">
                 <div
-                  className="bg-blue-500 h-2.5 rounded-full"
+                  className="bg-main h-2.5 rounded-full"
                   style={{ width: "40%" }}
                 ></div>
               </div>
@@ -86,9 +86,9 @@ const DetailCV: React.FC = () => {
                 <span>Từ khóa phù hợp</span>
                 <span>50</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5">
+              <div className="w-full bg-bgNormal rounded-full h-2.5">
                 <div
-                  className="bg-blue-500 h-2.5 rounded-full"
+                  className="bg-main h-2.5 rounded-full"
                   style={{ width: "50%" }}
                 ></div>
               </div>
@@ -98,9 +98,9 @@ const DetailCV: React.FC = () => {
                 <span>Định dạng</span>
                 <span>60</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5">
+              <div className="w-full bg-bgNormal rounded-full h-2.5">
                 <div
-                  className="bg-blue-500 h-2.5 rounded-full"
+                  className="bg-main h-2.5 rounded-full"
                   style={{ width: "60%" }}
                 ></div>
               </div>
@@ -110,9 +110,9 @@ const DetailCV: React.FC = () => {
                 <span>Độ liên quan</span>
                 <span>45</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5">
+              <div className="w-full bg-bgNormal rounded-full h-2.5">
                 <div
-                  className="bg-blue-500 h-2.5 rounded-full"
+                  className="bg-main h-2.5 rounded-full"
                   style={{ width: "45%" }}
                 ></div>
               </div>
@@ -123,45 +123,47 @@ const DetailCV: React.FC = () => {
           <div>
             <h2 className="text-lg font-semibold mb-4">Đánh giá chi tiết</h2>
             <div className="flex space-x-4">
-            <NavLink
-  to="skills"
-  className={({ isActive }) =>
-    `px-4 py-2 rounded hover:scale-105 ${
-      isActive ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
-    }`
-  }
->
-  Kỹ năng
-</NavLink>
+              <NavLink
+                to="skills"
+                className={({ isActive }) =>
+                  `px-4 py-2 rounded hover:scale-105 ${
+                    isActive
+                      ? "bg-main text-white"
+                      : "bg-bgNormal text-textDark"
+                  }`
+                }
+              >
+                Kỹ năng
+              </NavLink>
 
-<NavLink
-  to="analysis"
-  className={({ isActive }) =>
-    `px-4 py-2 rounded hover:scale-105 ${
-      isActive ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
-    }`
-  }
->
-  Phân tích
-</NavLink>
+              <NavLink
+                to="analysis"
+                className={({ isActive }) =>
+                  `px-4 py-2 rounded hover:scale-105 ${
+                    isActive
+                      ? "bg-main text-white"
+                      : "bg-bgNormal text-textDark"
+                  }`
+                }
+              >
+                Phân tích
+              </NavLink>
 
-<NavLink
-  to="suggestions"
-  className={({ isActive }) =>
-    `px-4 py-2 rounded hover:scale-105 ${
-      isActive ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
-    }`
-  }
->
-  Gợi ý
-</NavLink>
-
+              <NavLink
+                to="suggestions"
+                className={({ isActive }) =>
+                  `px-4 py-2 rounded hover:scale-105 ${
+                    isActive
+                      ? "bg-main text-white"
+                      : "bg-bgNormal text-textDark"
+                  }`
+                }
+              >
+                Gợi ý
+              </NavLink>
             </div>
           </div>
-         
-         
 
-         
           <div className="mt-6">
             <Outlet />
           </div>

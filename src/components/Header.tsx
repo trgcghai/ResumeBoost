@@ -1,12 +1,13 @@
 import { NavLink } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
 import { User } from "lucide-react"; // dùng biểu tượng nếu thích
+import { Button } from "./ui/button";
 
 const Header = () => {
   const { user } = useAppContext();
 
   return (
-    <header className="flex justify-between items-center bg-white px-6 py-4 shadow">
+    <header className="flex justify-between items-center bg-white px-6 py-4 shadow fixed top-0 left-0 right-0 z-10">
       <div className="flex items-center gap-7">
         <div className="text-xl font-bold">Logo</div>
         <nav className="flex space-x-4">
@@ -14,7 +15,7 @@ const Header = () => {
             to="/"
             className={({ isActive }) =>
               isActive
-                ? "text-white bg-blue-500 rounded px-4 py-1.5 hover:bg-mainHover"
+                ? "text-white bg-main rounded px-4 py-1.5 hover:bg-mainHover"
                 : "text-gray-500 px-4 py-1.5"
             }
           >
@@ -24,8 +25,8 @@ const Header = () => {
             to="/profile"
             className={({ isActive }) =>
               isActive
-                ? "text-white bg-blue-500 rounded px-4 py-1.5 hover:bg-mainHover"
-                : "text-gray-700 px-4 py-1.5"
+                ? "text-white bg-main rounded px-4 py-1.5 hover:bg-mainHover"
+                : "text-textDark px-4 py-1.5"
             }
           >
             Profile
@@ -42,15 +43,15 @@ const Header = () => {
               alt="avatar"
               className="w-8 h-8 rounded-full border border-gray-300"
             />
-            <span className="text-sm font-medium text-gray-700">
+            <span className="text-sm font-medium text-textDark">
               {user.name}
             </span>
           </div>
         ) : (
-          <button className="flex items-center gap-2 bg-blue-500 text-white px-4 py-1.5 rounded hover:bg-mainHover cursor-pointer">
+          <Button className="flex items-center gap-2 bg-main text-white px-4 py-1.5 rounded hover:bg-mainHover cursor-pointer">
             <User size={18} />
             Đăng nhập
-          </button>
+          </Button>
         )}
       </div>
     </header>
