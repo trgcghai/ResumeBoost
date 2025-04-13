@@ -1,19 +1,9 @@
-import { useState, ChangeEvent } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 
 // Define the component as a functional component with TypeScript
 const DetailCV: React.FC = () => {
-  // Define the type for cvFile state (it can be a File object or null)
-  const [cvFile, setCvFile] = useState<File | null>(null);
-
-  // Type the event for the file input change handler
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0] || null; // Safely access the first file
-    setCvFile(file);
-  };
-
   return (
-    <div className="container mx-auto p-6">
+    <div className="">
       {/* Back Button */}
       <NavLink to="/" className="text-main flex items-center mb-4">
         <svg
@@ -40,26 +30,14 @@ const DetailCV: React.FC = () => {
         {/* Left Section: CV Upload and Details */}
         <div className="col-span-2">
           {/* CV Upload Section */}
-          <div className="border-2 border-main rounded-lg p-4 mb-6">
+          <div className="border rounded-lg p-4">
             <h2 className="text-lg font-semibold mb-4">CV của bạn</h2>
-            <div className="bg-bgNormal h-120 flex items-center justify-center">
-              {cvFile ? (
-                <p>{cvFile.name}</p>
-              ) : (
-                <p className="text-gray-500">Tải CV của bạn lên đây</p>
-              )}
-            </div>
-            <input
-              type="file"
-              accept=".pdf,.doc,.docx"
-              onChange={handleFileChange}
-              className="mt-4"
-            />
+            <div className="bg-bgNormal h-[600px] flex items-center justify-center rounded-lg"></div>
           </div>
         </div>
 
         {/* Right Section: Overall Evaluation */}
-        <div className="bg-white shadow-md rounded-lg p-6 col-span-2">
+        <div className="bg-white rounded-lg p-6 col-span-2 border">
           <h2 className="text-lg font-semibold mb-4">Đánh giá tổng quan</h2>
           <div className="flex justify-center mb-4">
             <div className="relative">
