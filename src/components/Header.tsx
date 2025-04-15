@@ -1,7 +1,5 @@
 import { NavLink } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
-import { User } from "lucide-react"; // dùng biểu tượng nếu thích
-import { Button } from "./ui/button";
 
 const Header = () => {
   const { user } = useAppContext();
@@ -15,7 +13,7 @@ const Header = () => {
             to="/"
             className={({ isActive }) =>
               isActive
-                ? "text-white bg-main rounded px-4 py-1.5 hover:bg-mainHover"
+                ? "text-white bg-main rounded-lg px-4 py-1.5 hover:bg-mainHover"
                 : "text-textDark px-4 py-1.5"
             }
           >
@@ -25,7 +23,7 @@ const Header = () => {
             to="/profile"
             className={({ isActive }) =>
               isActive
-                ? "text-white bg-main rounded px-4 py-1.5 hover:bg-mainHover"
+                ? "text-white bg-main rounded-lg px-4 py-1.5 hover:bg-mainHover"
                 : "text-textDark px-4 py-1.5"
             }
           >
@@ -36,7 +34,7 @@ const Header = () => {
 
       {/* Avatar/Login button */}
       <div>
-        {user ? (
+        {user && (
           <div className="flex items-center gap-2">
             <img
               src="https://i.pravatar.cc/30" // hoặc user.avatar nếu có
@@ -47,11 +45,6 @@ const Header = () => {
               {user.name}
             </span>
           </div>
-        ) : (
-          <Button className="flex items-center gap-2 bg-main text-white px-4 py-1.5 rounded hover:bg-mainHover cursor-pointer">
-            <User size={18} />
-            Đăng nhập
-          </Button>
         )}
       </div>
     </header>
