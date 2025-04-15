@@ -1,6 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
 import { AppProvider } from "./context/AppContext.tsx";
 import "./App.css";
 
@@ -53,6 +57,11 @@ const router = createBrowserRouter([
     path: "/admin",
     element: <AdminLayout />,
     children: [
+      {
+        // Add an index route that redirects to dashboard
+        index: true,
+        element: <Navigate to="/admin/dashboard" replace />,
+      },
       {
         path: "dashboard",
         element: <AdminDashboard />,
