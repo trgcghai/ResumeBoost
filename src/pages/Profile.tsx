@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import CustomBreadcrumb from "@/components/CustomBreadcrumb";
+import CustomBreadcrumb from "@/components/layout/CustomBreadcrumb";
 
 interface CV {
   id: string;

@@ -144,4 +144,9 @@
   --color-yellowText: #bf6c2b;
   --color-yellowBgLight: #fcf5d7;
   --color-yellowBorder: #bf6c2b;
+
+  /* color for pie chart in admin dashboard page */
+  --color-greenPie: #6fdc73;
+  --color-yellowPie: #f6e54f;
+  --color-redPie: #f5675d;
 }

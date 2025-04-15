@@ -1,4 +1,4 @@
-import { LoginForm } from "@/components/LoginForm";
+import { LoginForm } from "@/components/auth/LoginForm";
 const Login = () => {
   return (
     <div className="h-screen w-full bg-bgLight">

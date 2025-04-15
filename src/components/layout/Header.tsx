@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { useAppContext } from "../context/AppContext";
+import { useAppContext } from "../../context/AppContext";
 
 const Header = () => {
   const { user } = useAppContext();
@@ -32,12 +32,12 @@ const Header = () => {
         </nav>
       </div>
 
-      {/* Avatar/Login button */}
+      {/* user.avatar nếu có */}
       <div>
         {user && (
           <div className="flex items-center gap-2">
             <img
-              src="https://i.pravatar.cc/30" // hoặc user.avatar nếu có
+              src="https://i.pravatar.cc/30"
               alt="avatar"
               className="w-8 h-8 rounded-full border border-gray-300"
             />

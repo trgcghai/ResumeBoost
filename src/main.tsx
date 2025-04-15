@@ -15,9 +15,6 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import DetailCV from "./pages/DetailCV";
 import AdminDashboard from "./pages/AdminDashboard";
-import SkillsTab from "./components/SkillsTab";
-import AnalysisTab from "./components/AnalysisTab";
-import SuggestionsTab from "./components/SuggestionsTab";
 
 const router = createBrowserRouter([
   {
@@ -35,28 +32,6 @@ const router = createBrowserRouter([
       {
         path: "details/:id",
         element: <DetailCV />,
-      },
-      {
-        path: "details",
-        element: <DetailCV />,
-        children: [
-          {
-            index: true,
-            element: <SkillsTab />,
-          },
-          {
-            path: "skills",
-            element: <SkillsTab />,
-          },
-          {
-            path: "analysis",
-            element: <AnalysisTab />,
-          },
-          {
-            path: "suggestions",
-            element: <SuggestionsTab />,
-          },
-        ],
       },
     ],
   },
@@ -91,15 +66,6 @@ const router = createBrowserRouter([
         element: <div>CV Management Page</div>,
       },
     ],
-  },
-  // Redirect routes for backward compatibility
-  {
-    path: "/login",
-    element: <Login />,
-  },
-  {
-    path: "/signup",
-    element: <Signup />,
   },
 ]);
 
