@@ -19,9 +19,6 @@ const FileUploader = ({
     onDrop,
     accept: {
       "application/pdf": [".pdf"],
-      "application/msword": [".doc"],
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-        [".docx"],
     },
     maxFiles: 1,
   });
@@ -42,15 +39,13 @@ const FileUploader = ({
           <p>Kéo và thả file vào đây</p>
           <p className="text-gray-500 text-sm my-2">Hoặc</p>
           <label
-            htmlFor="file"
+            htmlFor=""
             className="mt-2 bg-main text-white px-4 py-2 my-2 inline-block rounded hover:bg-mainHover"
-            onClick={(e) => e.stopPropagation()}
           >
             Tìm kiếm file
           </label>
-          <input type="file" className="hidden" name="" id="file" />
           <p className="text-xs text-gray-500 mt-2">
-            Hỗ trợ: PDF, DOC, DOCX (Tối đa 5MB)
+            Hỗ trợ: PDF (Tối đa 10MB)
           </p>
         </>
       )}
