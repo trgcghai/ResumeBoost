@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useAppContext } from "../../context/AppContext";
 
 const Header = () => {
@@ -7,7 +7,9 @@ const Header = () => {
   return (
     <header className="flex justify-between items-center bg-white px-6 py-4 shadow fixed top-0 left-0 right-0 z-10">
       <div className="flex items-center gap-7">
-        <div className="text-xl font-bold">ResumeBoost</div>
+        <Link to="/" className="text-xl font-bold">
+          ResumeBoost
+        </Link>
         <nav className="flex space-x-4">
           <NavLink
             to="/"
