@@ -20,7 +20,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useAppDispatch } from "@/hooks/redux";
 import { login } from "@/store/slices/userSlice";
@@ -51,7 +51,7 @@ export function LoginForm({
     console.log("Form submitted", data);
 
     try {
-      const result = await createUserWithEmailAndPassword(
+      const result = await signInWithEmailAndPassword(
         auth,
         data.email,
         data.password

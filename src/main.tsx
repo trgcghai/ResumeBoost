@@ -7,7 +7,6 @@ import {
 } from "react-router-dom";
 import "./App.css";
 
-// Import layouts
 import RootLayout from "./layouts/RootLayout";
 import AuthLayout from "./layouts/AuthLayout";
 import AdminLayout from "./layouts/AdminLayout";
