@@ -20,8 +20,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "@/lib/firebase";
 import { useAppDispatch } from "@/hooks/redux";
 import { login } from "@/store/slices/userSlice";
 
@@ -56,6 +56,20 @@ export function LoginForm({
         data.email,
         data.password
       );
+
+      const { email, uid, photoURL } = result.user;
+
+      dispatch(login({ email: email || "", id: uid, avatar: photoURL || "" }));
+
+      navigate("/");
+    } catch (error) {
+      console.log("Error signing in:", error);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
 
       const { email, uid, photoURL } = result.user;
 
@@ -129,7 +143,7 @@ export function LoginForm({
               <div className="flex flex-col gap-3">
                 <Button
                   type="submit"
-                  className="w-full bg-main hover:bg-mainHover text-white"
+                  className="w-full bg-main hover:bg-mainHover text-white cursor-pointer"
                   disabled={form.formState.isSubmitting}
                 >
                   {form.formState.isSubmitting
@@ -151,11 +165,8 @@ export function LoginForm({
                 <Button
                   type="button"
                   variant="outline"
-                  className="w-full bg-bgNormal text-textDark hover:bg-bgNormal"
-                  onClick={() => {
-                    // Handle Google sign-in here
-                    console.log("Google sign-in clicked");
-                  }}
+                  className="w-full bg-bgNormal text-textDark hover:bg-bgNormal cursor-pointer"
+                  onClick={handleGoogleSignIn}
                 >
                   <svg
                     className="mr-2 h-4 w-4"

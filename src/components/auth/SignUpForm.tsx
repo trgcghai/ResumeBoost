@@ -18,12 +18,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { auth } from "@/lib/firebase";
+import { auth, googleProvider } from "@/lib/firebase";
 import { useAppDispatch } from "@/hooks/redux";
 import { login } from "@/store/slices/userSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 
 const signUpSchema = z
   .object({
@@ -82,6 +82,20 @@ export function SignUpForm({
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+
+      const { email, uid, photoURL } = result.user;
+
+      dispatch(login({ email: email || "", id: uid, avatar: photoURL || "" }));
+
+      navigate("/");
+    } catch (error) {
+      console.log("Error signing in:", error);
+    }
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="bg-bgLight">
@@ -116,7 +130,6 @@ export function SignUpForm({
                 )}
               />
 
-              {/* Password */}
               <FormField
                 control={form.control}
                 name="password"
@@ -138,7 +151,6 @@ export function SignUpForm({
                 )}
               />
 
-              {/* Confirm Password */}
               <FormField
                 control={form.control}
                 name="confirmPassword"
@@ -165,13 +177,12 @@ export function SignUpForm({
               <div className="flex flex-col gap-3">
                 <Button
                   type="submit"
-                  className="w-full bg-main hover:bg-mainHover text-white"
+                  className="w-full bg-main hover:bg-mainHover text-white cursor-pointer"
                   disabled={form.formState.isSubmitting}
                 >
                   {form.formState.isSubmitting ? "Đang đăng ký..." : "Đăng ký"}
                 </Button>
 
-                {/* Divider */}
                 <div className="relative my-2">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-gray-200" />
@@ -186,12 +197,8 @@ export function SignUpForm({
                 <Button
                   type="button"
                   variant="outline"
-                  className="w-full bg-bgNormal text-textDark hover:bg-bgNormal"
-                  onClick={() => {
-                    // Handle Google sign-up here
-                    console.log("Google sign-up clicked");
-                    // Your Google sign-up logic will go here
-                  }}
+                  className="w-full bg-bgNormal text-textDark hover:bg-bgNormal cursor-pointer"
+                  onClick={handleGoogleSignIn}
                 >
                   <svg
                     className="mr-2 h-4 w-4"
