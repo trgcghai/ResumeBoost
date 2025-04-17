@@ -20,6 +20,8 @@ import { Provider } from "react-redux";
 import { store } from "./store/store.ts";
 import { LoginForm } from "./components/auth/LoginForm.tsx";
 import { SignUpForm } from "./components/auth/SignUpForm.tsx";
+import { ProtectedLayout } from "./layouts/ProtectedLayout.tsx";
+import { RedirectIfAuthenticated } from "./components/RedirectIfAuthenticated.tsx";
 
 const router = createBrowserRouter([
   {
@@ -31,49 +33,64 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "profile",
-        element: <Profile />,
-      },
-      {
-        path: "details/:id",
-        element: <DetailCV />,
+        element: <ProtectedLayout />,
+        children: [
+          {
+            path: "profile",
+            element: <Profile />,
+          },
+          {
+            path: "details/:id",
+            element: <DetailCV />,
+          },
+        ],
       },
     ],
   },
   {
-    path: "/auth",
-    element: <AuthLayout />,
+    element: <RedirectIfAuthenticated />,
     children: [
       {
-        path: "login",
-        element: <LoginForm />,
-      },
-      {
-        path: "signup",
-        element: <SignUpForm />,
+        path: "/auth",
+        element: <AuthLayout />,
+        children: [
+          {
+            path: "login",
+            element: <LoginForm />,
+          },
+          {
+            path: "signup",
+            element: <SignUpForm />,
+          },
+        ],
       },
     ],
   },
   {
     path: "/admin",
-    element: <AdminLayout />,
+    element: <ProtectedLayout />,
     children: [
       {
-        // Add an index route that redirects to dashboard
-        index: true,
-        element: <Navigate to="/admin/dashboard" replace />,
-      },
-      {
-        path: "dashboard",
-        element: <AdminDashboard />,
-      },
-      {
-        path: "users",
-        element: <div>User Management Page</div>,
-      },
-      {
-        path: "cvs",
-        element: <div>CV Management Page</div>,
+        element: <AdminLayout />,
+        children: [
+          {
+            // Add an index route that redirects to dashboard
+            index: true,
+            element: <Navigate to="/admin/dashboard" replace />,
+          },
+          {
+            path: "dashboard",
+            element: <AdminDashboard />,
+          },
+          {
+            path: "users",
+            element: <div>User Management Page</div>,
+          },
+          {
+            path: "cvs",
+            element: <div>CV Management Page</div>,
+          },
+        ],
       },
     ],
   },

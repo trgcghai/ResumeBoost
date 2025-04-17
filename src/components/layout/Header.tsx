@@ -1,6 +1,14 @@
 import { Link, NavLink } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { logout } from "@/store/slices/userSlice";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { LogOut } from "lucide-react";
 
 const Header = () => {
   const { user, isAuthenticated } = useAppSelector((state) => state.user);
@@ -8,6 +16,11 @@ const Header = () => {
 
   const handleLogout = () => {
     dispatch(logout());
+  };
+
+  const getUserInitials = () => {
+    if (!user || !user.email) return "U";
+    return user.email.charAt(0).toUpperCase();
   };
 
   return (
@@ -42,24 +55,47 @@ const Header = () => {
 
       <div>
         {isAuthenticated && user && (
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <img
-                src={user.avatar || "https://i.pravatar.cc/30"}
-                alt="avatar"
-                className="w-8 h-8 rounded-full border border-gray-300"
-              />
-              <span className="text-sm font-medium text-textDark">
-                {user.name}
-              </span>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="text-sm text-textDark hover:text-main"
-            >
-              Logout
-            </button>
-          </div>
+          <HoverCard openDelay={200} closeDelay={100}>
+            <HoverCardTrigger asChild>
+              <div className="flex items-center gap-2 cursor-pointer p-1 rounded-full hover:bg-gray-100">
+                <Avatar className="h-8 w-8 border border-gray-200">
+                  <AvatarImage
+                    src={user.avatar || ""}
+                    alt={user.email || "User"}
+                  />
+                  <AvatarFallback className="bg-main text-white">
+                    {getUserInitials()}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-80" align="end">
+              <div className="flex justify-between space-x-4">
+                <Avatar className="h-12 w-12">
+                  <AvatarImage src={user.avatar || ""} />
+                  <AvatarFallback className="bg-main text-white">
+                    {getUserInitials()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="space-y-1 flex-1">
+                  <h4 className="text-sm font-semibold">Xin chào</h4>
+                  <p className="text-sm font-semibold">{user.email}</p>
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-col gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Đăng xuất
+                </Button>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
         )}
       </div>
     </header>
