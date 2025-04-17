@@ -5,7 +5,6 @@ import {
   Navigate,
   RouterProvider,
 } from "react-router-dom";
-import { AppProvider } from "./context/AppContext.tsx";
 import "./App.css";
 
 // Import layouts
@@ -15,10 +14,12 @@ import AdminLayout from "./layouts/AdminLayout";
 
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
 import DetailCV from "./pages/DetailCV";
 import AdminDashboard from "./pages/AdminDashboard";
+import { Provider } from "react-redux";
+import { store } from "./store/store.ts";
+import { LoginForm } from "./components/auth/LoginForm.tsx";
+import { SignUpForm } from "./components/auth/SignUpForm.tsx";
 
 const router = createBrowserRouter([
   {
@@ -45,11 +46,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: "login",
-        element: <Login />,
+        element: <LoginForm />,
       },
       {
         path: "signup",
-        element: <Signup />,
+        element: <SignUpForm />,
       },
     ],
   },
@@ -80,8 +81,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <AppProvider>
+    <Provider store={store}>
       <RouterProvider router={router} />
-    </AppProvider>
+    </Provider>
   </React.StrictMode>
 );

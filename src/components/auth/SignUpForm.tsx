@@ -151,7 +151,7 @@ export function SignUpForm({
             <div className="mt-6 text-center text-sm text-textNormal">
               Đã có tài khoản?{" "}
               <Link
-                to="/login"
+                to="/auth/login"
                 className="text-main hover:text-mainHover underline underline-offset-4"
               >
                 Đăng nhập

@@ -67,6 +67,18 @@ export function LoginForm({
                 >
                   Đăng nhập
                 </Button>
+
+                <div className="relative my-2">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-200" />
+                  </div>
+                  <div className="relative flex justify-center">
+                    <span className="bg-bgLight px-2 text-sm text-textNormal">
+                      Hoặc
+                    </span>
+                  </div>
+                </div>
+
                 <Button
                   variant="outline"
                   className="w-full bg-bgNormal text-textDark hover:bg-bgNormal"
@@ -93,7 +105,7 @@ export function LoginForm({
             <div className="mt-6 text-center text-sm text-textNormal">
               Chưa có tài khoản?{" "}
               <Link
-                to="/signup"
+                to="/auth/signup"
                 className="text-main hover:text-mainHover underline underline-offset-4"
               >
                 Đăng ký

@@ -1,8 +1,14 @@
 import { Link, NavLink } from "react-router-dom";
-import { useAppContext } from "../../context/AppContext";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { logout } from "@/store/slices/userSlice";
 
 const Header = () => {
-  const { user } = useAppContext();
+  const { user, isAuthenticated } = useAppSelector((state) => state.user);
+  const dispatch = useAppDispatch();
+
+  const handleLogout = () => {
+    dispatch(logout());
+  };
 
   return (
     <header className="flex justify-between items-center bg-white px-6 py-4 shadow fixed top-0 left-0 right-0 z-10">
@@ -34,18 +40,25 @@ const Header = () => {
         </nav>
       </div>
 
-      {/* user.avatar nếu có */}
       <div>
-        {user && (
-          <div className="flex items-center gap-2">
-            <img
-              src="https://i.pravatar.cc/30"
-              alt="avatar"
-              className="w-8 h-8 rounded-full border border-gray-300"
-            />
-            <span className="text-sm font-medium text-textDark">
-              {user.name}
-            </span>
+        {isAuthenticated && user && (
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <img
+                src={user.avatar || "https://i.pravatar.cc/30"}
+                alt="avatar"
+                className="w-8 h-8 rounded-full border border-gray-300"
+              />
+              <span className="text-sm font-medium text-textDark">
+                {user.name}
+              </span>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="text-sm text-textDark hover:text-main"
+            >
+              Logout
+            </button>
           </div>
         )}
       </div>
