@@ -8,13 +8,79 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "@/lib/firebase";
+import { useAppDispatch } from "@/hooks/redux";
+import { login } from "@/store/slices/userSlice";
+
+// Define schema for validation
+const loginSchema = z.object({
+  email: z.string().email({ message: "Email không hợp lệ" }),
+  password: z.string().min(8, { message: "Mật khẩu phải có ít nhất 8 ký tự" }),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (data: LoginFormValues) => {
+    console.log("Form submitted", data);
+
+    try {
+      const result = await signInWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
+      );
+
+      const { email, uid, photoURL } = result.user;
+
+      dispatch(login({ email: email || "", id: uid, avatar: photoURL || "" }));
+
+      navigate("/");
+    } catch (error) {
+      console.log("Error signing in:", error);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+
+      const { email, uid, photoURL } = result.user;
+
+      dispatch(login({ email: email || "", id: uid, avatar: photoURL || "" }));
+
+      navigate("/");
+    } catch (error) {
+      console.log("Error signing in:", error);
+    }
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="bg-bgLight">
@@ -27,45 +93,62 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-3">
-                <Label htmlFor="email" className="text-textDark">
-                  Email
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="example@email.com"
-                  required
-                  className="ring-main focus-visible:ring-main"
-                />
-              </div>
-              <div className="grid gap-3">
-                <div className="flex items-center">
-                  <Label htmlFor="password" className="text-textDark">
-                    Mật khẩu
-                  </Label>
-                  <Link
-                    to="/auth/forgot-password"
-                    className="ml-auto inline-block text-sm text-main hover:text-mainHover underline-offset-4 hover:underline"
-                  >
-                    Quên mật khẩu?
-                  </Link>
-                </div>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  className="ring-main focus-visible:ring-main"
-                />
-              </div>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-textDark">Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="example@email.com"
+                        className="ring-main focus-visible:ring-main"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-500" />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center">
+                      <FormLabel className="text-textDark">Mật khẩu</FormLabel>
+                      <Link
+                        to="/auth/forgot-password"
+                        className="ml-auto inline-block text-sm text-main hover:text-mainHover underline-offset-4 hover:underline"
+                      >
+                        Quên mật khẩu?
+                      </Link>
+                    </div>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Nhập mật khẩu của bạn"
+                        className="ring-main focus-visible:ring-main"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-500" />
+                  </FormItem>
+                )}
+              />
+
               <div className="flex flex-col gap-3">
                 <Button
                   type="submit"
-                  className="w-full bg-main hover:bg-mainHover text-white"
+                  className="w-full bg-main hover:bg-mainHover text-white cursor-pointer"
+                  disabled={form.formState.isSubmitting}
                 >
-                  Đăng nhập
+                  {form.formState.isSubmitting
+                    ? "Đang đăng nhập..."
+                    : "Đăng nhập"}
                 </Button>
 
                 <div className="relative my-2">
@@ -80,8 +163,10 @@ export function LoginForm({
                 </div>
 
                 <Button
+                  type="button"
                   variant="outline"
-                  className="w-full bg-bgNormal text-textDark hover:bg-bgNormal"
+                  className="w-full bg-bgNormal text-textDark hover:bg-bgNormal cursor-pointer"
+                  onClick={handleGoogleSignIn}
                 >
                   <svg
                     className="mr-2 h-4 w-4"
@@ -101,17 +186,18 @@ export function LoginForm({
                   Đăng nhập với Google
                 </Button>
               </div>
-            </div>
-            <div className="mt-6 text-center text-sm text-textNormal">
-              Chưa có tài khoản?{" "}
-              <Link
-                to="/auth/signup"
-                className="text-main hover:text-mainHover underline underline-offset-4"
-              >
-                Đăng ký
-              </Link>
-            </div>
-          </form>
+
+              <div className="mt-6 text-center text-sm text-textNormal">
+                Chưa có tài khoản?{" "}
+                <Link
+                  to="/auth/signup"
+                  className="text-main hover:text-mainHover underline underline-offset-4"
+                >
+                  Đăng ký
+                </Link>
+              </div>
+            </form>
+          </Form>
         </CardContent>
       </Card>
     </div>
