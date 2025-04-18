@@ -16,11 +16,12 @@ import Profile from "./pages/Profile";
 import DetailCV from "./pages/DetailCV";
 import AdminDashboard from "./pages/AdminDashboard";
 import { Provider } from "react-redux";
-import { store } from "./store/store.ts";
+import { persistor, store } from "./store/store.ts";
 import { LoginForm } from "./components/auth/LoginForm.tsx";
 import { SignUpForm } from "./components/auth/SignUpForm.tsx";
 import { ProtectedLayout } from "./layouts/ProtectedLayout.tsx";
 import { RedirectIfAuthenticated } from "./components/RedirectIfAuthenticated.tsx";
+import { PersistGateWithAuth } from "./components/PersistGateWithAuth.tsx";
 
 const router = createBrowserRouter([
   {
@@ -98,7 +99,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Provider store={store}>
-      <RouterProvider router={router} />
+      <PersistGateWithAuth persistor={persistor}>
+        <RouterProvider router={router} />
+      </PersistGateWithAuth>
     </Provider>
   </React.StrictMode>
 );

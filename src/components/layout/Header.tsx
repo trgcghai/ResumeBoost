@@ -9,13 +9,21 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 const Header = () => {
   const { user, isAuthenticated } = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
 
-  const handleLogout = () => {
-    dispatch(logout());
+  const handleLogout = async () => {
+    try {
+      await signOut(auth); // Đăng xuất khỏi Firebase
+
+      dispatch(logout()); // Cập nhật trạng thái đăng xuất trong Redux
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   const getUserInitials = () => {
