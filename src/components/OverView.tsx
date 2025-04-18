@@ -1,10 +1,15 @@
 import { getAuth } from "firebase/auth";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { UserProfile } from "@/type";
 
 const Overview: React.FC = () => {
   const auth = getAuth();
   const user = auth.currentUser;
+  const userProfileCollectionRef = collection(db, "user_profiles");
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   const getInitials = () => {
     if (user?.displayName === "User") return "U";
@@ -17,6 +22,24 @@ const Overview: React.FC = () => {
     }
     return user?.displayName?.[0]?.toUpperCase() || "U";
   };
+
+  useEffect(() => {
+    const getProfile = async () => {
+      try {
+        const data = await getDocs(userProfileCollectionRef);
+        const userProfiles: UserProfile[] = data.docs.map((doc) => ({
+          ...(doc.data() as UserProfile), // Explicitly type the data
+          id: doc.id,
+        }));
+        setUserProfile(
+          userProfiles.filter((profile) => profile.userId === user?.uid)[0]
+        );
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+    getProfile();
+  }, [user?.uid, userProfileCollectionRef]);
 
   return (
     <div className="mb-6">
@@ -39,15 +62,25 @@ const Overview: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="bg-white border rounded-lg px-4 py-4 text-center flex items-center justify-between">
           <h3 className="text-lg font-semibold">Tổng số CV</h3>
-          <p className="text-2xl font-bold">4</p>
+          <p className="text-2xl font-bold">{userProfile?.cvCount}</p>
         </div>
         <div className="bg-white border rounded-lg px-4 py-4 text-center flex items-center justify-between">
           <h3 className="text-lg font-semibold">Điểm trung bình</h3>
-          <p className="text-2xl font-bold">86</p>
+          <p className="text-2xl font-bold">{userProfile?.avgScore}</p>
         </div>
         <div className="bg-white border rounded-lg px-4 py-4 text-center flex items-center justify-between">
           <h3 className="text-lg font-semibold">CV gần nhất</h3>
-          <p className="text-2xl font-bold">10:30 04/04/2025</p>
+          <p className="text-2xl font-bold">
+            {userProfile?.lastUploadTime
+              ? userProfile.lastUploadTime.toDate().toLocaleString("vi-VN", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                })
+              : "Chưa có CV"}
+          </p>
         </div>
       </div>
     </div>
