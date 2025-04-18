@@ -1,7 +1,7 @@
 import { getAuth } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { UserProfile } from "@/type";
 
@@ -9,6 +9,7 @@ const Overview: React.FC = () => {
   const auth = getAuth();
   const user = auth.currentUser;
   const userProfileCollectionRef = collection(db, "user_profiles");
+
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   const getInitials = () => {
@@ -26,14 +27,21 @@ const Overview: React.FC = () => {
   useEffect(() => {
     const getProfile = async () => {
       try {
-        const data = await getDocs(userProfileCollectionRef);
-        const userProfiles: UserProfile[] = data.docs.map((doc) => ({
-          ...(doc.data() as UserProfile), // Explicitly type the data
-          id: doc.id,
-        }));
-        setUserProfile(
-          userProfiles.filter((profile) => profile.userId === user?.uid)[0]
+        const userId = user?.uid || "";
+        const q = query(
+          userProfileCollectionRef,
+          where("userId", "==", userId)
         );
+
+        const dataSnap = await getDocs(q);
+        if (dataSnap.empty) {
+          return;
+        } else {
+          setUserProfile({
+            ...(dataSnap.docs[0].data() as UserProfile),
+            id: dataSnap.docs[0].id,
+          });
+        }
       } catch (error) {
         console.error("Error fetching user profile:", error);
       }
