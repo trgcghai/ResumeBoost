@@ -9,17 +9,22 @@ export type User = {
 type UserState = {
   user: User | null;
   isAuthenticated: boolean;
+  isLoading: boolean;
 };
 
 const initialState: UserState = {
   user: null,
   isAuthenticated: false,
+  isLoading: true,
 };
 
 export const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
+    persistComplete: (state) => {
+      state.isLoading = false;
+    },
     login: (state, action: PayloadAction<User>) => {
       state.isAuthenticated = true;
       state.user = action.payload;
@@ -34,6 +39,6 @@ export const userSlice = createSlice({
   },
 });
 
-export const { login, logout, updateUser } = userSlice.actions;
+export const { login, logout, updateUser, persistComplete } = userSlice.actions;
 
 export default userSlice.reducer;
