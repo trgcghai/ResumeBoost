@@ -13,8 +13,8 @@ import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 
 const Header = () => {
-  const user = auth.currentUser;
-  const { isAuthenticated } = useAppSelector((state) => state.user);
+  const authUser = auth.currentUser;
+  const { user, isAuthenticated } = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
 
   const handleLogout = async () => {
@@ -29,7 +29,8 @@ const Header = () => {
 
   const getUserInitials = () => {
     return (
-      user?.displayName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase()
+      authUser?.displayName?.[0]?.toUpperCase() ||
+      authUser?.email?.[0]?.toUpperCase()
     );
   };
 
@@ -63,15 +64,15 @@ const Header = () => {
         </nav>
       </div>
 
-      <div>
+      <div className="flex items-center gap-4">
         {isAuthenticated && user && (
           <HoverCard openDelay={200} closeDelay={100}>
             <HoverCardTrigger asChild>
               <div className="flex items-center gap-2 cursor-pointer p-1 rounded-full hover:bg-gray-100">
-                <Avatar className="h-8 w-8 border border-gray-200">
+                <Avatar className="h-10 w-10 border border-gray-200">
                   <AvatarImage
-                    src={user.photoURL || ""}
-                    alt={user.email || "User"}
+                    src={authUser?.photoURL || ""}
+                    alt={authUser?.email || "User"}
                   />
                   <AvatarFallback className="bg-main text-white">
                     {getUserInitials()}
@@ -82,14 +83,14 @@ const Header = () => {
             <HoverCardContent className="w-80" align="end">
               <div className="flex justify-between space-x-4">
                 <Avatar className="h-12 w-12">
-                  <AvatarImage src={user.photoURL || ""} />
+                  <AvatarImage src={authUser?.photoURL || ""} />
                   <AvatarFallback className="bg-main text-white">
                     {getUserInitials()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="space-y-1 flex-1">
                   <h4 className="text-sm font-semibold">Xin chào</h4>
-                  <p className="text-sm font-semibold">{user.email}</p>
+                  <p className="text-sm font-semibold">{authUser?.email}</p>
                 </div>
               </div>
 
@@ -106,6 +107,14 @@ const Header = () => {
               </div>
             </HoverCardContent>
           </HoverCard>
+        )}
+        {user?.role === "admin" && (
+          <Link
+            to="/admin/dashboard"
+            className="text-white bg-main rounded-lg px-4 py-1.5 hover:bg-mainHover"
+          >
+            Admin Dashboard
+          </Link>
         )}
       </div>
     </header>
