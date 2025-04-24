@@ -47,6 +47,7 @@ export const createUserProfile = onCall(async (request) => {
         userId,
         cvCount: 0,
         avgScore: 0,
+        createdAt: new Date(),
         lastUploadTime: new Date(),
         updatedAt: new Date(),
       });

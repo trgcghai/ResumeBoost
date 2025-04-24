@@ -23,13 +23,17 @@ import { useAppDispatch } from "@/hooks/redux";
 import { login } from "@/store/slices/userSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import GoogleAuth from "./GoogleAuth";
 import { httpsCallable } from "firebase/functions";
 
 const signUpSchema = z
   .object({
     email: z.string().email({ message: "Email không hợp lệ" }),
+    username: z
+      .string()
+      .min(3, { message: "Tên người dùng phải có ít nhất 3 ký tự" })
+      .max(20, { message: "Tên người dùng không được quá 20 ký tự" }),
     password: z
       .string()
       .min(8, { message: "Mật khẩu phải có ít nhất 8 ký tự" }),
@@ -65,6 +69,7 @@ export function SignUpForm({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       email: "",
+      username: "",
       password: "",
       confirmPassword: "",
     },
@@ -79,6 +84,10 @@ export function SignUpForm({
         data.email,
         data.password
       );
+
+      await updateProfile(result.user, {
+        displayName: data.username,
+      });
 
       const { email, uid, photoURL } = result.user;
 
@@ -132,7 +141,12 @@ export function SignUpForm({
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Email */}
+              {form.formState.errors.root && (
+                <p className="text-red-500 text-sm text-center">
+                  {form.formState.errors.root.message}
+                </p>
+              )}
+
               <FormField
                 control={form.control}
                 name="email"
@@ -143,6 +157,27 @@ export function SignUpForm({
                       <Input
                         type="email"
                         placeholder="example@email.com"
+                        className="ring-main focus-visible:ring-main"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-500" />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-textDark">
+                      Tên người dùng
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="example123"
                         className="ring-main focus-visible:ring-main"
                         {...field}
                       />
