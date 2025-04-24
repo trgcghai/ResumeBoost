@@ -93,7 +93,6 @@ export function SignUpForm({
       );
       const res = (await createUserProfileWithRole({
         userId: uid,
-        isAdmin: true,
       })) as {
         data: responeType;
       };

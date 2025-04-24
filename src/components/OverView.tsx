@@ -1,13 +1,18 @@
-import { getAuth } from "firebase/auth";
+import { getAuth, signOut } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { UserProfile } from "@/type";
+import { Button } from "./ui/button";
+import { LogOut } from "lucide-react";
+import { useAppDispatch } from "@/hooks/redux";
+import { logout } from "@/store/slices/userSlice";
 
 const Overview: React.FC = () => {
   const auth = getAuth();
   const user = auth.currentUser;
+  const dispatch = useAppDispatch();
   const userProfileCollectionRef = collection(db, "user_profiles");
 
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -16,6 +21,16 @@ const Overview: React.FC = () => {
     return (
       user?.displayName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase()
     );
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth); // Đăng xuất khỏi Firebase
+
+      dispatch(logout()); // Cập nhật trạng thái đăng xuất trong Redux
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   useEffect(() => {
@@ -45,32 +60,44 @@ const Overview: React.FC = () => {
 
   return (
     <div className="mb-6">
-      <div
-        className={`mb-4 flex ${
-          user?.displayName ? "items-start" : "items-center"
-        } gap-4`}
-      >
-        <Avatar className="h-16 w-16 border border-gray-200">
-          <AvatarImage
-            src={user?.photoURL || ""}
-            alt={user?.displayName || ""}
-          />
-          <AvatarFallback className="bg-main text-white text-lg">
-            {getInitials()}
-          </AvatarFallback>
-        </Avatar>
-        <div>
-          {user?.displayName ? (
-            <>
-              <h1 className="text-2xl font-bold">{user?.displayName}</h1>
-              <p className="text-textNormal">{user?.email}</p>
-            </>
-          ) : (
-            <>
-              <p className="text-xl font-bold">{user?.email}</p>
-            </>
-          )}
+      <div className="flex items-center justify-between mb-4 ">
+        <div
+          className={`flex ${
+            user?.displayName ? "items-start" : "items-center"
+          } gap-4`}
+        >
+          <Avatar className="h-16 w-16 border border-gray-200">
+            <AvatarImage
+              src={user?.photoURL || ""}
+              alt={user?.displayName || ""}
+            />
+            <AvatarFallback className="bg-main text-white text-lg">
+              {getInitials()}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            {user?.displayName ? (
+              <>
+                <h1 className="text-2xl font-bold">{user?.displayName}</h1>
+                <p className="text-textNormal">{user?.email}</p>
+              </>
+            ) : (
+              <>
+                <p className="text-xl font-bold">{user?.email}</p>
+              </>
+            )}
+          </div>
         </div>
+
+        <Button
+          variant="default"
+          size="lg"
+          className="justify-start bg-danger text-white cursor-pointer hover:bg-red-600"
+          onClick={handleLogout}
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          Đăng xuất
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
