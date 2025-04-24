@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { z } from "zod";
 import {
   Form,
@@ -19,8 +19,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { auth, functions } from "@/lib/firebase";
-import { useAppDispatch } from "@/hooks/redux";
-import { login } from "@/store/slices/userSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
@@ -63,8 +61,6 @@ export function SignUpForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -89,24 +85,23 @@ export function SignUpForm({
         displayName: data.username,
       });
 
-      const { email, uid, photoURL } = result.user;
+      const { uid } = result.user;
 
-      dispatch(login({ email: email || "", id: uid, avatar: photoURL || "" }));
-      const createUserProfile = httpsCallable(functions, "createUserProfile");
-      const res = (await createUserProfile({ userId: uid })) as {
+      const createUserProfileWithRole = httpsCallable(
+        functions,
+        "createUserProfileWithRole"
+      );
+      const res = (await createUserProfileWithRole({
+        userId: uid,
+        isAdmin: true,
+      })) as {
         data: responeType;
       };
       if (res.data.success) {
         console.log("User profile created successfully");
-        navigate("/");
       } else {
-        console.log(
-          "User profile already exists or error occurred",
-          res.data.message
-        );
+        console.log("Error occurred", res.data.message);
       }
-
-      navigate("/");
     } catch (error) {
       console.log(error);
 

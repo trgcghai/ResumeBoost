@@ -27,14 +27,19 @@ export const PersistGateWithAuth = ({
 
   // Xử lý trạng thái auth và persistence
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        await user.getIdToken(true); // Lấy token mới nhất
+        const tokenResult = await user.getIdTokenResult(); // Lấy token result mới nhất
+
         // Có user đăng nhập, cập nhật redux
         dispatch(
           login({
             id: user.uid,
             email: user.email || "",
             avatar: user.photoURL || "",
+            role: tokenResult.claims.role,
+            isAdmin: tokenResult.claims.admin,
           })
         );
       } else {

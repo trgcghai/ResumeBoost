@@ -1,10 +1,7 @@
 import { signInWithPopup } from "firebase/auth";
 import { Button } from "../ui/button";
 import { auth, functions, googleProvider } from "@/lib/firebase";
-import { useAppDispatch } from "@/hooks/redux";
 import { httpsCallable } from "firebase/functions";
-import { login } from "@/store/slices/userSlice";
-import { useNavigate } from "react-router-dom";
 
 interface responeType {
   success: boolean;
@@ -13,28 +10,26 @@ interface responeType {
 }
 
 const GoogleAuth = () => {
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-
   const handleGoogleAuth = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
 
-      const { email, uid, photoURL } = result.user;
+      const { uid } = result.user;
 
-      dispatch(login({ email: email || "", id: uid, avatar: photoURL || "" }));
-
-      const createUserProfile = httpsCallable(functions, "createUserProfile");
-      const res = await createUserProfile({ userId: uid });
-      const data = res.data as responeType;
-      if (data.success) {
+      const createUserProfileWithRole = httpsCallable(
+        functions,
+        "createUserProfileWithRole"
+      );
+      const res = (await createUserProfileWithRole({
+        userId: uid,
+        isAdmin: true,
+      })) as {
+        data: responeType;
+      };
+      if (res.data.success) {
         console.log("User profile created successfully");
-        navigate("/");
       } else {
-        console.log(
-          "User profile already exists or error occurred",
-          data.message
-        );
+        console.log("Error occurred", res.data.message);
       }
     } catch (error) {
       console.log("Error signing in:", error);

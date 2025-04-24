@@ -5,6 +5,7 @@ export type User = {
   email: string;
   avatar?: string;
   role?: string;
+  isAdmin?: boolean;
 };
 
 type UserState = {
@@ -26,9 +27,13 @@ export const userSlice = createSlice({
     persistComplete: (state) => {
       state.isLoading = false;
     },
-    login: (state, action: PayloadAction<User>) => {
+    login: (state, action) => {
       state.isAuthenticated = true;
-      state.user = action.payload;
+      state.user = {
+        ...action.payload,
+        role: action.payload.role,
+        isAdmin: action.payload.admin,
+      };
     },
     logout: (state) => {
       state.isAuthenticated = false;

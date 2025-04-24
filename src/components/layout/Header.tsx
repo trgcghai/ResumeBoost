@@ -9,11 +9,12 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
-import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { signOut } from "firebase/auth";
 
 const Header = () => {
-  const { user, isAuthenticated } = useAppSelector((state) => state.user);
+  const user = auth.currentUser;
+  const { isAuthenticated } = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
 
   const handleLogout = async () => {
@@ -27,8 +28,9 @@ const Header = () => {
   };
 
   const getUserInitials = () => {
-    if (!user || !user.email) return "U";
-    return user.email.charAt(0).toUpperCase();
+    return (
+      user?.displayName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase()
+    );
   };
 
   return (
@@ -68,7 +70,7 @@ const Header = () => {
               <div className="flex items-center gap-2 cursor-pointer p-1 rounded-full hover:bg-gray-100">
                 <Avatar className="h-8 w-8 border border-gray-200">
                   <AvatarImage
-                    src={user.avatar || ""}
+                    src={user.photoURL || ""}
                     alt={user.email || "User"}
                   />
                   <AvatarFallback className="bg-main text-white">
@@ -80,7 +82,7 @@ const Header = () => {
             <HoverCardContent className="w-80" align="end">
               <div className="flex justify-between space-x-4">
                 <Avatar className="h-12 w-12">
-                  <AvatarImage src={user.avatar || ""} />
+                  <AvatarImage src={user.photoURL || ""} />
                   <AvatarFallback className="bg-main text-white">
                     {getUserInitials()}
                   </AvatarFallback>
