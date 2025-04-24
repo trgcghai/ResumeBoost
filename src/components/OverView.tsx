@@ -13,15 +13,9 @@ const Overview: React.FC = () => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   const getInitials = () => {
-    if (user?.displayName === "User") return "U";
-
-    const nameParts = user?.displayName?.split(" ");
-    if (nameParts && nameParts.length >= 2) {
-      return `${nameParts[0][0]}${
-        nameParts[nameParts.length - 1][0]
-      }`.toUpperCase();
-    }
-    return user?.displayName?.[0]?.toUpperCase() || "U";
+    return (
+      user?.displayName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase()
+    );
   };
 
   useEffect(() => {
@@ -51,7 +45,11 @@ const Overview: React.FC = () => {
 
   return (
     <div className="mb-6">
-      <div className="mb-4 flex items-start gap-4">
+      <div
+        className={`mb-4 flex ${
+          user?.displayName ? "items-start" : "items-center"
+        } gap-4`}
+      >
         <Avatar className="h-16 w-16 border border-gray-200">
           <AvatarImage
             src={user?.photoURL || ""}
@@ -62,8 +60,16 @@ const Overview: React.FC = () => {
           </AvatarFallback>
         </Avatar>
         <div>
-          <h1 className="text-2xl font-bold">{user?.displayName}</h1>
-          <p className="text-textNormal">{user?.email}</p>
+          {user?.displayName ? (
+            <>
+              <h1 className="text-2xl font-bold">{user?.displayName}</h1>
+              <p className="text-textNormal">{user?.email}</p>
+            </>
+          ) : (
+            <>
+              <p className="text-xl font-bold">{user?.email}</p>
+            </>
+          )}
         </div>
       </div>
 

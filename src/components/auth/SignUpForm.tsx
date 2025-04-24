@@ -18,13 +18,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { auth } from "@/lib/firebase";
+import { auth, functions } from "@/lib/firebase";
 import { useAppDispatch } from "@/hooks/redux";
 import { login } from "@/store/slices/userSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import GoogleAuth from "./GoogleAuth";
+import { httpsCallable } from "firebase/functions";
 
 const signUpSchema = z
   .object({
@@ -47,6 +48,12 @@ const signUpSchema = z
   );
 
 type SignUpFormValues = z.infer<typeof signUpSchema>;
+
+interface responeType {
+  success: boolean;
+  message: string;
+  error?: object;
+}
 
 export function SignUpForm({
   className,
@@ -76,10 +83,38 @@ export function SignUpForm({
       const { email, uid, photoURL } = result.user;
 
       dispatch(login({ email: email || "", id: uid, avatar: photoURL || "" }));
+      const createUserProfile = httpsCallable(functions, "createUserProfile");
+      const res = (await createUserProfile({ userId: uid })) as {
+        data: responeType;
+      };
+      if (res.data.success) {
+        console.log("User profile created successfully");
+        navigate("/");
+      } else {
+        console.log(
+          "User profile already exists or error occurred",
+          res.data.message
+        );
+      }
 
       navigate("/");
     } catch (error) {
-      console.log("Error signing in:", error);
+      console.log(error);
+
+      if (
+        error instanceof Error &&
+        error.message.includes("auth/email-already-in-use")
+      ) {
+        form.setError("email", {
+          type: "manual",
+          message: "Email đã được sử dụng",
+        });
+      } else {
+        form.setError("root", {
+          type: "manual",
+          message: "Đăng ký không thành công. Vui lòng thử lại sau.",
+        });
+      }
     }
   };
 
