@@ -3,7 +3,7 @@ import SkillsTab from "@/components/detailAnalysis/SkillsTab";
 import AnalysisTab from "@/components/detailAnalysis/AnalysisTab";
 import SuggestionsTab from "@/components/detailAnalysis/SuggestionsTab";
 import CustomBreadcrumb from "@/components/layout/CustomBreadcrumb";
-
+import PDFDisplay from "@/components/PDFDisplay";
 // Define the component as a functional component with TypeScript
 const DetailCV: React.FC = () => {
   return (
@@ -15,7 +15,9 @@ const DetailCV: React.FC = () => {
       <div className="flex items-stretch gap-6">
         <div className="w-1/2 border rounded-lg p-4 flex flex-col gap-4">
           <h2 className="text-lg font-semibold">CV của bạn</h2>
-          <div className="bg-bgNormal rounded-lg flex-1 p-2">Your cv</div>
+          <div className="bg-bgNormal rounded-lg flex-1 p-2">
+            <PDFDisplay file="/dethi-dapan_tientien_2425-HK1.pdf" />
+          </div>
         </div>
 
         <div className="bg-white rounded-lg p-6 w-1/2 border">
