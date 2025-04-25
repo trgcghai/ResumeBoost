@@ -1,5 +1,6 @@
 import FileUploader from "@/components/FileUploader";
 import { Button } from "@/components/ui/button";
+import { XIcon } from "lucide-react";
 import { useState } from "react";
 
 const Home = () => {
@@ -11,15 +12,20 @@ const Home = () => {
   };
 
   const handleAnalyze = () => {
-    if (!file) {
-      alert("Vui lòng tải lên CV của bạn");
+    if (!file || !jobDescription) {
+      console.log("thiếu thông tin");
       return;
     }
 
     // Handle file analysis with job description
     console.log("Analyzing CV:", file);
     console.log("Job Description:", jobDescription);
-    // Add your API call or processing logic here
+
+    // todo
+    // call api to upload file to storage
+    // call to firebase to store data in database
+    // call to cloud function to call api to third party api to analyze cv
+    // redirect to result page
   };
 
   return (
@@ -35,7 +41,7 @@ const Home = () => {
         <label className="block font-semibold mb-2">Tải lên CV của bạn</label>
         <FileUploader onFileUpload={handleFileUpload} />
         {file && (
-          <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-md">
+          <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-md flex items-center justify-between">
             <p className="text-green-600 text-sm flex items-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -53,6 +59,11 @@ const Home = () => {
               </svg>
               {file.name} ({(file.size / 1024).toFixed(1)} KB)
             </p>
+            <XIcon
+              size={18}
+              className="text-danger cursor-pointer"
+              onClick={() => setFile(null)}
+            />
           </div>
         )}
       </div>
@@ -69,8 +80,9 @@ const Home = () => {
       </div>
 
       <Button
-        className="w-full text-lg bg-main text-white py-2 rounded hover:bg-mainHover"
+        className={`w-full text-lg bg-main text-white py-2 rounded hover:bg-mainHover cursor-pointer`}
         onClick={handleAnalyze}
+        disabled={!file || !jobDescription}
       >
         Phân tích ngay
       </Button>
