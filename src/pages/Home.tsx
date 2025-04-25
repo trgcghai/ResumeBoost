@@ -1,17 +1,21 @@
 import FileUploader from "@/components/FileUploader";
 import { Button } from "@/components/ui/button";
+import { functions } from "@/lib/firebase";
+import readFileAsBase64 from "@/utils/readFileAsBase64";
+import { httpsCallable } from "firebase/functions";
 import { XIcon } from "lucide-react";
 import { useState } from "react";
 
 const Home = () => {
   const [file, setFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleFileUpload = (uploadedFile: File) => {
     setFile(uploadedFile);
   };
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     if (!file || !jobDescription) {
       console.log("thiếu thông tin");
       return;
@@ -20,6 +24,26 @@ const Home = () => {
     // Handle file analysis with job description
     console.log("Analyzing CV:", file);
     console.log("Job Description:", jobDescription);
+
+    setIsUploading(true);
+
+    try {
+      const processResume = httpsCallable(functions, "processResume");
+      const fileBase64 = await readFileAsBase64(file);
+
+      const uploadResult = await processResume({
+        fileBase64,
+        fileName: file.name,
+        fileType: file.type,
+        jobDescription,
+      });
+
+      console.log("Upload result:", uploadResult);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    } finally {
+      setIsUploading(false);
+    }
 
     // todo
     // call api to upload file to storage
@@ -84,7 +108,7 @@ const Home = () => {
         onClick={handleAnalyze}
         disabled={!file || !jobDescription}
       >
-        Phân tích ngay
+        {isUploading ? "Đang phân tích" : "Phân tích ngay"}
       </Button>
     </div>
   );

@@ -12,6 +12,7 @@ import * as logger from "firebase-functions/logger";
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import { getAuth } from "firebase-admin/auth";
+import { v2 as cloudinary } from "cloudinary";
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
@@ -23,6 +24,13 @@ initializeApp();
 const db = getFirestore();
 // Get Auth instance
 const auth = getAuth();
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "dthvciqeu",
+  api_key: process.env.CLOUDINARY_API_KEY || "784973211484813",
+  api_secret:
+    process.env.CLOUDINARY_API_SECRET || "xUCqcqZzL-MXXHS9drIsaZ4q5LU",
+});
 
 export const helloWorld = onCall((request) => {
   const { name } = request.data;
@@ -121,3 +129,61 @@ export const setUserAsAdmin = onCall(async (request) => {
     };
   }
 });
+
+export const processResume = onCall(async (request) => {
+  try {
+    const { fileBase64, fileName, fileType, jobDescription } = request.data;
+
+    if (!fileBase64 || !fileName || !fileType || !jobDescription) {
+      return {
+        success: false,
+        message: "Missing file data or job description",
+      };
+    }
+
+    logger.info(
+      `check cloudinary config ${process.env.CLOUDINARY_CLOUD_NAME} ${process.env.CLOUDINARY_API_KEY} ${process.env.CLOUDINARY_API_SECRET}`
+    );
+
+    const uploadResult = await uploadToCloudinary(fileBase64);
+    logger.info(`File uploaded to Cloudinary: ${uploadResult}`, {
+      structuredData: true,
+    });
+
+    return {
+      success: true,
+      message: "File processed successfully",
+      result: uploadResult,
+    };
+  } catch (error) {
+    // logger.error("Error processing resume", error);
+    return {
+      success: false,
+      message: "Error processing resume",
+      error,
+    };
+  }
+});
+
+async function uploadToCloudinary(fileBase64: string) {
+  try {
+    // Loại bỏ header của base64 nếu có
+    const base64Data = fileBase64.includes("base64,")
+      ? fileBase64.split("base64,")[1]
+      : fileBase64;
+
+    // Upload file lên Cloudinary
+    const result = await cloudinary.uploader.upload(
+      `data:application/pdf;base64,${base64Data}`,
+      {
+        resource_type: "auto",
+        folder: "ResumeBoost",
+      }
+    );
+
+    return result;
+  } catch (error) {
+    logger.error("Cloudinary upload error", error);
+    return null;
+  }
+}
