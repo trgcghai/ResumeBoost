@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type User = {
-  id?: string;
+  id: string;
   email: string;
-  avatar?: string;
-  role?: string;
-  isAdmin?: boolean;
+  avatar: string;
+  role: string;
+  isAdmin: boolean;
 };
 
 type UserState = {
@@ -31,8 +31,6 @@ export const userSlice = createSlice({
       state.isAuthenticated = true;
       state.user = {
         ...action.payload,
-        role: action.payload.role,
-        isAdmin: action.payload.admin,
       };
     },
     logout: (state) => {

@@ -26,7 +26,7 @@ const GoogleAuth = () => {
         data: responeType;
       };
       if (res.data.success) {
-        console.log("User profile created successfully");
+        console.log(res.data.message);
       } else {
         console.log("Error occurred", res.data.message);
       }

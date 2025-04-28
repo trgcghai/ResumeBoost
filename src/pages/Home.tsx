@@ -5,11 +5,25 @@ import readFileAsBase64 from "@/utils/readFileAsBase64";
 import { httpsCallable } from "firebase/functions";
 import { XIcon } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+interface response {
+  success: boolean;
+  message: string;
+  error?: object;
+  result?: {
+    createResumeResult?: { id: string };
+    createJobDescriptionResult?: { id: string };
+    analysisId?: string;
+    uploadResult?: object;
+  };
+}
 
 const Home = () => {
   const [file, setFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const navigate = useNavigate();
 
   const handleFileUpload = (uploadedFile: File) => {
     setFile(uploadedFile);
@@ -21,35 +35,52 @@ const Home = () => {
       return;
     }
 
-    // Handle file analysis with job description
-    console.log("Analyzing CV:", file);
-    console.log("Job Description:", jobDescription);
-
     setIsUploading(true);
 
     try {
       const processResume = httpsCallable(functions, "processResume");
       const fileBase64 = await readFileAsBase64(file);
 
-      const uploadResult = await processResume({
+      const uploadResult = (await processResume({
         fileBase64,
         fileName: file.name,
-        fileType: file.type,
         jobDescription,
-      });
+      })) as { data: response };
 
       console.log("Upload result:", uploadResult);
+
+      if (uploadResult?.data?.success) {
+        setFile(null);
+        setJobDescription("");
+
+        analyzeResume(uploadResult);
+      }
     } catch (error) {
       console.error("Error uploading file:", error);
     } finally {
       setIsUploading(false);
     }
+  };
 
-    // todo
-    // call api to upload file to storage
-    // call to firebase to store data in database
-    // call to cloud function to call api to third party api to analyze cv
-    // redirect to result page
+  const analyzeResume = async (uploadResult: { data: response }) => {
+    try {
+      const { id: resumeId } =
+        uploadResult?.data?.result?.createResumeResult ?? {};
+      const { id: jobDescriptionId } =
+        uploadResult?.data?.result?.createJobDescriptionResult ?? {};
+
+      const analyzeResume = httpsCallable(functions, "analyzeResume");
+      const analyzeResult = (await analyzeResume({
+        resumeId,
+        jobDescriptionId,
+      })) as { data: response };
+
+      if (analyzeResult?.data?.success) {
+        navigate(`/details/${analyzeResult?.data?.result?.analysisId}`);
+      }
+    } catch (error) {
+      console.error("Error analyzing resume:", error);
+    }
   };
 
   return (
@@ -106,7 +137,7 @@ const Home = () => {
       <Button
         className={`w-full text-lg bg-main text-white py-2 rounded hover:bg-mainHover cursor-pointer`}
         onClick={handleAnalyze}
-        disabled={!file || !jobDescription}
+        disabled={!file || !jobDescription || isUploading}
       >
         {isUploading ? "Đang phân tích" : "Phân tích ngay"}
       </Button>
