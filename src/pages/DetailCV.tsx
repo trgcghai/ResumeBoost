@@ -17,7 +17,7 @@ const DetailCV: React.FC = () => {
 
   return (
     <div className="">
-      <CustomBreadcrumb />
+      <CustomBreadcrumb currentIsId={true} />
 
       <h1 className="text-2xl font-bold mb-6">ĐÁNH GIÁ CHI TIẾT CV</h1>
 
