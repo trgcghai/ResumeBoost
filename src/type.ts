@@ -59,7 +59,12 @@ export interface Analyses {
     publicUrl: string;
     secureUrl: string;
   };
-  suggqestions: string[];
+  skills: {
+    keywordsToAdd: string[];
+    missing: string[];
+    present: string[];
+  };
+  suggestions: string[];
 }
 
 export interface CardData {
