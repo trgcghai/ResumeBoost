@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import Overview from "../components/OverView";
 import Card from "../components/Card";
 import {
@@ -13,11 +13,23 @@ import { useUserResumes } from "@/hooks/useUserResumes";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { CardData } from "@/type";
+import { filterResumesByScore, sortResumes } from "@/utils/ResumeUtil";
 
 const Profile: React.FC = () => {
   const [scoreFilter, setScoreFilter] = useState("all");
   const [orderFilter, setOrderFilter] = useState("uploadDesc");
   const { data, loading, error } = useUserResumes();
+
+  const processedResumes: CardData[] = useMemo(() => {
+    if (!data || data.length === 0) return [];
+
+    // First filter, then sort (to avoid sorting unnecessary items)
+    return sortResumes(
+      [...filterResumesByScore(data, scoreFilter)],
+      orderFilter
+    );
+  }, [data, scoreFilter, orderFilter]);
 
   return (
     <>
@@ -90,8 +102,8 @@ const Profile: React.FC = () => {
                     <Skeleton className="h-20 w-full rounded-md" />
                   </div>
                 ))}{" "}
-            {data.length > 0
-              ? data.map((resume) => (
+            {processedResumes.length > 0
+              ? processedResumes.map((resume) => (
                   <Card
                     key={resume.resumeId}
                     id={resume.analysisId}
@@ -102,9 +114,7 @@ const Profile: React.FC = () => {
                 ))
               : !error && (
                   <div className="col-span-full text-center py-8">
-                    <p className="text-gray-500">
-                      Bạn chưa có CV nào. Hãy tải lên CV để phân tích!
-                    </p>
+                    <p className="text-gray-500">Không có resume nào !!</p>
                   </div>
                 )}
           </div>

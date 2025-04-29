@@ -1,23 +1,8 @@
 import { useState, useEffect } from "react";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  orderBy,
-  Timestamp,
-} from "firebase/firestore";
+import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { calAvgScore } from "@/utils/callAvgScore";
-import { Analyses, Resume } from "@/type";
-
-interface CardData {
-  resumeId: string;
-  analysisId: string;
-  title: string;
-  uploadTime: Timestamp;
-  avgScore: number;
-}
+import { Analyses, CardData, Resume } from "@/type";
 
 export function useUserResumes() {
   const [data, setData] = useState<CardData[]>([]);

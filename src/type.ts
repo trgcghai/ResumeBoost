@@ -61,3 +61,11 @@ export interface Analyses {
   };
   suggqestions: string[];
 }
+
+export interface CardData {
+  resumeId: string;
+  analysisId: string;
+  title: string;
+  uploadTime: Timestamp;
+  avgScore: number;
+}
