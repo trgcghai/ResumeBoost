@@ -5,7 +5,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { UserProfile } from "@/type";
 import { Button } from "./ui/button";
-import { LogOut } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 import { useAppDispatch } from "@/hooks/redux";
 import { logout } from "@/store/slices/userSlice";
 
@@ -16,12 +16,6 @@ const Overview: React.FC = () => {
   const userProfileCollectionRef = collection(db, "user_profiles");
 
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-
-  const getInitials = () => {
-    return (
-      user?.displayName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase()
-    );
-  };
 
   const handleLogout = async () => {
     try {
@@ -72,7 +66,7 @@ const Overview: React.FC = () => {
               alt={user?.displayName || ""}
             />
             <AvatarFallback className="bg-main text-white text-lg">
-              {getInitials()}
+              <User className="h-8 w-8" />
             </AvatarFallback>
           </Avatar>
           <div>
