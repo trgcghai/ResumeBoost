@@ -23,6 +23,25 @@ export interface ResumeAnalysisResult {
     | {};
 }
 
+export interface NormalizedResult {
+  skills: {
+    present: string[];
+    missing: string[];
+    keywordsToAdd: string[];
+  };
+  scores: {
+    overall: number;
+    format: number;
+    keywords: number;
+    relevance: number;
+  };
+  analysis: {
+    strengths: string[];
+    weaknesses: string[];
+  };
+  suggestions: string[];
+}
+
 export interface CloudinaryUploadResult {
   asset_folder?: string;
   asset_id?: string;

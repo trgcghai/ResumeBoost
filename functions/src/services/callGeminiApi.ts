@@ -1,5 +1,5 @@
 import { logger } from "firebase-functions";
-import { ResumeAnalysisResult } from "../type";
+import { NormalizedResult, ResumeAnalysisResult } from "../type";
 import geminiClient from "../config/gemini";
 import { DocumentData } from "firebase-admin/firestore";
 
@@ -122,62 +122,37 @@ export async function callGeminiApi(
   } catch (error) {
     logger.error("Error calling Gemini API", error);
     throw new Error("Error calling Gemini API: " + (error as Error).message);
-
-    // Trả về kết quả phân tích mặc định nếu có lỗi
-    return getDefaultAnalysisResult();
   }
 }
 
 /**
  * Chuẩn hóa kết quả phân tích từ Gemini API
  */
-function normalizeAnalysisResult(result: any) {
-  // Đảm bảo tất cả các trường đều có giá trị hợp lệ
+function normalizeAnalysisResult(result: any): NormalizedResult {
+  const clampScore = (value: any, defaultValue: number): number =>
+    typeof value === "number"
+      ? Math.max(0, Math.min(100, value))
+      : defaultValue;
+
+  const ensureArray = (value: any): string[] =>
+    Array.isArray(value) ? value : [];
+
   return {
     skills: {
-      present: Array.isArray(result.skillsAnalysis?.presentSkills)
-        ? result.skillsAnalysis.presentSkills
-        : [],
-      missing: Array.isArray(result.skillsAnalysis?.missingSkills)
-        ? result.skillsAnalysis.missingSkills
-        : [],
-      keywordsToAdd: Array.isArray(result.skillsAnalysis?.recommendedSkills)
-        ? result.skillsAnalysis.recommendedSkills
-        : [],
+      present: ensureArray(result.skillsAnalysis?.presentSkills),
+      missing: ensureArray(result.skillsAnalysis?.missingSkills),
+      keywordsToAdd: ensureArray(result.skillsAnalysis?.recommendedSkills),
     },
     scores: {
-      overall:
-        typeof result.overallScore === "number"
-          ? Math.max(0, Math.min(100, result.overallScore))
-          : 70,
-      format:
-        typeof result.formatScore === "number"
-          ? Math.max(0, Math.min(100, result.formatScore))
-          : 65,
-      keywords:
-        typeof result.keywordMatchScore === "number"
-          ? Math.max(0, Math.min(100, result.keywordMatchScore))
-          : 60,
-      relevance:
-        typeof result.relevanceScore === "number"
-          ? Math.max(0, Math.min(100, result.relevanceScore))
-          : 55,
+      overall: clampScore(result.overallScore, 70),
+      format: clampScore(result.formatScore, 65),
+      keywords: clampScore(result.keywordMatchScore, 60),
+      relevance: clampScore(result.relevanceScore, 55),
     },
     analysis: {
-      strengths: Array.isArray(result.analysis) ? result.analysis : [],
-      weaknesses: Array.isArray(result.weaknesses) ? result.weaknesses : [],
+      strengths: ensureArray(result.analysis),
+      weaknesses: ensureArray(result.weaknesses),
     },
-    suggestions: Array.isArray(result.suggestions) ? result.suggestions : [],
-  };
-}
-
-/**
- * Tạo kết quả phân tích mặc định trong trường hợp gặp lỗi
- */
-function getDefaultAnalysisResult(): ResumeAnalysisResult {
-  return {
-    success: false,
-    message: "Error calling Gemini API",
-    analysis: {},
+    suggestions: ensureArray(result.suggestions),
   };
 }
