@@ -128,12 +128,15 @@ export async function callGeminiApi(
 /**
  * Chuẩn hóa kết quả phân tích từ Gemini API
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function normalizeAnalysisResult(result: any): NormalizedResult {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const clampScore = (value: any, defaultValue: number): number =>
     typeof value === "number"
       ? Math.max(0, Math.min(100, value))
       : defaultValue;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ensureArray = (value: any): string[] =>
     Array.isArray(value) ? value : [];
 

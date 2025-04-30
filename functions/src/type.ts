@@ -20,7 +20,7 @@ export interface ResumeAnalysisResult {
         };
         suggestions: string[];
       }
-    | {};
+    | object;
 }
 
 export interface NormalizedResult {
@@ -71,6 +71,7 @@ export interface ResumeObject {
   createdAt: Date;
   updatedAt: Date;
   analysisId?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   analysisResult?: any;
 }
 
