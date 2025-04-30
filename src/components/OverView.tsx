@@ -1,8 +1,8 @@
-import { getAuth, signOut } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { UserProfile } from "@/type";
 import { Button } from "./ui/button";
 import { LogOut, User } from "lucide-react";
@@ -10,7 +10,6 @@ import { useAppDispatch } from "@/hooks/redux";
 import { logout } from "@/store/slices/userSlice";
 
 const Overview: React.FC = () => {
-  const auth = getAuth();
   const user = auth.currentUser;
   const dispatch = useAppDispatch();
   const userProfileCollectionRef = collection(db, "user_profiles");
