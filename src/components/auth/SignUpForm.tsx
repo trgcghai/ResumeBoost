@@ -18,36 +18,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { auth, functions } from "@/lib/firebase";
+import { auth } from "@/lib/firebase";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import GoogleAuth from "./GoogleAuth";
-import { httpsCallable } from "firebase/functions";
-
-const signUpSchema = z
-  .object({
-    email: z.string().email({ message: "Email không hợp lệ" }),
-    username: z
-      .string()
-      .min(3, { message: "Tên người dùng phải có ít nhất 3 ký tự" })
-      .max(20, { message: "Tên người dùng không được quá 20 ký tự" }),
-    password: z
-      .string()
-      .min(8, { message: "Mật khẩu phải có ít nhất 8 ký tự" }),
-    confirmPassword: z
-      .string()
-      .min(8, { message: "Xác nhận mật khẩu phải có ít nhất 8 ký tự" }),
-  })
-  .refine(
-    (data) => {
-      return data.password === data.confirmPassword;
-    },
-    {
-      message: "Mật khẩu không khớp",
-      path: ["confirmPassword"],
-    }
-  );
+import { createUserProfileWithRole } from "@/controllers/UserController";
+import { signUpSchema } from "@/lib/schemas/auth";
 
 type SignUpFormValues = z.infer<typeof signUpSchema>;
 
@@ -87,19 +64,13 @@ export function SignUpForm({
 
       const { uid } = result.user;
 
-      const createUserProfileWithRole = httpsCallable(
-        functions,
-        "createUserProfileWithRole"
-      );
-      const res = (await createUserProfileWithRole({
+      const res: responeType = (await createUserProfileWithRole({
         userId: uid,
-      })) as {
-        data: responeType;
-      };
-      if (res.data.success) {
+      })) as responeType;
+      if (res.success) {
         console.log("User profile created successfully");
       } else {
-        console.log("Error occurred", res.data.message);
+        console.log("Error occurred", res.message);
       }
     } catch (error) {
       console.log(error);
