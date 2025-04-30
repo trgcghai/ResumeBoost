@@ -1,7 +1,7 @@
-import { logger } from "firebase-functions";
-import { NormalizedResult, ResumeAnalysisResult } from "../type";
-import geminiClient from "../config/gemini";
-import { DocumentData } from "firebase-admin/firestore";
+import { NormalizedResult, ResumeAnalysisResult } from "@/type";
+import geminiClient from "../lib/gemini";
+import { DocumentData } from "firebase/firestore";
+import { Buffer } from "buffer";
 
 /**
  * Gọi Gemini API để phân tích CV
@@ -15,7 +15,7 @@ export async function callGeminiApi(
   jobDescription: string
 ): Promise<ResumeAnalysisResult> {
   try {
-    logger.info("Calling Gemini API to analyze resume");
+    console.log("Calling Gemini API to analyze resume");
 
     const pdfResponse = await fetch(
       resumeData.fileUrl.secureUrl || resumeData.fileUrl.publicUrl,
@@ -23,7 +23,7 @@ export async function callGeminiApi(
         method: "GET",
       }
     );
-    logger.info({ pdfResponse });
+    console.log({ pdfResponse });
     if (!pdfResponse.ok) {
       throw new Error("Failed to fetch PDF file");
     }
@@ -112,7 +112,7 @@ export async function callGeminiApi(
     // Chuẩn hóa kết quả
     const normalizedAnalysis = normalizeAnalysisResult(rawAnalysisData);
 
-    logger.info("Resume analysis completed successfully");
+    console.log("Resume analysis completed successfully");
 
     return {
       success: true,
@@ -120,7 +120,7 @@ export async function callGeminiApi(
       analysis: normalizedAnalysis,
     };
   } catch (error) {
-    logger.error("Error calling Gemini API", error);
+    console.log("Error calling Gemini API", error);
     throw new Error("Error calling Gemini API: " + (error as Error).message);
   }
 }

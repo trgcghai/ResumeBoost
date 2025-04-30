@@ -2,11 +2,10 @@ import { useEffect } from "react";
 import { PersistGate } from "redux-persist/integration/react";
 import { Persistor } from "redux-persist/es/types";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth, db, functions } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { login, logout, persistComplete } from "@/store/slices/userSlice";
 import { doc, getDoc } from "firebase/firestore";
-import { httpsCallable } from "firebase/functions";
 
 // Component tải trang
 const LoadingScreen = () => (
@@ -32,23 +31,14 @@ export const PersistGateWithAuth = ({
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
-          await user.getIdToken(true); // Lấy token mới nhất
-          const tokenResult = await user.getIdTokenResult(); // Lấy token result mới nhất
-
-          // Lấy thông tin người dùng từ Firestore (ưu tiên cao hơn)
+          // Lấy thông tin người dùng từ Firestore
           const userProfileRef = doc(db, "user_profiles", user.uid);
           const userProfileSnap = await getDoc(userProfileRef);
 
           let role = "user";
           let isAdmin = false;
 
-          // 1. Đầu tiên, lấy từ token claims (nếu có)
-          if (tokenResult.claims.role) {
-            role = tokenResult.claims.role as string;
-            isAdmin = tokenResult.claims.admin === true;
-          }
-
-          // 2. Sau đó, ghi đè bằng dữ liệu từ Firestore nếu có
+          // Ghi bằng dữ liệu từ Firestore
           if (userProfileSnap.exists()) {
             const userData = userProfileSnap.data();
             if (userData.role) {
@@ -68,23 +58,6 @@ export const PersistGateWithAuth = ({
               isAdmin: isAdmin,
             })
           );
-
-          // Nếu dữ liệu từ Firestore và token không trùng khớp, cần đồng bộ
-          if (
-            role !== tokenResult.claims.role ||
-            isAdmin !== tokenResult.claims.admin
-          ) {
-            console.log(
-              "Phát hiện sự không đồng bộ giữa Firestore và token claims"
-            );
-            // Gọi cloud function để cập nhật custom claims (triển khai bên dưới)
-            try {
-              const syncClaims = httpsCallable(functions, "syncUserClaims");
-              await syncClaims({ userId: user.uid });
-            } catch (syncError) {
-              console.error("Không thể đồng bộ custom claims:", syncError);
-            }
-          }
         } catch (error) {
           console.error("Lỗi khi lấy thông tin người dùng:", error);
           // Dùng thông tin cơ bản nếu có lỗi

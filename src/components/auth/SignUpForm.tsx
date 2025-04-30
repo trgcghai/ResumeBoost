@@ -18,12 +18,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { auth, functions } from "@/lib/firebase";
+import { auth } from "@/lib/firebase";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import GoogleAuth from "./GoogleAuth";
-import { httpsCallable } from "firebase/functions";
+import { createUserProfileWithRole } from "@/controllers/UserController";
 
 const signUpSchema = z
   .object({
@@ -87,19 +87,13 @@ export function SignUpForm({
 
       const { uid } = result.user;
 
-      const createUserProfileWithRole = httpsCallable(
-        functions,
-        "createUserProfileWithRole"
-      );
-      const res = (await createUserProfileWithRole({
+      const res: responeType = (await createUserProfileWithRole({
         userId: uid,
-      })) as {
-        data: responeType;
-      };
-      if (res.data.success) {
+      })) as responeType;
+      if (res.success) {
         console.log("User profile created successfully");
       } else {
-        console.log("Error occurred", res.data.message);
+        console.log("Error occurred", res.message);
       }
     } catch (error) {
       console.log(error);

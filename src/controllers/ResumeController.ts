@@ -1,18 +1,23 @@
-import { CallableRequest } from "firebase-functions/v2/https";
-import * as logger from "firebase-functions/logger";
-import { db } from "../config/firebase";
 import { updateUserProfileStats } from "../services/UserServices";
 import { callGeminiApi } from "../services/callGeminiApi";
 import { ResumeAnalysisResult } from "../type";
 import { uploadToCloudinary } from "../services/CloudinaryService";
+import { auth, db } from "@/lib/firebase";
+import { collection, doc, getDoc, setDoc } from "firebase/firestore";
 
 /**
  * Process resume controller - xử lý upload và lưu thông tin
  */
-export async function processResume(request: CallableRequest) {
+export async function processResume({
+  fileBase64,
+  fileName,
+  jobDescription,
+}: {
+  fileBase64: string;
+  fileName: string;
+  jobDescription: string;
+}) {
   try {
-    const { fileBase64, fileName, jobDescription } = request.data;
-
     if (!fileBase64 || !fileName || !jobDescription) {
       return {
         success: false,
@@ -20,9 +25,9 @@ export async function processResume(request: CallableRequest) {
       };
     }
 
-    const userId = request.auth?.uid;
+    const userId = auth.currentUser?.uid;
     if (!userId) {
-      logger.error("User not authenticated");
+      console.log("User not authenticated");
       return {
         success: false,
         message: "Authentication required",
@@ -30,10 +35,10 @@ export async function processResume(request: CallableRequest) {
     }
 
     const uploadResult = await uploadToCloudinary(fileBase64);
-    logger.info({ uploadResult });
+    console.log({ uploadResult });
 
     if (!uploadResult || !uploadResult.public_id) {
-      logger.error("Cloudinary upload failed or returned incomplete data");
+      console.log("Cloudinary upload failed or returned incomplete data");
       return {
         success: false,
         message: "Failed to upload file to Cloudinary",
@@ -61,12 +66,12 @@ export async function processResume(request: CallableRequest) {
       updatedAt: new Date(),
     };
 
-    let createResumeResult, resumeRef;
+    let resumeRef;
     try {
-      resumeRef = db.collection("resumes").doc();
-      createResumeResult = await resumeRef.set(resumeObject);
+      resumeRef = doc(collection(db, "resumes"));
+      await setDoc(resumeRef, resumeObject);
     } catch (firestoreError) {
-      logger.error("Error creating resume document:", firestoreError);
+      console.log("Error creating resume document:", firestoreError);
       throw new Error(`Failed to create resume document: ${firestoreError}`);
     }
 
@@ -78,14 +83,12 @@ export async function processResume(request: CallableRequest) {
       updatedAt: new Date(),
     };
 
-    let createJobDescriptionResult, jobDescriptionRef;
+    let jobDescriptionRef;
     try {
-      jobDescriptionRef = db.collection("job_descriptions").doc();
-      createJobDescriptionResult = await jobDescriptionRef.set(
-        jobDescriptionObject
-      );
+      jobDescriptionRef = doc(collection(db, "job_descriptions"));
+      await setDoc(jobDescriptionRef, jobDescriptionObject);
     } catch (firestoreError) {
-      logger.error("Error creating job description document:", firestoreError);
+      console.log("Error creating job description document:", firestoreError);
       throw new Error(
         `Failed to create job description document: ${firestoreError}`
       );
@@ -109,17 +112,15 @@ export async function processResume(request: CallableRequest) {
           url: uploadResult?.url,
         },
         createResumeResult: {
-          ...createResumeResult,
           id: resumeRef.id,
         },
         createJobDescriptionResult: {
-          ...createJobDescriptionResult,
           id: jobDescriptionRef.id,
         },
       },
     };
   } catch (error) {
-    logger.error("Error processing resume", error);
+    console.log("Error processing resume", error);
     return {
       success: false,
       message: "Error processing resume",
@@ -132,10 +133,14 @@ export async function processResume(request: CallableRequest) {
  * Controller gọi Gemini API để phân tích CV
  * Cần truyền resumeId và jobDescriptionId để xác định CV và job description cần phân tích
  */
-export async function analyzeResume(request: CallableRequest) {
+export async function analyzeResume({
+  resumeId,
+  jobDescriptionId,
+}: {
+  resumeId: string;
+  jobDescriptionId: string;
+}) {
   try {
-    const { resumeId, jobDescriptionId } = request.data;
-
     if (!resumeId || !jobDescriptionId) {
       return {
         success: false,
@@ -143,7 +148,7 @@ export async function analyzeResume(request: CallableRequest) {
       };
     }
 
-    const userId = request.auth?.uid;
+    const userId = auth.currentUser?.uid;
 
     if (!userId) {
       return {
@@ -153,7 +158,7 @@ export async function analyzeResume(request: CallableRequest) {
     }
 
     // 1. Lấy thông tin resume từ Firestore
-    const resumeDoc = await db.collection("resumes").doc(resumeId).get();
+    const resumeDoc = await getDoc(doc(db, "resumes", resumeId));
     if (!resumeDoc.exists) {
       return {
         success: false,
@@ -170,10 +175,9 @@ export async function analyzeResume(request: CallableRequest) {
     }
 
     // 2. Lấy thông tin job description từ Firestore
-    const jobDescriptionDoc = await db
-      .collection("job_descriptions")
-      .doc(jobDescriptionId)
-      .get();
+    const jobDescriptionDoc = await getDoc(
+      doc(db, "job_descriptions", jobDescriptionId)
+    );
     if (!jobDescriptionDoc.exists) {
       return {
         success: false,
@@ -189,7 +193,7 @@ export async function analyzeResume(request: CallableRequest) {
       };
     }
 
-    logger.log({ jobDescriptionData, resumeData }, { structuredData: true });
+    console.log({ jobDescriptionData, resumeData }, { structuredData: true });
 
     // 3. Gọi Gemini API để phân tích CV
     const analysisResponse: ResumeAnalysisResult = await callGeminiApi(
@@ -198,7 +202,7 @@ export async function analyzeResume(request: CallableRequest) {
     );
 
     // 4. Lưu kết quả phân tích vào Firestore
-    const analysisRef = db.collection("analyses").doc();
+    const analysisRef = doc(collection(db, "analyses"));
     const analysisObject = {
       userId,
       resumeId: resumeId,
@@ -225,7 +229,7 @@ export async function analyzeResume(request: CallableRequest) {
       updatedAt: new Date(),
     };
 
-    await analysisRef.set(analysisObject);
+    await setDoc(analysisRef, analysisObject);
 
     // 5. Cập nhật thông tin người dùng
     if (
@@ -245,7 +249,7 @@ export async function analyzeResume(request: CallableRequest) {
       },
     };
   } catch (error) {
-    logger.error("Error analyzing resume", error);
+    console.log("Error analyzing resume", error);
     return {
       success: false,
       message: `Error analyzing resume: ${error}`,

@@ -1,9 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 
-export const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-
 export const geminiClient = new GoogleGenAI({
-  apiKey: GEMINI_API_KEY,
+  apiKey: import.meta.env.VITE_GEMINI_API_KEY,
 });
 
 export default geminiClient;
