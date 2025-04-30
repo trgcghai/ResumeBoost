@@ -25,12 +25,7 @@ import { auth } from "@/lib/firebase";
 import { useAppDispatch } from "@/hooks/redux";
 import { login } from "@/store/slices/userSlice";
 import GoogleAuth from "./GoogleAuth";
-
-// Define schema for validation
-const loginSchema = z.object({
-  email: z.string().email({ message: "Email không hợp lệ" }),
-  password: z.string().min(8, { message: "Mật khẩu phải có ít nhất 8 ký tự" }),
-});
+import { loginSchema } from "@/lib/schemas/auth";
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 

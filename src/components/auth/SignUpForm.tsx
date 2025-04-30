@@ -24,30 +24,7 @@ import { useForm } from "react-hook-form";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import GoogleAuth from "./GoogleAuth";
 import { createUserProfileWithRole } from "@/controllers/UserController";
-
-const signUpSchema = z
-  .object({
-    email: z.string().email({ message: "Email không hợp lệ" }),
-    username: z
-      .string()
-      .min(3, { message: "Tên người dùng phải có ít nhất 3 ký tự" })
-      .max(20, { message: "Tên người dùng không được quá 20 ký tự" }),
-    password: z
-      .string()
-      .min(8, { message: "Mật khẩu phải có ít nhất 8 ký tự" }),
-    confirmPassword: z
-      .string()
-      .min(8, { message: "Xác nhận mật khẩu phải có ít nhất 8 ký tự" }),
-  })
-  .refine(
-    (data) => {
-      return data.password === data.confirmPassword;
-    },
-    {
-      message: "Mật khẩu không khớp",
-      path: ["confirmPassword"],
-    }
-  );
+import { signUpSchema } from "@/lib/schemas/auth";
 
 type SignUpFormValues = z.infer<typeof signUpSchema>;
 
