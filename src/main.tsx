@@ -10,7 +10,7 @@ import "./App.css";
 import RootLayout from "./layouts/RootLayout";
 import AuthLayout from "./layouts/AuthLayout";
 import AdminLayout from "./layouts/AdminLayout";
-
+import User from "./pages/user.tsx";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import DetailCV from "./pages/DetailCV";
@@ -84,7 +84,7 @@ const router = createBrowserRouter([
           },
           {
             path: "users",
-            element: <div>User Management Page</div>,
+            element: <User />,
           },
           {
             path: "cvs",
