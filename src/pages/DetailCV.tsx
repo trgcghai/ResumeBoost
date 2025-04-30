@@ -3,7 +3,7 @@ import SkillsTab from "@/components/detailAnalysis/SkillsTab";
 import AnalysisTab from "@/components/detailAnalysis/AnalysisTab";
 import SuggestionsTab from "@/components/detailAnalysis/SuggestionsTab";
 import CustomBreadcrumb from "@/components/layout/CustomBreadcrumb";
-import PDFDisplay from "@/components/PDFDisplay";
+import PDFDisplay from "@/components/pdf/PDFDisplay";
 import { useAnalysisData } from "@/hooks/useAnalyzeResult";
 import { useParams } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert";
