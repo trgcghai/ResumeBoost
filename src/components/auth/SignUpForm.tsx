@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { z } from "zod";
 import {
   Form,
@@ -18,16 +18,20 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { auth, googleProvider } from "@/lib/firebase";
-import { useAppDispatch } from "@/hooks/redux";
-import { login } from "@/store/slices/userSlice";
+import { auth, functions } from "@/lib/firebase";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import GoogleAuth from "./GoogleAuth";
+import { httpsCallable } from "firebase/functions";
 
 const signUpSchema = z
   .object({
     email: z.string().email({ message: "Email không hợp lệ" }),
+    username: z
+      .string()
+      .min(3, { message: "Tên người dùng phải có ít nhất 3 ký tự" })
+      .max(20, { message: "Tên người dùng không được quá 20 ký tự" }),
     password: z
       .string()
       .min(8, { message: "Mật khẩu phải có ít nhất 8 ký tự" }),
@@ -47,16 +51,21 @@ const signUpSchema = z
 
 type SignUpFormValues = z.infer<typeof signUpSchema>;
 
+interface responeType {
+  success: boolean;
+  message: string;
+  error?: object;
+}
+
 export function SignUpForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       email: "",
+      username: "",
       password: "",
       confirmPassword: "",
     },
@@ -72,27 +81,43 @@ export function SignUpForm({
         data.password
       );
 
-      const { email, uid, photoURL } = result.user;
+      await updateProfile(result.user, {
+        displayName: data.username,
+      });
 
-      dispatch(login({ email: email || "", id: uid, avatar: photoURL || "" }));
+      const { uid } = result.user;
 
-      navigate("/");
+      const createUserProfileWithRole = httpsCallable(
+        functions,
+        "createUserProfileWithRole"
+      );
+      const res = (await createUserProfileWithRole({
+        userId: uid,
+      })) as {
+        data: responeType;
+      };
+      if (res.data.success) {
+        console.log("User profile created successfully");
+      } else {
+        console.log("Error occurred", res.data.message);
+      }
     } catch (error) {
-      console.log("Error signing in:", error);
-    }
-  };
+      console.log(error);
 
-  const handleGoogleSignIn = async () => {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-
-      const { email, uid, photoURL } = result.user;
-
-      dispatch(login({ email: email || "", id: uid, avatar: photoURL || "" }));
-
-      navigate("/");
-    } catch (error) {
-      console.log("Error signing in:", error);
+      if (
+        error instanceof Error &&
+        error.message.includes("auth/email-already-in-use")
+      ) {
+        form.setError("email", {
+          type: "manual",
+          message: "Email đã được sử dụng",
+        });
+      } else {
+        form.setError("root", {
+          type: "manual",
+          message: "Đăng ký không thành công. Vui lòng thử lại sau.",
+        });
+      }
     }
   };
 
@@ -110,7 +135,12 @@ export function SignUpForm({
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Email */}
+              {form.formState.errors.root && (
+                <p className="text-red-500 text-sm text-center">
+                  {form.formState.errors.root.message}
+                </p>
+              )}
+
               <FormField
                 control={form.control}
                 name="email"
@@ -121,6 +151,27 @@ export function SignUpForm({
                       <Input
                         type="email"
                         placeholder="example@email.com"
+                        className="ring-main focus-visible:ring-main"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-500" />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-textDark">
+                      Tên người dùng
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="example123"
                         className="ring-main focus-visible:ring-main"
                         {...field}
                       />
@@ -194,29 +245,7 @@ export function SignUpForm({
                   </div>
                 </div>
 
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full bg-bgNormal text-textDark hover:bg-bgNormal cursor-pointer"
-                  onClick={handleGoogleSignIn}
-                >
-                  <svg
-                    className="mr-2 h-4 w-4"
-                    aria-hidden="true"
-                    focusable="false"
-                    data-prefix="fab"
-                    data-icon="google"
-                    role="img"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 488 512"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
-                    ></path>
-                  </svg>
-                  Đăng ký với Google
-                </Button>
+                <GoogleAuth />
               </div>
 
               <div className="mt-6 text-center text-sm text-textNormal">

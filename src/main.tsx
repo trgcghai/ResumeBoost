@@ -22,6 +22,8 @@ import { SignUpForm } from "./components/auth/SignUpForm.tsx";
 import { ProtectedLayout } from "./layouts/ProtectedLayout.tsx";
 import { RedirectIfAuthenticated } from "./components/RedirectIfAuthenticated.tsx";
 import { PersistGateWithAuth } from "./components/PersistGateWithAuth.tsx";
+import { AdminProtectedLayout } from "./layouts/AdminProtectedLayout.tsx";
+import { UnauthorizedPage } from "./pages/UnauthorizedPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -68,7 +70,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    element: <ProtectedLayout />,
+    element: <AdminProtectedLayout />,
     children: [
       {
         element: <AdminLayout />,
@@ -93,6 +95,10 @@ const router = createBrowserRouter([
         ],
       },
     ],
+  },
+  {
+    path: "unauthorized",
+    element: <UnauthorizedPage />,
   },
 ]);
 
