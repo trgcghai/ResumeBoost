@@ -1,11 +1,5 @@
 import { useState, useEffect } from "react";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   ColumnDef,
   ColumnFiltersState,
   SortingState,
@@ -16,9 +10,10 @@ import {
 } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowUpDown, Download, Trash2 } from "lucide-react";
-import * as XLSX from 'xlsx';
+import { Trash2, X, Check } from "lucide-react";
 import DataTable from "./DataTable";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import DataTableSection from "./DataTableSection";
 import {
   Select,
   SelectContent,
@@ -27,17 +22,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { toast } from "sonner";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 // Define the CV type based on the schema
 type CV = {
@@ -72,30 +63,41 @@ const initialCvs: CV[] = [
   },
 ];
 
-// Key để lưu trong localStorage
-const STORAGE_KEY = 'cv_list';
-
 export default function CvManagementTable() {
-  // Khởi tạo state với dữ liệu từ localStorage hoặc data mẫu
-  const [data, setData] = useState<CV[]>(() => {
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    return savedData ? JSON.parse(savedData) : initialCvs;
-  });
+  const [data, setData] = useState<CV[]>(initialCvs);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [sortField, setSortField] = useState("fileName");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // Lưu data vào localStorage mỗi khi thay đổi
+  // State cho Alert
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+
+  // Tự động ẩn Alert sau 3 giây
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  }, [data]);
+    if (showAlert) {
+      const timer = setTimeout(() => {
+        setShowAlert(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showAlert]);
 
   const handleDelete = (cvId: string) => {
+    const cvToDelete = data.find((cv) => cv._id === cvId);
     const updatedCvs = data.filter((cv) => cv._id !== cvId);
     setData(updatedCvs);
-    toast.success("Đã xóa CV thành công");
+    setIsDialogOpen(false);
+
+    // Hiển thị thông báo thành công
+    setAlertMessage(
+      `CV "${cvToDelete?.fileName || ""}" đã được xóa thành công`
+    );
+    setShowAlert(true);
   };
 
   const handleSort = (field: string) => {
@@ -111,42 +113,42 @@ export default function CvManagementTable() {
   const columns: ColumnDef<CV>[] = [
     {
       accessorKey: "fileName",
-      header: ({ column }) => {
+      header: () => {
         return (
           <Button
             variant="ghost"
+            className="p-0 cursor-pointer"
             onClick={() => handleSort("fileName")}
           >
             Tên file
-            <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
       },
     },
     {
       accessorKey: "fileType",
-      header: ({ column }) => {
+      header: () => {
         return (
           <Button
             variant="ghost"
+            className="p-0 cursor-pointer"
             onClick={() => handleSort("fileType")}
           >
             Loại file
-            <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
       },
     },
     {
       accessorKey: "createdAt",
-      header: ({ column }) => {
+      header: () => {
         return (
           <Button
             variant="ghost"
+            className="p-0 cursor-pointer"
             onClick={() => handleSort("createdAt")}
           >
             Ngày tạo
-            <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
       },
@@ -155,52 +157,22 @@ export default function CvManagementTable() {
       },
     },
     {
-      accessorKey: "updatedAt",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => handleSort("updatedAt")}
-          >
-            Cập nhật lần cuối
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => {
-        return new Date(row.getValue("updatedAt")).toLocaleDateString("vi-VN");
-      },
-    },
-    {
       id: "actions",
       header: "Thao tác",
       cell: ({ row }) => {
         const cv = row.original;
         return (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-600 hover:bg-red-50">
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  CV "{cv.fileName}" sẽ bị xóa vĩnh viễn và không thể khôi phục.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Hủy</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => handleDelete(cv._id)}
-                  className="bg-red-500 hover:bg-red-600"
-                >
-                  Xóa
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-red-500 hover:text-red-600 hover:bg-red-50"
+            onClick={() => {
+              setDeleteId(cv._id);
+              setIsDialogOpen(true);
+            }}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
         );
       },
     },
@@ -222,13 +194,6 @@ export default function CvManagementTable() {
     },
   });
 
-  const handleExportExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "CVs");
-    XLSX.writeFile(wb, "cv_list.xlsx");
-  };
-
   const handleReset = () => {
     setGlobalFilter("");
     setColumnFilters([]);
@@ -237,70 +202,112 @@ export default function CvManagementTable() {
     setSortOrder("asc");
   };
 
+  // Define header actions component
+  const headerActions = (
+    <div className="flex items-center space-x-2">
+      <Input
+        placeholder="Tìm kiếm..."
+        value={globalFilter}
+        onChange={(e) => setGlobalFilter(e.target.value)}
+        className="max-w-sm"
+      />
+      <Select
+        value={sortField}
+        onValueChange={(value) => {
+          setSortField(value);
+          handleSort(value);
+        }}
+      >
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="Sắp xếp theo" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="fileName">Tên file</SelectItem>
+          <SelectItem value="fileType">Loại file</SelectItem>
+          <SelectItem value="createdAt">Ngày tạo</SelectItem>
+        </SelectContent>
+      </Select>
+      <Select
+        value={sortOrder}
+        onValueChange={(value: "asc" | "desc") => {
+          setSortOrder(value);
+          handleSort(sortField);
+        }}
+      >
+        <SelectTrigger className="w-[150px]">
+          <SelectValue placeholder="Thứ tự sắp xếp" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="asc">Tăng dần</SelectItem>
+          <SelectItem value="desc">Giảm dần</SelectItem>
+        </SelectContent>
+      </Select>
+      <Button variant="outline" onClick={handleReset}>
+        Reset
+      </Button>
+    </div>
+  );
+
   return (
-    <Card className="shadow-none">
-      <CardHeader>
-        <CardTitle>Quản lý CV</CardTitle>
-        <div className="flex items-center justify-between space-x-4">
-          <div className="flex items-center space-x-2">
-            <Input
-              placeholder="Tìm kiếm..."
-              value={globalFilter}
-              onChange={(e) => setGlobalFilter(e.target.value)}
-              className="max-w-sm"
-            />
-            <Select
-              value={sortField}
-              onValueChange={(value) => {
-                setSortField(value);
-                handleSort(value);
-              }}
+    <div className="relative">
+      {showAlert && (
+        <div className="absolute top-4 right-4 z-50 w-72">
+          <Alert
+            variant="default"
+            className="bg-green-50 border-green-200 flex items-center justify-between"
+          >
+            <Check className="h-4 w-4 text-green-500" />
+            <AlertDescription className="text-green-600 flex-1">
+              {alertMessage}
+            </AlertDescription>
+            <Button
+              variant="ghost"
+              className="h-4 w-4 p-0 text-green-500 hover:bg-green-100"
+              onClick={() => setShowAlert(false)}
             >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Sắp xếp theo" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="fileName">Tên file</SelectItem>
-                <SelectItem value="fileType">Loại file</SelectItem>
-                <SelectItem value="createdAt">Ngày tạo</SelectItem>
-                <SelectItem value="updatedAt">Ngày cập nhật</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select
-              value={sortOrder}
-              onValueChange={(value: "asc" | "desc") => {
-                setSortOrder(value);
-                handleSort(sortField);
-              }}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Thứ tự sắp xếp" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="asc">Tăng dần</SelectItem>
-                <SelectItem value="desc">Giảm dần</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button variant="outline" onClick={handleReset}>
-              Reset
+              <X className="h-4 w-4" />
             </Button>
-          </div>
-          <Button onClick={handleExportExcel}>
-            <Download className="mr-2 h-4 w-4" />
-            Xuất Excel
-          </Button>
+          </Alert>
         </div>
-      </CardHeader>
-      <CardContent>
+      )}
+
+      <DataTableSection
+        title="Quản lý CV"
+        description="Danh sách CV được tải lên của người dùng"
+        headerActions={headerActions}
+      >
         <div className="rounded-md border">
           <DataTable
-            data={table.getRowModel().rows.map(row => row.original)}
+            data={table.getRowModel().rows.map((row) => row.original)}
             columns={columns}
             tableCellClassName="text-base py-3"
             tableHeadClassName="font-medium"
           />
         </div>
-      </CardContent>
-    </Card>
+      </DataTableSection>
+
+      {/* Dialog xác nhận xóa */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Bạn có chắc chắn muốn xóa?</DialogTitle>
+            <DialogDescription>
+              CV này sẽ bị xóa vĩnh viễn và không thể khôi phục.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              Hủy
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => deleteId && handleDelete(deleteId)}
+            >
+              Xóa
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
-} 
+}

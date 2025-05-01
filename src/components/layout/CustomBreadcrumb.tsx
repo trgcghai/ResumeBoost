@@ -17,7 +17,7 @@ const pathMap: Record<string, string> = {
   admin: "Quản trị",
   dashboard: "Bảng điều khiển",
   users: "Người dùng",
-  cvs: "Danh sách CV",
+  cvs: "Danh sách cv",
   login: "Đăng nhập",
   signup: "Đăng ký",
 };

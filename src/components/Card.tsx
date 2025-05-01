@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface CardProps {
   title: string;
@@ -15,12 +15,12 @@ const Card: React.FC<CardProps> = ({ title, uploadTime, score, id }) => {
       <p className="text-textNormal">{uploadTime}</p>
       <div className="flex justify-between items-center mt-2">
         <p className="text-main font-bold">{score}/100</p>
-        <NavLink
+        <Link
           to={`/details/${id}`}
-          className="bg-main text-white px-4 py-2 rounded-lg hover:bg-main"
+          className="bg-main text-white px-4 py-2 rounded-lg hover:bg-mainHover"
         >
           Xem kết quả
-        </NavLink>
+        </Link>
       </div>
     </div>
   );
