@@ -1,5 +1,5 @@
 import CustomBreadcrumb from "@/components/layout/CustomBreadcrumb";
-import UserProfileTable from "../components/table/UserProfileTable"; // Adjust the import path
+import UserProfileTable from "@/components/table/UserProfileTable";
 
 export default function AdminDashboardUser() {
   return (

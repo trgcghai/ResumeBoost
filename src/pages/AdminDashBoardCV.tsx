@@ -1,5 +1,5 @@
-import CvManagementTable from "@/components/table/CvManagementTable";
 import CustomBreadcrumb from "@/components/layout/CustomBreadcrumb";
+import CvManagementTable from "../components/table/CvManagementTable";
 
 export default function AdminDashboardCV() {
   return (
