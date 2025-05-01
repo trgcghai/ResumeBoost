@@ -1,9 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type User = {
-  id?: string;
+  id: string;
   email: string;
-  avatar?: string;
+  avatar: string;
+  role: string;
+  isAdmin: boolean;
 };
 
 type UserState = {
@@ -25,9 +27,11 @@ export const userSlice = createSlice({
     persistComplete: (state) => {
       state.isLoading = false;
     },
-    login: (state, action: PayloadAction<User>) => {
+    login: (state, action) => {
       state.isAuthenticated = true;
-      state.user = action.payload;
+      state.user = {
+        ...action.payload,
+      };
     },
     logout: (state) => {
       state.isAuthenticated = false;

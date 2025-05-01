@@ -1,13 +1,4 @@
-import React from "react";
-
-const SuggestionsTab: React.FC = () => {
-  const suggestions = [
-    "Viết lại phần kinh nghiệm tại Công ty X để nhấn mạnh kỹ năng lập kế hoạch.",
-    "Thêm các dự án cụ thể liên quan đến phân tích dữ liệu.",
-    "Cấu trúc lại phần kỹ năng để nổi bật hơn.",
-    "Bổ sung thông tin định lượng (ví dụ: tăng hiệu suất 40%, quản lý nhóm 5 người).",
-  ];
-
+const SuggestionsTab = ({ suggestions }: { suggestions: string[] }) => {
   return (
     <>
       <div className="">
