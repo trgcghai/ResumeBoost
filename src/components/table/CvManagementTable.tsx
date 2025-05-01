@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Trash2, Check, Download } from "lucide-react";
+import { Trash2, Check, Download, Search, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ColumnDef } from "@tanstack/react-table";
@@ -49,11 +49,18 @@ export default function CvManagementTable() {
           return (
             <Button
               variant="ghost"
-              className="p-0 cursor-pointer"
+              className="p-0 cursor-pointer text-textDark hover:text-main font-semibold"
               onClick={() => sortingAndFiltering.handleSort("fileName")}
             >
               Tên file
             </Button>
+          );
+        },
+        cell: ({ row }) => {
+          return (
+            <div className="font-medium text-textDark">
+              {row.getValue("fileName")}
+            </div>
           );
         },
       },
@@ -63,11 +70,20 @@ export default function CvManagementTable() {
           return (
             <Button
               variant="ghost"
-              className="p-0 cursor-pointer"
+              className="p-0 cursor-pointer text-textDark hover:text-main font-semibold"
               onClick={() => sortingAndFiltering.handleSort("fileType")}
             >
               Loại file
             </Button>
+          );
+        },
+        cell: ({ row }) => {
+          return (
+            <div className="flex items-center">
+              <span className="rounded-full px-2 py-1 text-sm font-medium bg-accent text-accent-foreground">
+                {row.getValue("fileType")}
+              </span>
+            </div>
           );
         },
       },
@@ -77,7 +93,7 @@ export default function CvManagementTable() {
           return (
             <Button
               variant="ghost"
-              className="p-0 cursor-pointer"
+              className="p-0 cursor-pointer text-textDark hover:text-main font-semibold"
               onClick={() => sortingAndFiltering.handleSort("createdAt")}
             >
               Ngày tạo
@@ -85,24 +101,33 @@ export default function CvManagementTable() {
           );
         },
         cell: ({ row }) => {
-          return new Date(row.getValue("createdAt")).toLocaleDateString(
-            "vi-VN"
+          return (
+            <div className="text-textNormal">
+              {new Date(row.getValue("createdAt")).toLocaleDateString("vi-VN")}
+            </div>
           );
         },
       },
       {
         id: "actions",
-        header: "Thao tác",
+        header: () => (
+          <Button
+            variant="ghost"
+            className="text-right text-textDark font-semibold"
+          >
+            Thao tác
+          </Button>
+        ),
         cell: ({ row }) => {
           const cv = row.original;
           return (
             <Button
               variant="ghost"
-              size="icon"
-              className="text-danger px-6 hover:text-danger cursor-pointer"
+              size="sm"
+              className="text-danger hover:bg-red-50 hover:text-danger cursor-pointer"
               onClick={() => openDeleteDialog(cv._id)}
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="h-4 w-4 mr-1" />
               Xóa
             </Button>
           );
@@ -142,15 +167,7 @@ export default function CvManagementTable() {
   // Handler for exporting to Excel
   const handleExportExcel = () => {
     try {
-      // Format data for export
-      const exportData = data.map((cv) => ({
-        "Tên file": cv.fileName,
-        "Loại file": cv.fileType,
-        "Ngày tạo": new Date(cv.createdAt).toLocaleDateString("vi-VN"),
-        "Ngày cập nhật": new Date(cv.updatedAt).toLocaleDateString("vi-VN"),
-      }));
-
-      const worksheet = XLSX.utils.json_to_sheet(exportData);
+      const worksheet = XLSX.utils.json_to_sheet(data);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "CVs");
       XLSX.writeFile(workbook, "cvs.xlsx");
@@ -162,13 +179,17 @@ export default function CvManagementTable() {
 
   // Render header actions
   const headerActions = (
-    <div className="flex items-center space-x-2">
-      <Input
-        placeholder="Tìm kiếm..."
-        value={globalFilter}
-        onChange={(e) => setGlobalFilter(e.target.value)}
-        className="max-w-sm"
-      />
+    <div className="flex flex-wrap items-center gap-2">
+      <div className="relative flex-grow max-w-sm">
+        <Input
+          placeholder="Tìm kiếm..."
+          value={globalFilter}
+          onChange={(e) => setGlobalFilter(e.target.value)}
+          className="pl-9 border-main/30 focus-visible:ring-main/30"
+        />
+        <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-textLight" />
+      </div>
+
       <Select
         value={sortField}
         onValueChange={(value) => {
@@ -176,7 +197,7 @@ export default function CvManagementTable() {
           sortingAndFiltering.handleSort(value);
         }}
       >
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className="w-[180px] border-main/30 focus:ring-main/30">
           <SelectValue placeholder="Sắp xếp theo" />
         </SelectTrigger>
         <SelectContent>
@@ -185,6 +206,7 @@ export default function CvManagementTable() {
           <SelectItem value="createdAt">Ngày tạo</SelectItem>
         </SelectContent>
       </Select>
+
       <Select
         value={sortOrder}
         onValueChange={(value: "asc" | "desc") => {
@@ -192,7 +214,7 @@ export default function CvManagementTable() {
           sortingAndFiltering.handleSort(sortField);
         }}
       >
-        <SelectTrigger className="w-[150px]">
+        <SelectTrigger className="w-[150px] border-main/30 focus:ring-main/30">
           <SelectValue placeholder="Thứ tự sắp xếp" />
         </SelectTrigger>
         <SelectContent>
@@ -200,11 +222,22 @@ export default function CvManagementTable() {
           <SelectItem value="desc">Giảm dần</SelectItem>
         </SelectContent>
       </Select>
-      <Button variant="outline" onClick={handleReset}>
+
+      <Button
+        variant="outline"
+        onClick={handleReset}
+        className="border-main/30 hover:bg-main/5 text-textDark"
+      >
+        <RefreshCw className="h-4 w-4 mr-1" />
         Reset
       </Button>
-      <Button variant="outline" onClick={handleExportExcel}>
-        <Download className="mr-2 h-4 w-4" />
+
+      <Button
+        variant="default"
+        onClick={handleExportExcel}
+        className="bg-main hover:bg-mainHover text-white"
+      >
+        <Download className="h-4 w-4 mr-1" />
         Xuất Excel
       </Button>
     </div>
@@ -217,30 +250,40 @@ export default function CvManagementTable() {
         description="Danh sách CV tải lên của người dùng"
         headerActions={headerActions}
       >
-        <div className="rounded-md border">
+        <div className="rounded-md border border-border bg-card shadow-sm">
           <DataTable
             data={table.getRowModel().rows.map((row) => row.original)}
             columns={columns}
             tableCellClassName="text-base py-3"
-            tableHeadClassName="font-medium"
+            tableHeadClassName="bg-muted/50"
           />
         </div>
       </DataTableSection>
 
       {/* Dialog xác nhận xóa */}
       <Dialog open={isDialogOpen} onOpenChange={closeDeleteDialog}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Bạn có chắc chắn muốn xóa?</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-textDark">
+              Bạn có chắc chắn muốn xóa?
+            </DialogTitle>
+            <DialogDescription className="text-textNormal">
               CV này sẽ bị xóa vĩnh viễn và không thể khôi phục.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={closeDeleteDialog}>
+            <Button
+              variant="outline"
+              onClick={closeDeleteDialog}
+              className="border-main/30 hover:bg-main/5"
+            >
               Hủy
             </Button>
-            <Button variant="destructive" onClick={onDelete}>
+            <Button
+              variant="destructive"
+              onClick={onDelete}
+              className="bg-danger hover:bg-danger/80"
+            >
               Xóa
             </Button>
           </DialogFooter>
@@ -251,15 +294,17 @@ export default function CvManagementTable() {
       <Dialog open={showAlert} onOpenChange={hideNotification}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-green-600">
+            <DialogTitle className="flex items-center gap-2 text-greenText">
               <Check className="h-5 w-5" /> Thành công
             </DialogTitle>
-            <DialogDescription>{alertMessage}</DialogDescription>
+            <DialogDescription className="text-textDark">
+              {alertMessage}
+            </DialogDescription>
           </DialogHeader>
           <DialogFooter className="sm:justify-center">
             <Button
               variant="default"
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-main hover:bg-mainHover text-white"
               onClick={hideNotification}
             >
               Đồng ý

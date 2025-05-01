@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Trash2, Check, Download } from "lucide-react";
+import { Trash2, Check, Download, Search, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ColumnDef } from "@tanstack/react-table";
@@ -52,11 +52,18 @@ export default function UserProfileTable() {
           return (
             <Button
               variant="ghost"
-              className="p-0 cursor-pointer"
+              className="p-0 cursor-pointer text-textDark hover:text-main font-semibold"
               onClick={() => sortingAndFiltering.handleSort("userId")}
             >
               User ID
             </Button>
+          );
+        },
+        cell: ({ row }) => {
+          return (
+            <div className="font-medium text-textDark">
+              {row.getValue("userId")}
+            </div>
           );
         },
       },
@@ -66,11 +73,20 @@ export default function UserProfileTable() {
           return (
             <Button
               variant="ghost"
-              className="p-0 cursor-pointer"
+              className="p-0 cursor-pointer text-textDark hover:text-main font-semibold"
               onClick={() => sortingAndFiltering.handleSort("cvCount")}
             >
               Số lượng CV
             </Button>
+          );
+        },
+        cell: ({ row }) => {
+          return (
+            <div className="flex items-center">
+              <span className="rounded-full px-2 py-1 text-sm font-medium bg-accent text-main">
+                {row.getValue("cvCount")}
+              </span>
+            </div>
           );
         },
       },
@@ -80,7 +96,7 @@ export default function UserProfileTable() {
           return (
             <Button
               variant="ghost"
-              className="p-0 cursor-pointer"
+              className="p-0 cursor-pointer text-textDark hover:text-main font-semibold"
               onClick={() => sortingAndFiltering.handleSort("avgScore")}
             >
               Điểm trung bình
@@ -88,7 +104,22 @@ export default function UserProfileTable() {
           );
         },
         cell: ({ row }) => {
-          return Number(row.getValue("avgScore")).toFixed(1);
+          const score = Number(row.getValue("avgScore"));
+          let colorClass = "bg-greenBgLight text-greenText";
+
+          if (score < 70) {
+            colorClass = "bg-redBgLight text-redText";
+          } else if (score < 85) {
+            colorClass = "bg-yellowBgLight text-yellowText";
+          }
+
+          return (
+            <div
+              className={`inline-block rounded-full px-2 py-1 text-sm font-medium ${colorClass}`}
+            >
+              {score.toFixed(1)}
+            </div>
+          );
         },
       },
       {
@@ -97,14 +128,18 @@ export default function UserProfileTable() {
           return (
             <Button
               variant="ghost"
-              className="p-0 cursor-pointer"
+              className="p-0 cursor-pointer text-textDark hover:text-main font-semibold"
               onClick={() => sortingAndFiltering.handleSort("lastUploadTime")}
             >
               Thời gian upload cuối
             </Button>
           );
         },
-        cell: ({ row }) => formatDate(row.getValue("lastUploadTime")),
+        cell: ({ row }) => (
+          <div className="text-textNormal">
+            {formatDate(row.getValue("lastUploadTime"))}
+          </div>
+        ),
       },
       {
         accessorKey: "updatedAt",
@@ -112,28 +147,39 @@ export default function UserProfileTable() {
           return (
             <Button
               variant="ghost"
-              className="p-0 cursor-pointer"
+              className="p-0 cursor-pointer text-textDark hover:text-main font-semibold"
               onClick={() => sortingAndFiltering.handleSort("updatedAt")}
             >
               Cập nhật gần nhất
             </Button>
           );
         },
-        cell: ({ row }) => formatDate(row.getValue("updatedAt")),
+        cell: ({ row }) => (
+          <div className="text-textNormal">
+            {formatDate(row.getValue("updatedAt"))}
+          </div>
+        ),
       },
       {
         id: "actions",
-        header: "Thao tác",
+        header: () => (
+          <Button
+            variant="ghost"
+            className="text-left text-textDark font-semibold p-2"
+          >
+            Thao tác
+          </Button>
+        ),
         cell: ({ row }) => {
           const user = row.original;
           return (
             <Button
               variant="ghost"
-              size="icon"
-              className="text-danger px-6 hover:text-danger cursor-pointer"
+              size="sm"
+              className="text-danger hover:bg-red-50 hover:text-danger cursor-pointer"
               onClick={() => openDeleteDialog(user._id)}
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="h-4 w-4 mr-1" />
               Xóa
             </Button>
           );
@@ -173,10 +219,25 @@ export default function UserProfileTable() {
   // Xử lý export Excel
   const handleExport = () => {
     try {
-      const ws = XLSX.utils.json_to_sheet(data);
+      // Format data for export
+      const exportData = data.map((user) => ({
+        "User ID": user.userId,
+        "Số lượng CV": user.cvCount,
+        "Điểm trung bình": Number(user.avgScore).toFixed(1),
+        "Thời gian upload cuối": formatDate(user.lastUploadTime),
+        "Cập nhật gần nhất": formatDate(user.updatedAt),
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(exportData);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "UserProfiles");
-      XLSX.writeFile(wb, "user_profiles.xlsx");
+
+      // Generate file name with date
+      const date = new Date().toISOString().slice(0, 10);
+      const fileName = `user_profiles_${date}.xlsx`;
+
+      XLSX.writeFile(wb, fileName);
+      showNotification("Xuất Excel thành công", "success");
     } catch (error) {
       console.error("Error exporting to Excel:", error);
       showNotification("Xuất Excel thất bại", "error");
@@ -185,13 +246,17 @@ export default function UserProfileTable() {
 
   // Render header actions
   const headerActions = (
-    <div className="flex items-center space-x-2">
-      <Input
-        placeholder="Tìm kiếm..."
-        value={globalFilter}
-        onChange={(e) => setGlobalFilter(e.target.value)}
-        className="max-w-sm"
-      />
+    <div className="flex flex-wrap items-center gap-2">
+      <div className="relative flex-grow max-w-sm">
+        <Input
+          placeholder="Tìm kiếm..."
+          value={globalFilter}
+          onChange={(e) => setGlobalFilter(e.target.value)}
+          className="pl-9 border-main/30 focus-visible:ring-main/30"
+        />
+        <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-textLight" />
+      </div>
+
       <Select
         value={sortField}
         onValueChange={(value) => {
@@ -199,7 +264,7 @@ export default function UserProfileTable() {
           sortingAndFiltering.handleSort(value);
         }}
       >
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className="w-[180px] border-main/30 focus:ring-main/30">
           <SelectValue placeholder="Sắp xếp theo" />
         </SelectTrigger>
         <SelectContent>
@@ -209,6 +274,7 @@ export default function UserProfileTable() {
           <SelectItem value="lastUploadTime">Thời gian upload</SelectItem>
         </SelectContent>
       </Select>
+
       <Select
         value={sortOrder}
         onValueChange={(value: "asc" | "desc") => {
@@ -216,7 +282,7 @@ export default function UserProfileTable() {
           sortingAndFiltering.handleSort(sortField);
         }}
       >
-        <SelectTrigger className="w-[150px]">
+        <SelectTrigger className="w-[150px] border-main/30 focus:ring-main/30">
           <SelectValue placeholder="Thứ tự sắp xếp" />
         </SelectTrigger>
         <SelectContent>
@@ -224,11 +290,22 @@ export default function UserProfileTable() {
           <SelectItem value="desc">Giảm dần</SelectItem>
         </SelectContent>
       </Select>
-      <Button variant="outline" onClick={handleReset}>
+
+      <Button
+        variant="outline"
+        onClick={handleReset}
+        className="border-main/30 hover:bg-main/5 text-textDark"
+      >
+        <RefreshCw className="h-4 w-4 mr-1" />
         Reset
       </Button>
-      <Button variant="outline" onClick={handleExport}>
-        <Download className="mr-2 h-4 w-4" />
+
+      <Button
+        variant="default"
+        onClick={handleExport}
+        className="bg-main hover:bg-mainHover text-white"
+      >
+        <Download className="h-4 w-4 mr-1" />
         Xuất Excel
       </Button>
     </div>
@@ -238,33 +315,43 @@ export default function UserProfileTable() {
     <div className="relative">
       <DataTableSection
         title="Hồ sơ người dùng"
-        description="Danh sách người dùng của hệ thống"
+        description="Thông tin chi tiết hồ sơ người dùng"
         headerActions={headerActions}
       >
-        <div className="rounded-md border">
+        <div className="rounded-md border border-border bg-card shadow-sm">
           <DataTable
             data={table.getRowModel().rows.map((row) => row.original)}
             columns={columns}
             tableCellClassName="text-base py-3"
-            tableHeadClassName="font-medium"
+            tableHeadClassName="bg-muted/50"
           />
         </div>
       </DataTableSection>
 
       {/* Dialog xác nhận xóa */}
       <Dialog open={isDialogOpen} onOpenChange={closeDeleteDialog}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Bạn có chắc chắn muốn xóa?</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-textDark">
+              Bạn có chắc chắn muốn xóa?
+            </DialogTitle>
+            <DialogDescription className="text-textNormal">
               Hồ sơ người dùng này sẽ bị xóa vĩnh viễn và không thể khôi phục.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={closeDeleteDialog}>
+            <Button
+              variant="outline"
+              onClick={closeDeleteDialog}
+              className="border-main/30 hover:bg-main/5"
+            >
               Hủy
             </Button>
-            <Button variant="destructive" onClick={onDelete}>
+            <Button
+              variant="destructive"
+              onClick={onDelete}
+              className="bg-danger hover:bg-danger/80"
+            >
               Xóa
             </Button>
           </DialogFooter>
@@ -275,15 +362,17 @@ export default function UserProfileTable() {
       <Dialog open={showAlert} onOpenChange={hideNotification}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-green-600">
+            <DialogTitle className="flex items-center gap-2 text-greenText">
               <Check className="h-5 w-5" /> Thành công
             </DialogTitle>
-            <DialogDescription>{alertMessage}</DialogDescription>
+            <DialogDescription className="text-textDark">
+              {alertMessage}
+            </DialogDescription>
           </DialogHeader>
           <DialogFooter className="sm:justify-center">
             <Button
               variant="default"
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-main hover:bg-mainHover text-white"
               onClick={hideNotification}
             >
               Đồng ý
