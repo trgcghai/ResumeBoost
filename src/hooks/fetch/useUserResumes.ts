@@ -22,7 +22,7 @@ export function useUserResumes() {
         const resumesRef = collection(db, "resumes");
         const resumeQuery = query(
           resumesRef,
-          where("userId", "==", currentUser.uid),
+          where("user.userId", "==", currentUser.uid),
           orderBy("createdAt", "desc")
         );
 
