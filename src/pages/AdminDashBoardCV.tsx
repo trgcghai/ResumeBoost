@@ -1,6 +1,6 @@
 import CustomBreadcrumb from "@/components/layout/CustomBreadcrumb";
 import CvManagementTable from "@/components/table/CvManagementTable/CvManagementTable";
-import useFetchAdminData from "@/hooks/useFetchAdminData";
+import useFetchAdminData from "@/hooks/fetch/useFetchAdminData";
 
 export default function AdminDashboardCV() {
   const { useResume } = useFetchAdminData();

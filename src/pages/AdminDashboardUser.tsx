@@ -1,6 +1,6 @@
 import CustomBreadcrumb from "@/components/layout/CustomBreadcrumb";
 import UserProfileTable from "@/components/table/UserProfileTable/UserProfileTable";
-import useFetchAdminData from "@/hooks/useFetchAdminData";
+import useFetchAdminData from "@/hooks/fetch/useFetchAdminData";
 
 export default function AdminDashboardUser() {
   const { useUserProfile } = useFetchAdminData();

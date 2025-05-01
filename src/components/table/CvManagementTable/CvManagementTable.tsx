@@ -44,15 +44,12 @@ export default function CvManagementTable({ resumes }: { resumes: Resume[] }) {
   } = sortingAndFiltering;
 
   // Handlers
-  const onDelete = () => {
+  const onDelete = async () => {
     if (!deleteId) return;
 
-    const deletedCv = handleDelete(deleteId);
+    const deletedCv = await handleDelete(deleteId);
     if (deletedCv) {
-      showNotification(
-        `CV "${deletedCv.fileName}" đã được xóa thành công`,
-        "success"
-      );
+      showNotification(`CV đã được xóa thành công`, "success");
     }
   };
 

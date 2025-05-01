@@ -2,13 +2,13 @@ import useUserProfileManagement from "@/hooks/useUserProfileManagement";
 import useSortingAndFilteringUsers from "@/hooks/useSortingAndFilteringUsers";
 import useAlertNotification from "@/hooks/useAlertNotification";
 import useExcel from "@/hooks/useExportExcel";
-import { getColumnsConfig } from "./columnsConfig";
 import DataTableSection from "../DataTableSection";
 import { HeaderActions } from "./HeaderActions";
 import DataTable from "../DataTable";
 import { DeleteConfirmationDialog } from "../shared/DeleteConfirmationDialog";
 import { SuccessNotificationDialog } from "../shared/SuccessNotificationDialog";
 import { UserProfile } from "@/type";
+import { getColumnsConfig } from "./ColumnsConfig";
 
 export default function UserProfileTable({
   profiles,
@@ -50,15 +50,12 @@ export default function UserProfileTable({
   } = sortingAndFiltering;
 
   // Handlers
-  const onDelete = () => {
+  const onDelete = async () => {
     if (!deleteId) return;
 
-    const deletedUser = handleDelete(deleteId);
+    const deletedUser = await handleDelete(deleteId);
     if (deletedUser) {
-      showNotification(
-        `Hồ sơ người dùng "${deletedUser.userId}" đã được xóa thành công`,
-        "success"
-      );
+      showNotification(`Hồ sơ người dùng đã được xóa thành công`, "success");
     }
   };
 
