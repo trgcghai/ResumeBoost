@@ -22,6 +22,9 @@ import { SignUpForm } from "./components/auth/SignUpForm.tsx";
 import { ProtectedLayout } from "./layouts/ProtectedLayout.tsx";
 import { RedirectIfAuthenticated } from "./components/RedirectIfAuthenticated.tsx";
 import { PersistGateWithAuth } from "./components/PersistGateWithAuth.tsx";
+import CvManagementPage from "./pages/AdminDashBoardCV.tsx";
+import { AdminProtectedLayout } from "./layouts/AdminProtectedLayout.tsx";
+import { UnauthorizedPage } from "./pages/UnauthorizedPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -68,13 +71,12 @@ const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    element: <ProtectedLayout />,
+    element: <AdminProtectedLayout />,
     children: [
       {
         element: <AdminLayout />,
         children: [
           {
-            // Add an index route that redirects to dashboard
             index: true,
             element: <Navigate to="/admin/dashboard" replace />,
           },
@@ -88,11 +90,15 @@ const router = createBrowserRouter([
           },
           {
             path: "cvs",
-            element: <div>CV Management Page</div>,
+            element: <CvManagementPage />,
           },
         ],
       },
     ],
+  },
+  {
+    path: "unauthorized",
+    element: <UnauthorizedPage />,
   },
 ]);
 

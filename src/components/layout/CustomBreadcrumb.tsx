@@ -17,12 +17,16 @@ const pathMap: Record<string, string> = {
   admin: "Quản trị",
   dashboard: "Bảng điều khiển",
   users: "Người dùng",
-  cvs: "Danh sách CV",
+  cvs: "Danh sách cv",
   login: "Đăng nhập",
   signup: "Đăng ký",
 };
 
-const CustomBreadcrumb = () => {
+const CustomBreadcrumb = ({
+  currentIsId = false,
+}: {
+  currentIsId?: boolean;
+}) => {
   const location = useLocation();
   const pathnames = location.pathname.split("/").filter((x) => x);
 
@@ -44,18 +48,19 @@ const CustomBreadcrumb = () => {
       ) && !/^\d+$/.test(path)
   );
 
+  const displayPaths =
+    currentIsId && validPaths.length > 0 ? validPaths.slice(0, -1) : validPaths;
+
   return (
     <Breadcrumb className="mb-2">
       <BreadcrumbList>
-        {/* Home breadcrumb */}
         <BreadcrumbItem>
           <BreadcrumbLink href="/">Trang chủ</BreadcrumbLink>
         </BreadcrumbItem>
 
-        {/* Dynamic breadcrumbs based on pathname */}
-        {validPaths.map((value, index) => {
+        {displayPaths.map((value, index) => {
           const to = `/${validPaths.slice(0, index + 1).join("/")}`;
-          const isLast = index === validPaths.length - 1;
+          const isLast = index === displayPaths.length - 1;
           const label = getLabel(value);
 
           return (

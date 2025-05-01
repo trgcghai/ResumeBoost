@@ -2,9 +2,10 @@ import { useEffect } from "react";
 import { PersistGate } from "redux-persist/integration/react";
 import { Persistor } from "redux-persist/es/types";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { login, logout, persistComplete } from "@/store/slices/userSlice";
+import { doc, getDoc } from "firebase/firestore";
 
 // Component tải trang
 const LoadingScreen = () => (
@@ -27,16 +28,49 @@ export const PersistGateWithAuth = ({
 
   // Xử lý trạng thái auth và persistence
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // Có user đăng nhập, cập nhật redux
-        dispatch(
-          login({
-            id: user.uid,
-            email: user.email || "",
-            avatar: user.photoURL || "",
-          })
-        );
+        try {
+          // Lấy thông tin người dùng từ Firestore
+          const userProfileRef = doc(db, "user_profiles", user.uid);
+          const userProfileSnap = await getDoc(userProfileRef);
+
+          let role = "user";
+          let isAdmin = false;
+
+          // Ghi bằng dữ liệu từ Firestore
+          if (userProfileSnap.exists()) {
+            const userData = userProfileSnap.data();
+            if (userData.role) {
+              role = userData.role;
+              // Giả sử role "admin" đồng nghĩa với isAdmin = true
+              isAdmin = role === "admin";
+            }
+          }
+
+          // Cập nhật Redux store
+          dispatch(
+            login({
+              id: user.uid,
+              email: user.email || "",
+              avatar: user.photoURL || "",
+              role: role,
+              isAdmin: isAdmin,
+            })
+          );
+        } catch (error) {
+          console.error("Lỗi khi lấy thông tin người dùng:", error);
+          // Dùng thông tin cơ bản nếu có lỗi
+          dispatch(
+            login({
+              id: user.uid,
+              email: user.email || "",
+              avatar: user.photoURL || "",
+              role: "user",
+              isAdmin: false,
+            })
+          );
+        }
       } else {
         // Không có user đăng nhập
         dispatch(logout());

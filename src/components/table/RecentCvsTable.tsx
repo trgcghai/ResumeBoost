@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ColumnDef } from "@tanstack/react-table";
 import DataTable from "./DataTable";
+import DataTableSection from "./DataTableSection";
 
 type CV = {
   title: string;
@@ -63,16 +63,11 @@ export default function RecentCvsTable() {
   ];
 
   return (
-    <Card className="shadow-none">
-      <CardHeader>
-        <CardTitle>CV gần đây</CardTitle>
-        <p className="text-sm text-muted-foreground">
-          Danh sách CV mới được tải lên
-        </p>
-      </CardHeader>
-      <CardContent>
-        <DataTable columns={columns} data={cvs} />
-      </CardContent>
-    </Card>
+    <DataTableSection
+      title="CV gần đây"
+      description="Danh sách CV mới được tải lên"
+    >
+      <DataTable columns={columns} data={cvs} />
+    </DataTableSection>
   );
 }
