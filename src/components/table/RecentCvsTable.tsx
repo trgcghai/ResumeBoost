@@ -4,9 +4,14 @@ import DataTableSection from "./DataTableSection";
 import { Resume } from "@/type";
 import { Timestamp } from "firebase/firestore";
 import { format } from "date-fns";
-import useFetchAdminData from "@/hooks/fetch/useFetchAdminData";
 
-export default function RecentCvsTable() {
+export default function RecentCvsTable({
+  resumes,
+  loading,
+}: {
+  resumes: Resume[];
+  loading: boolean;
+}) {
   const columns: ColumnDef<Resume>[] = [
     {
       accessorKey: "fileName",
@@ -69,9 +74,6 @@ export default function RecentCvsTable() {
       ),
     },
   ];
-
-  const { useResume } = useFetchAdminData();
-  const { resumes, loading } = useResume(5, true);
 
   return (
     <DataTableSection

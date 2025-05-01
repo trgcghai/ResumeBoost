@@ -1,5 +1,6 @@
 import { db } from "@/lib/firebase";
 import { Resume, UserProfile } from "@/type";
+import { calAvgScore } from "@/utils/callAvgScore";
 import {
   collection,
   doc,
@@ -12,6 +13,7 @@ import {
   QueryConstraint,
   orderBy,
   limit,
+  getCountFromServer,
 } from "firebase/firestore";
 import { useEffect, useState, useCallback } from "react";
 
@@ -199,11 +201,135 @@ export default function useFetchAdminData() {
     return { updateUserRole, isUpdating, error };
   }
 
+  function useOverview() {
+    const [overviewData, setOverviewData] = useState({
+      totalResumes: 0,
+      totalUsers: 0,
+    });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
+
+    useEffect(() => {
+      async function fetchOverview() {
+        setLoading(true);
+        try {
+          const userProfilesRef = collection(db, "user_profiles");
+          const userSnapshot = await getCountFromServer(userProfilesRef);
+          const totalUsers = userSnapshot.data().count;
+
+          const resumesRef = collection(db, "resumes");
+          const resumeSnapshot = await getCountFromServer(resumesRef);
+          const totalResumes = resumeSnapshot.data().count;
+
+          setOverviewData({
+            totalUsers,
+            totalResumes,
+          });
+        } catch (error) {
+          setError(error as Error);
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      fetchOverview();
+    }, []);
+
+    return { overviewData, loading, error };
+  }
+
+  function useStatisticAnalyzeScore() {
+    const [scoreData, setScoreData] = useState([
+      { name: "Tốt", value: 0 },
+      { name: "Trung bình", value: 0 },
+      { name: "Kém", value: 0 },
+    ]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
+
+    useEffect(() => {
+      async function analyzeScores() {
+        setLoading(true);
+        try {
+          const analyseRef = collection(db, "analyses");
+          const analyseSnapshot = await getDocs(analyseRef);
+
+          if (analyseSnapshot.empty) {
+            setScoreData([
+              { name: "Tốt", value: 0 },
+              { name: "Trung bình", value: 0 },
+              { name: "Kém", value: 0 },
+            ]);
+            return;
+          }
+
+          let goodCount = 0;
+          let averageCount = 0;
+          let poorCount = 0;
+
+          analyseSnapshot.forEach((doc) => {
+            const analyzeData = doc.data();
+            const score = calAvgScore(analyzeData.scores) || 0;
+
+            if (score > 90) {
+              goodCount++;
+            } else if (score >= 70 && score <= 90) {
+              averageCount++;
+            } else {
+              poorCount++;
+            }
+          });
+
+          const totalCount = analyseSnapshot.size;
+
+          const goodPercentage = Math.round((goodCount / totalCount) * 100);
+          const averagePercentage = Math.round(
+            (averageCount / totalCount) * 100
+          );
+          const poorPercentage = Math.round((poorCount / totalCount) * 100);
+
+          const adjustedData = [
+            { name: "Tốt", value: goodPercentage },
+            { name: "Trung bình", value: averagePercentage },
+            { name: "Kém", value: poorPercentage },
+          ];
+
+          // Đảm bảo tổng phần trăm là 100%
+          // Nếu bị thiếu thì cộng vào phần tử có giá trị lớn nhất
+          const totalPercentage =
+            goodPercentage + averagePercentage + poorPercentage;
+          if (totalPercentage !== 100 && totalCount > 0) {
+            const diff = 100 - totalPercentage;
+            const maxIndex = adjustedData.reduce(
+              (maxIdx, item, idx, arr) =>
+                item.value > arr[maxIdx].value ? idx : maxIdx,
+              0
+            );
+            adjustedData[maxIndex].value += diff;
+          }
+
+          setScoreData(adjustedData);
+        } catch (error) {
+          console.error("Error analyzing CV scores:", error);
+          setError(error as Error);
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      analyzeScores();
+    }, []);
+
+    return { scoreData, loading, error };
+  }
+
   return {
     useResume,
     useUserProfile,
     useDeleteResume,
     useDeleteProfile,
     useUpdateUserRole,
+    useOverview,
+    useStatisticAnalyzeScore,
   };
 }

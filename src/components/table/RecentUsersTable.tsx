@@ -3,10 +3,15 @@ import DataTable from "./DataTable";
 import DataTableSection from "./DataTableSection";
 import { Timestamp } from "firebase/firestore";
 import { format } from "date-fns";
-import useFetchAdminData from "@/hooks/fetch/useFetchAdminData";
 import { UserProfile } from "@/type";
 
-export default function RecentUsersTable() {
+export default function RecentUsersTable({
+  profiles,
+  loading,
+}: {
+  profiles: UserProfile[];
+  loading: boolean;
+}) {
   const columns: ColumnDef<UserProfile>[] = [
     {
       accessorKey: "username",
@@ -90,8 +95,6 @@ export default function RecentUsersTable() {
       ),
     },
   ];
-  const { useUserProfile } = useFetchAdminData();
-  const { profiles, loading } = useUserProfile(5, true);
 
   return (
     <DataTableSection
