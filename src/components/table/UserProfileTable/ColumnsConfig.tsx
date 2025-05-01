@@ -1,18 +1,34 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { MoreVertical, Trash2 } from "lucide-react";
 import { Timestamp } from "firebase/firestore";
 import { UserProfile } from "@/type";
 import { format } from "date-fns";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ColumnsConfigProps {
   openDeleteDialog: (id: string) => void;
   handleSort: (field: string) => void;
+  handleUpdateRole: (userId: string, newRole: string) => Promise<boolean>;
 }
 
 export const getColumnsConfig = ({
   openDeleteDialog,
   handleSort,
+  handleUpdateRole,
 }: ColumnsConfigProps): ColumnDef<UserProfile>[] => [
   {
     accessorKey: "username",
@@ -30,6 +46,31 @@ export const getColumnsConfig = ({
         {row.getValue("username")}
       </div>
     ),
+  },
+  {
+    accessorKey: "role",
+    header: () => (
+      <Button
+        variant="ghost"
+        className="p-0 cursor-pointer text-textDark hover:text-main font-semibold"
+        onClick={() => handleSort("role")}
+      >
+        Vai trò
+      </Button>
+    ),
+    cell: ({ row }) => {
+      const role = row.getValue("role");
+
+      return role == "admin" ? (
+        <span className="font-semibold text-white bg-danger px-2 py-1 rounded-xl w-fit">
+          {row.getValue("role")}
+        </span>
+      ) : (
+        <span className="font-medium text-white bg-subMain px-2 py-1 rounded-xl w-fit">
+          {row.getValue("role")}
+        </span>
+      );
+    },
   },
   {
     accessorKey: "cvCount",
@@ -130,16 +171,46 @@ export const getColumnsConfig = ({
         Thao tác
       </Button>
     ),
-    cell: ({ row }) => (
-      <Button
-        variant="ghost"
-        size="sm"
-        className="text-danger hover:bg-red-50 hover:text-danger cursor-pointer"
-        onClick={() => openDeleteDialog(row.original.id)}
-      >
-        <Trash2 className="h-4 w-4 mr-1" />
-        Xóa
-      </Button>
-    ),
+    cell: ({ row }) => {
+      const userId = row.original.userId;
+      const currentRole = row.original.role;
+
+      return (
+        <div className="flex items-center justify-start ml-4">
+          <Popover>
+            <PopoverTrigger className="bg-accent p-1 rounded-full flex items-center justify-center">
+              <MoreVertical className="w-5 h-5 text-gray-500" />
+            </PopoverTrigger>
+            <PopoverContent className="p-2 space-y-4">
+              <div className="flex items-center gap-4">
+                <Label htmlFor="role">Vai trò</Label>
+                <Select
+                  defaultValue={currentRole}
+                  onValueChange={(value) => handleUpdateRole(userId, value)}
+                >
+                  <SelectTrigger id="role" className="flex-1">
+                    <SelectValue placeholder="Chọn vai trò" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="user">User</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Separator />
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-danger hover:bg-red-50 hover:text-danger cursor-pointer w-full"
+                onClick={() => openDeleteDialog(row.original.id)}
+              >
+                <Trash2 className="h-4 w-4 mr-1" />
+                Xóa
+              </Button>
+            </PopoverContent>
+          </Popover>
+        </div>
+      );
+    },
   },
 ];

@@ -1,6 +1,15 @@
 import { db } from "@/lib/firebase";
 import { Resume, UserProfile } from "@/type";
-import { collection, doc, deleteDoc, getDocs } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  deleteDoc,
+  getDocs,
+  query,
+  where,
+  updateDoc,
+  Timestamp,
+} from "firebase/firestore";
 import { useEffect, useState, useCallback } from "react";
 
 export default function useFetchAdminData() {
@@ -110,5 +119,46 @@ export default function useFetchAdminData() {
     return { deleteProfile, isDeleting, error };
   }
 
-  return { useResume, useUserProfile, useDeleteResume, useDeleteProfile };
+  function useUpdateUserRole() {
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
+
+    const updateUserRole = useCallback(
+      async (userId: string, newRole: string) => {
+        setIsUpdating(true);
+        try {
+          const profileRef = collection(db, "user_profiles");
+          const q = query(profileRef, where("userId", "==", userId));
+
+          const profileSnap = await getDocs(q);
+          if (!profileSnap.empty) {
+            await updateDoc(profileSnap.docs[0].ref, {
+              role: newRole,
+              updatedAt: Timestamp.fromDate(new Date()),
+            });
+            return true;
+          }
+
+          return false;
+        } catch (error) {
+          console.error("Error updating user role:", error);
+          setError(error as Error);
+          return false;
+        } finally {
+          setIsUpdating(false);
+        }
+      },
+      []
+    );
+
+    return { updateUserRole, isUpdating, error };
+  }
+
+  return {
+    useResume,
+    useUserProfile,
+    useDeleteResume,
+    useDeleteProfile,
+    useUpdateUserRole,
+  };
 }

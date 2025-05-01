@@ -23,6 +23,7 @@ export default function UserProfileTable({
     openDeleteDialog,
     closeDeleteDialog,
     handleDelete,
+    handleUpdateRole,
   } = useUserProfileManagement(profiles);
   const { exportExcel } = useExcel();
   const { showAlert, alertMessage, showNotification, hideNotification } =
@@ -32,6 +33,7 @@ export default function UserProfileTable({
   const columns = getColumnsConfig({
     openDeleteDialog,
     handleSort: (field: string) => handleSort(field),
+    handleUpdateRole,
   });
 
   // Sorting and filtering
