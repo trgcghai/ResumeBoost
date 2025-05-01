@@ -172,10 +172,15 @@ export default function UserProfileTable() {
 
   // Xử lý export Excel
   const handleExport = () => {
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "UserProfiles");
-    XLSX.writeFile(wb, "user_profiles.xlsx");
+    try {
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "UserProfiles");
+      XLSX.writeFile(wb, "user_profiles.xlsx");
+    } catch (error) {
+      console.error("Error exporting to Excel:", error);
+      showNotification("Xuất Excel thất bại", "error");
+    }
   };
 
   // Render header actions

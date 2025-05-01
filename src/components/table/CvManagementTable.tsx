@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Trash2, Check } from "lucide-react";
+import { Trash2, Check, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ColumnDef } from "@tanstack/react-table";
@@ -24,6 +24,7 @@ import {
 import useCvManagement, { CV } from "@/hooks/useCvManagement";
 import useSortingAndFiltering from "@/hooks/useSortingAndFiltering";
 import useAlertNotification from "@/hooks/useAlertNotification";
+import * as XLSX from "xlsx";
 
 export default function CvManagementTable() {
   // Sử dụng custom hooks
@@ -138,6 +139,27 @@ export default function CvManagementTable() {
     }
   };
 
+  // Handler for exporting to Excel
+  const handleExportExcel = () => {
+    try {
+      // Format data for export
+      const exportData = data.map((cv) => ({
+        "Tên file": cv.fileName,
+        "Loại file": cv.fileType,
+        "Ngày tạo": new Date(cv.createdAt).toLocaleDateString("vi-VN"),
+        "Ngày cập nhật": new Date(cv.updatedAt).toLocaleDateString("vi-VN"),
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(exportData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "CVs");
+      XLSX.writeFile(workbook, "cvs.xlsx");
+    } catch (error) {
+      showNotification("Có lỗi khi xuất Excel", "error");
+      console.error("Excel export error:", error);
+    }
+  };
+
   // Render header actions
   const headerActions = (
     <div className="flex items-center space-x-2">
@@ -180,6 +202,10 @@ export default function CvManagementTable() {
       </Select>
       <Button variant="outline" onClick={handleReset}>
         Reset
+      </Button>
+      <Button variant="outline" onClick={handleExportExcel}>
+        <Download className="mr-2 h-4 w-4" />
+        Xuất Excel
       </Button>
     </div>
   );
