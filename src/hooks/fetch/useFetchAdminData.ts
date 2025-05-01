@@ -9,11 +9,19 @@ import {
   where,
   updateDoc,
   Timestamp,
+  QueryConstraint,
+  orderBy,
+  limit,
 } from "firebase/firestore";
 import { useEffect, useState, useCallback } from "react";
 
 export default function useFetchAdminData() {
-  function useResume() {
+  /**
+   * Hook để lấy danh sách CV
+   * @param maxResult - Số lượng CV tối đa trả về, mặc định là -1 (lấy tất cả)
+   * @param getLatest - Sắp xếp theo thời gian tạo mới nhất, mặc định là false
+   */
+  function useResume(maxResult = -1, getLatest = false) {
     const [resumes, setResumes] = useState<Resume[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
@@ -23,7 +31,23 @@ export default function useFetchAdminData() {
         setLoading(true);
         try {
           const resumesRef = collection(db, "resumes");
-          const resumeDoc = await getDocs(resumesRef);
+
+          const queryConstraints: QueryConstraint[] = [];
+
+          if (getLatest) {
+            queryConstraints.push(orderBy("createdAt", "desc"));
+          }
+
+          if (maxResult > 0) {
+            queryConstraints.push(limit(maxResult));
+          }
+
+          const resumeQuery =
+            queryConstraints.length > 0
+              ? query(resumesRef, ...queryConstraints)
+              : resumesRef;
+
+          const resumeDoc = await getDocs(resumeQuery);
 
           const resumesData = resumeDoc.docs.map((doc) => ({
             id: doc.id,
@@ -39,12 +63,17 @@ export default function useFetchAdminData() {
       }
 
       fetchResumes();
-    }, []);
+    }, [getLatest, maxResult]);
 
     return { resumes, loading, error };
   }
 
-  function useUserProfile() {
+  /**
+   * Hook để lấy danh sách hồ sơ người dùng
+   * @param maxResult - Số lượng hồ sơ tối đa trả về, mặc định là -1 (lấy tất cả)
+   * @param getLatest - Sắp xếp theo thời gian cập nhật mới nhất, mặc định là false
+   */
+  function useUserProfile(maxResult = -1, getLatest = false) {
     const [profiles, setProfiles] = useState<UserProfile[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
@@ -54,7 +83,23 @@ export default function useFetchAdminData() {
         setLoading(true);
         try {
           const profileRef = collection(db, "user_profiles");
-          const profileDocs = await getDocs(profileRef);
+
+          const queryConstraints: QueryConstraint[] = [];
+
+          if (getLatest) {
+            queryConstraints.push(orderBy("createdAt", "desc"));
+          }
+
+          if (maxResult > 0) {
+            queryConstraints.push(limit(maxResult));
+          }
+
+          const profileQuery =
+            queryConstraints.length > 0
+              ? query(profileRef, ...queryConstraints)
+              : profileRef;
+
+          const profileDocs = await getDocs(profileQuery);
 
           const profileData = profileDocs.docs.map((doc) => ({
             id: doc.id,
@@ -70,7 +115,7 @@ export default function useFetchAdminData() {
       }
 
       fetchProfiles();
-    }, []);
+    }, [getLatest, maxResult]);
 
     return { profiles, loading, error };
   }

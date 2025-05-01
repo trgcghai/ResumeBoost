@@ -5,7 +5,6 @@ import useFetchAdminData from "@/hooks/fetch/useFetchAdminData";
 export default function AdminDashboardCV() {
   const { useResume } = useFetchAdminData();
   const { resumes, loading } = useResume();
-  console.log(resumes);
 
   return (
     <div className="space-y-3">

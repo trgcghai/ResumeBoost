@@ -1,73 +1,90 @@
 import { ColumnDef } from "@tanstack/react-table";
 import DataTable from "./DataTable";
 import DataTableSection from "./DataTableSection";
-
-type CV = {
-  title: string;
-  author: string;
-  score: number;
-  date: string | Date;
-};
-
-const cvs: CV[] = [
-  {
-    title: "Frontend Developer CV",
-    author: "Nguyen Van A",
-    score: 87,
-    date: "15/12/2023",
-  },
-  {
-    title: "UX Designer Resume",
-    author: "Tran Thi B",
-    score: 92,
-    date: "14/12/2023",
-  },
-  {
-    title: "Full Stack Developer CV",
-    author: "Le Van C",
-    score: 78,
-    date: "10/12/2023",
-  },
-  {
-    title: "Project Manager Resume",
-    author: "Pham Thi D",
-    score: 85,
-    date: "09/12/2023",
-  },
-  {
-    title: "Data Analyst CV",
-    author: "Hoang Van E",
-    score: 90,
-    date: "08/12/2023",
-  },
-];
+import { Resume } from "@/type";
+import { Timestamp } from "firebase/firestore";
+import { format } from "date-fns";
+import useFetchAdminData from "@/hooks/fetch/useFetchAdminData";
 
 export default function RecentCvsTable() {
-  const columns: ColumnDef<CV>[] = [
+  const columns: ColumnDef<Resume>[] = [
     {
-      accessorKey: "title",
-      header: "Tiêu đề",
+      accessorKey: "fileName",
+      header: () => (
+        <p className="p-0 cursor-pointer text-textDark hover:text-main font-semibold">
+          Tên file
+        </p>
+      ),
+      cell: ({ row }) => (
+        <div className="font-medium text-textDark">
+          {(row.getValue("fileName") as string).replace(/\.[^.]+$/, "")}
+        </div>
+      ),
     },
     {
-      accessorKey: "author",
-      header: "Chủ sở hữu",
+      accessorKey: "username",
+      accessorFn: (row) => row.user?.username || "",
+      header: () => (
+        <p className="p-0 cursor-pointer text-textDark hover:text-main font-semibold">
+          Chủ sở hữu
+        </p>
+      ),
+      cell: ({ row }) => {
+        return (
+          <div className="font-medium text-textDark">
+            {row.original.user.username}
+          </div>
+        );
+      },
     },
     {
-      accessorKey: "score",
-      header: "Điểm",
+      accessorKey: "format",
+      header: () => (
+        <p className="p-0 cursor-pointer text-textDark hover:text-main font-semibold">
+          Loại file
+        </p>
+      ),
+      cell: ({ row }) => (
+        <div className="flex items-center">
+          <span className="rounded-full px-2 py-1 text-sm font-medium bg-accent text-accent-foreground">
+            {row.getValue("format")}
+          </span>
+        </div>
+      ),
     },
     {
-      accessorKey: "date",
-      header: "Ngày tải lên",
+      accessorKey: "createdAt",
+      header: () => (
+        <p className="p-0 cursor-pointer text-textDark hover:text-main font-semibold">
+          Ngày tạo
+        </p>
+      ),
+      cell: ({ row }) => (
+        <div className="text-textNormal">
+          {format(
+            (row.getValue("createdAt") as Timestamp).toDate(),
+            "HH:mm dd/MM/yyyy"
+          )}
+        </div>
+      ),
     },
   ];
+
+  const { useResume } = useFetchAdminData();
+  const { resumes, loading } = useResume(5, true);
 
   return (
     <DataTableSection
       title="CV gần đây"
       description="Danh sách CV mới được tải lên"
     >
-      <DataTable columns={columns} data={cvs} />
+      {loading ? (
+        <div className="flex items-center justify-center h-64">
+          <p className="text-gray-500">Đang tải dữ liệu...</p>
+        </div>
+      ) : (
+        resumes && <DataTable columns={columns} data={resumes} />
+      )}
     </DataTableSection>
   );
 }
