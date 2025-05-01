@@ -1,7 +1,12 @@
 import CustomBreadcrumb from "@/components/layout/CustomBreadcrumb";
-import CvManagementTable from "../components/table/CvManagementTable";
+import CvManagementTable from "@/components/table/CvManagementTable/CvManagementTable";
+import useFetchAdminData from "@/hooks/useFetchAdminData";
 
 export default function AdminDashboardCV() {
+  const { useResume } = useFetchAdminData();
+  const { resumes, loading } = useResume();
+  console.log(resumes);
+
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
@@ -13,7 +18,14 @@ export default function AdminDashboardCV() {
       </div>
 
       <div className="grid grid-cols-1 gap-4">
-        <CvManagementTable />
+        {loading ? (
+          <div className="flex items-center justify-center h-64">
+            <p className="text-gray-500">Đang tải dữ liệu...</p>
+          </div>
+        ) : (
+          resumes &&
+          resumes.length > 0 && <CvManagementTable resumes={resumes} />
+        )}
       </div>
     </div>
   );

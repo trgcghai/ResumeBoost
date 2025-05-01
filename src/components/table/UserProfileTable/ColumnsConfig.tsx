@@ -2,12 +2,13 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
-import { UserProfile } from "@/hooks/useUserProfileManagement";
+import { Timestamp } from "firebase/firestore";
+import { UserProfile } from "@/type";
 
 interface ColumnsConfigProps {
   openDeleteDialog: (id: string) => void;
   handleSort: (field: string) => void;
-  formatDate: (date: string) => string;
+  formatDate: (date: Timestamp) => string;
 }
 
 export const getColumnsConfig = ({
@@ -128,7 +129,7 @@ export const getColumnsConfig = ({
         variant="ghost"
         size="sm"
         className="text-danger hover:bg-red-50 hover:text-danger cursor-pointer"
-        onClick={() => openDeleteDialog(row.original._id)}
+        onClick={() => openDeleteDialog(row.original.id)}
       >
         <Trash2 className="h-4 w-4 mr-1" />
         Xóa

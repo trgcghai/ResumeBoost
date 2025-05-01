@@ -1,4 +1,4 @@
-import useCvManagement, { CV } from "@/hooks/useCvManagement";
+import useCvManagement from "@/hooks/useCvManagement";
 import useSortingAndFiltering from "@/hooks/useSortingAndFiltering";
 import useAlertNotification from "@/hooks/useAlertNotification";
 import useExcel from "@/hooks/useExportExcel";
@@ -8,9 +8,10 @@ import { HeaderActions } from "./HeaderActions";
 import DataTable from "../DataTable";
 import { DeleteConfirmationDialog } from "../shared/DeleteConfirmationDialog";
 import { SuccessNotificationDialog } from "../shared/SuccessNotificationDialog";
+import { Resume } from "@/type";
+import { format } from "date-fns";
 
-export default function CvManagementTable() {
-  // Hooks
+export default function CvManagementTable({ resumes }: { resumes: Resume[] }) {
   const {
     data,
     deleteId,
@@ -18,18 +19,18 @@ export default function CvManagementTable() {
     openDeleteDialog,
     closeDeleteDialog,
     handleDelete,
-  } = useCvManagement();
+    formatDate,
+  } = useCvManagement(resumes);
   const { exportExcel } = useExcel();
   const { showAlert, alertMessage, showNotification, hideNotification } =
     useAlertNotification();
 
-  // Table columns
   const columns = getColumnsConfig({
     openDeleteDialog,
     handleSort: (field: string) => sortingAndFiltering.handleSort(field),
+    formatDate,
   });
 
-  // Sorting and filtering
   const sortingAndFiltering = useSortingAndFiltering(data, columns);
   const {
     table,
@@ -57,10 +58,10 @@ export default function CvManagementTable() {
 
   const handleExportExcel = () => {
     try {
-      const formattedData = data.map((cv: CV) => ({
+      const formattedData = data.map((cv: Resume) => ({
         "Tên file": cv.fileName,
-        "Loại file": cv.fileType,
-        "Ngày tạo": new Date(cv.createdAt).toLocaleDateString("vi-VN"),
+        "Loại file": cv.format,
+        "Ngày tạo": format(cv.createdAt.toDate(), "dd/MM/yyyy"),
       }));
       exportExcel(formattedData, "cvs");
     } catch (error) {

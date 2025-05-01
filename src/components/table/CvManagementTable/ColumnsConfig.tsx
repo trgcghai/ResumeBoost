@@ -2,17 +2,20 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
-import { CV } from "@/hooks/useCvManagement";
+import { Timestamp } from "firebase/firestore";
+import { Resume } from "@/type";
 
 interface ColumnsConfigProps {
   openDeleteDialog: (id: string) => void;
   handleSort: (field: string) => void;
+  formatDate: (date: Timestamp) => string;
 }
 
 export const getColumnsConfig = ({
   openDeleteDialog,
   handleSort,
-}: ColumnsConfigProps): ColumnDef<CV>[] => [
+  formatDate,
+}: ColumnsConfigProps): ColumnDef<Resume>[] => [
   {
     accessorKey: "fileName",
     header: () => (
@@ -31,12 +34,12 @@ export const getColumnsConfig = ({
     ),
   },
   {
-    accessorKey: "fileType",
+    accessorKey: "format",
     header: () => (
       <Button
         variant="ghost"
         className="p-0 cursor-pointer text-textDark hover:text-main font-semibold"
-        onClick={() => handleSort("fileType")}
+        onClick={() => handleSort("format")}
       >
         Loại file
       </Button>
@@ -44,7 +47,7 @@ export const getColumnsConfig = ({
     cell: ({ row }) => (
       <div className="flex items-center">
         <span className="rounded-full px-2 py-1 text-sm font-medium bg-accent text-accent-foreground">
-          {row.getValue("fileType")}
+          {row.getValue("format")}
         </span>
       </div>
     ),
@@ -62,7 +65,7 @@ export const getColumnsConfig = ({
     ),
     cell: ({ row }) => (
       <div className="text-textNormal">
-        {new Date(row.getValue("createdAt")).toLocaleDateString("vi-VN")}
+        {formatDate(row.getValue("createdAt"))}
       </div>
     ),
   },
@@ -81,7 +84,7 @@ export const getColumnsConfig = ({
         variant="ghost"
         size="sm"
         className="text-danger hover:bg-red-50 hover:text-danger cursor-pointer"
-        onClick={() => openDeleteDialog(row.original._id)}
+        onClick={() => openDeleteDialog(row.original.id)}
       >
         <Trash2 className="h-4 w-4 mr-1" />
         Xóa

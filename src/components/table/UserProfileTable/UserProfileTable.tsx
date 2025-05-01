@@ -1,6 +1,4 @@
-import useUserProfileManagement, {
-  UserProfile,
-} from "@/hooks/useUserProfileManagement";
+import useUserProfileManagement from "@/hooks/useUserProfileManagement";
 import useSortingAndFilteringUsers from "@/hooks/useSortingAndFilteringUsers";
 import useAlertNotification from "@/hooks/useAlertNotification";
 import useExcel from "@/hooks/useExportExcel";
@@ -10,8 +8,13 @@ import { HeaderActions } from "./HeaderActions";
 import DataTable from "../DataTable";
 import { DeleteConfirmationDialog } from "../shared/DeleteConfirmationDialog";
 import { SuccessNotificationDialog } from "../shared/SuccessNotificationDialog";
+import { UserProfile } from "@/type";
 
-export default function UserProfileTable() {
+export default function UserProfileTable({
+  profiles,
+}: {
+  profiles: UserProfile[];
+}) {
   // Hooks
   const {
     data,
@@ -21,7 +24,7 @@ export default function UserProfileTable() {
     closeDeleteDialog,
     handleDelete,
     formatDate,
-  } = useUserProfileManagement();
+  } = useUserProfileManagement(profiles);
   const { exportExcel } = useExcel();
   const { showAlert, alertMessage, showNotification, hideNotification } =
     useAlertNotification();
