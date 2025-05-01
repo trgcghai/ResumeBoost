@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ColumnDef } from "@tanstack/react-table";
 import DataTable from "./DataTable";
+import DataTableSection from "./DataTableSection";
 
 type User = {
   name: string;
@@ -53,16 +53,11 @@ export default function RecentUsersTable() {
   ];
 
   return (
-    <Card className="shadow-none">
-      <CardHeader>
-        <CardTitle>Người dùng gần đây</CardTitle>
-        <p className="text-sm text-muted-foreground">
-          Danh sách người dùng mới đăng ký
-        </p>
-      </CardHeader>
-      <CardContent className="">
-        <DataTable data={users} columns={columns} />
-      </CardContent>
-    </Card>
+    <DataTableSection
+      title="Người dùng gần đây"
+      description="Danh sách người dùng mới đăng ký"
+    >
+      <DataTable data={users} columns={columns} />
+    </DataTableSection>
   );
 }
