@@ -16,6 +16,7 @@ import {
  */
 export async function createUserProfile(
   userId: string,
+  displayName: string,
   isAdmin: boolean = false
 ) {
   try {
@@ -35,6 +36,7 @@ export async function createUserProfile(
         lastUploadTime: new Date(),
         updatedAt: new Date(),
         role: isAdmin ? "admin" : "user",
+        username: displayName,
       });
 
       console.log(`User profile created for ${userId}`, {

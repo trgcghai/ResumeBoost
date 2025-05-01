@@ -17,7 +17,7 @@ export const useSortingAndFilteringUsers = <T>(
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
-  const [sortField, setSortField] = useState("userId"); // Default sort field là userId
+  const [sortField, setSortField] = useState("username"); // Default sort field là userId
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   const handleSort = (field: string) => {
@@ -34,7 +34,7 @@ export const useSortingAndFilteringUsers = <T>(
     setGlobalFilter("");
     setColumnFilters([]);
     setSorting([]);
-    setSortField("userId"); // Reset về userId
+    setSortField("username"); // Reset về userId
     setSortOrder("asc");
   };
 

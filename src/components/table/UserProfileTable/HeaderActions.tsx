@@ -55,7 +55,7 @@ export function HeaderActions({
           <SelectValue placeholder="Sắp xếp theo" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="userId">User ID</SelectItem>
+          <SelectItem value="username">Username</SelectItem>
           <SelectItem value="cvCount">Số lượng CV</SelectItem>
           <SelectItem value="avgScore">Điểm trung bình</SelectItem>
           <SelectItem value="lastUploadTime">Thời gian upload</SelectItem>

@@ -15,18 +15,20 @@ export const getColumnsConfig = ({
   handleSort,
 }: ColumnsConfigProps): ColumnDef<UserProfile>[] => [
   {
-    accessorKey: "userId",
+    accessorKey: "username",
     header: () => (
       <Button
         variant="ghost"
         className="p-0 cursor-pointer text-textDark hover:text-main font-semibold"
-        onClick={() => handleSort("userId")}
+        onClick={() => handleSort("username")}
       >
-        User ID
+        Username
       </Button>
     ),
     cell: ({ row }) => (
-      <div className="font-medium text-textDark">{row.getValue("userId")}</div>
+      <div className="font-medium text-textDark">
+        {row.getValue("username")}
+      </div>
     ),
   },
   {

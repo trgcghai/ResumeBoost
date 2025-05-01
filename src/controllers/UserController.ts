@@ -5,14 +5,16 @@ import * as userService from "../services/UserServices";
  */
 export async function createUserProfileWithRole({
   userId,
+  displayName,
   isAdmin = false,
 }: {
   userId: string;
+  displayName: string;
   isAdmin?: boolean;
 }) {
   if (!userId) {
     return { success: false, message: "userId is required" };
   }
 
-  return await userService.createUserProfile(userId, isAdmin);
+  return await userService.createUserProfile(userId, displayName, isAdmin);
 }

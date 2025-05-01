@@ -8,6 +8,8 @@ export interface UserProfile {
   lastUploadTime: Timestamp;
   updatedAt: Timestamp;
   userId: string;
+  role: string;
+  username: string;
 }
 
 export interface Resume {
