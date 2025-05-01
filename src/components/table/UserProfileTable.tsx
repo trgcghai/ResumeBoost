@@ -1,281 +1,291 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { useMemo } from "react";
+import { Trash2, Check, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ColumnDef, SortingFn } from "@tanstack/react-table";
-import {
-  ArrowDown,
-  ArrowUp,
-  Search,
-  RotateCcw,
-  FileDown,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-} from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ColumnDef } from "@tanstack/react-table";
 import DataTable from "./DataTable";
+import DataTableSection from "./DataTableSection";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+import useUserProfileManagement, {
+  UserProfile,
+} from "@/hooks/useUserProfileManagement";
+import useSortingAndFilteringUsers from "@/hooks/useSortingAndFilteringUsers";
+import useAlertNotification from "@/hooks/useAlertNotification";
 import * as XLSX from "xlsx";
 
-export type UserProfile = {
-  _id: string;
-  userId: string;
-  cvCount: number;
-  avgScore: number;
-  lastUploadTime: string;
-  updatedAt: string;
-};
-
-const initialProfiles: UserProfile[] = [
-  // ... (giữ nguyên dữ liệu của bạn)
-  // Thêm thêm dữ liệu để có ít nhất 7 user
-  {
-    _id: "1",
-    userId: "user_001",
-    cvCount: 5,
-    avgScore: 82.5,
-    lastUploadTime: "2025-04-28T10:30:00Z",
-    updatedAt: "2025-04-28T10:35:00Z",
-  },
-  {
-    _id: "2",
-    userId: "user_002",
-    cvCount: 3,
-    avgScore: 75.0,
-    lastUploadTime: "2025-04-27T09:15:00Z",
-    updatedAt: "2025-04-27T09:20:00Z",
-  },
-  {
-    _id: "3",
-    userId: "user_003",
-    cvCount: 7,
-    avgScore: 88.3,
-    lastUploadTime: "2025-04-26T14:45:00Z",
-    updatedAt: "2025-04-26T14:50:00Z",
-  },
-  {
-    _id: "4",
-    userId: "user_004",
-    cvCount: 2,
-    avgScore: 65.0,
-    lastUploadTime: "2025-04-25T11:20:00Z",
-    updatedAt: "2025-04-25T11:25:00Z",
-  },
-  {
-    _id: "5",
-    userId: "user_005",
-    cvCount: 4,
-    avgScore: 79.5,
-    lastUploadTime: "2025-04-24T15:10:00Z",
-    updatedAt: "2025-04-24T15:15:00Z",
-  },
-  {
-    _id: "6",
-    userId: "user_006",
-    cvCount: 6,
-    avgScore: 91.2,
-    lastUploadTime: "2025-04-23T09:45:00Z",
-    updatedAt: "2025-04-23T09:50:00Z",
-  },
-  {
-    _id: "7",
-    userId: "user_007",
-    cvCount: 1,
-    avgScore: 60.0,
-    lastUploadTime: "2025-04-22T14:30:00Z",
-    updatedAt: "2025-04-22T14:35:00Z",
-  },
-];
-
-// Custom sorting function for strings (userId)
-const sortString: SortingFn<UserProfile> = (rowA, rowB, columnId) => {
-  const a = rowA.getValue(columnId) as string;
-  const b = rowB.getValue(columnId) as string;
-  return a.localeCompare(b);
-};
-
-// Custom sorting function for numbers (cvCount, avgScore)
-const sortNumber: SortingFn<UserProfile> = (rowA, rowB, columnId) => {
-  const a = rowA.getValue(columnId) as number;
-  const b = rowB.getValue(columnId) as number;
-  return a - b;
-};
-
-const columns: ColumnDef<UserProfile>[] = [
-  {
-    accessorKey: "userId",
-    header: ({ column }) => (
-      <div
-        className="cursor-pointer flex items-center gap-1"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        User ID
-        {column.getIsSorted() === "asc" && <ArrowUp className="w-4 h-4" />}
-        {column.getIsSorted() === "desc" && <ArrowDown className="w-4 h-4" />}
-      </div>
-    ),
-    sortingFn: sortString, // Use custom string sorting for userId
-  },
-  {
-    accessorKey: "cvCount",
-    header: ({ column }) => (
-      <div
-        className="cursor-pointer flex items-center gap-1"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Số lượng CV
-        {column.getIsSorted() === "asc" && <ArrowUp className="w-4 h-4" />}
-        {column.getIsSorted() === "desc" && <ArrowDown className="w-4 h-4" />}
-      </div>
-    ),
-    sortingFn: sortNumber, // Use custom number sorting for cvCount
-  },
-  {
-    accessorKey: "avgScore",
-    header: ({ column }) => (
-      <div
-        className="cursor-pointer flex items-center gap-1"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Điểm trung bình
-        {column.getIsSorted() === "asc" && <ArrowUp className="w-4 h-4" />}
-        {column.getIsSorted() === "desc" && <ArrowDown className="w-4 h-4" />}
-      </div>
-    ),
-    sortingFn: sortNumber, // Use custom number sorting for avgScore
-  },
-  {
-    accessorKey: "lastUploadTime",
-    header: "Thời gian upload cuối",
-  },
-  {
-    accessorKey: "updatedAt",
-    header: "Cập nhật gần nhất",
-  },
-];
-
 export default function UserProfileTable() {
-  const [search, setSearch] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  // Sử dụng custom hooks
+  const {
+    data,
+    deleteId,
+    isDialogOpen,
+    openDeleteDialog,
+    closeDeleteDialog,
+    handleDelete,
+    formatDate,
+  } = useUserProfileManagement();
 
-  // Lọc dữ liệu dựa trên search term
-  const filteredData = search
-    ? initialProfiles.filter((profile) =>
-        profile.userId.toLowerCase().includes(search.toLowerCase())
-      )
-    : initialProfiles;
+  const { showAlert, alertMessage, showNotification, hideNotification } =
+    useAlertNotification();
 
-  // Tính toán phân trang
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentData = filteredData.slice(startIndex, endIndex);
+  // Định nghĩa columns
+  const columns = useMemo<ColumnDef<UserProfile>[]>(
+    () => [
+      {
+        accessorKey: "userId",
+        header: () => {
+          return (
+            <Button
+              variant="ghost"
+              className="p-0 cursor-pointer"
+              onClick={() => sortingAndFiltering.handleSort("userId")}
+            >
+              User ID
+            </Button>
+          );
+        },
+      },
+      {
+        accessorKey: "cvCount",
+        header: () => {
+          return (
+            <Button
+              variant="ghost"
+              className="p-0 cursor-pointer"
+              onClick={() => sortingAndFiltering.handleSort("cvCount")}
+            >
+              Số lượng CV
+            </Button>
+          );
+        },
+      },
+      {
+        accessorKey: "avgScore",
+        header: () => {
+          return (
+            <Button
+              variant="ghost"
+              className="p-0 cursor-pointer"
+              onClick={() => sortingAndFiltering.handleSort("avgScore")}
+            >
+              Điểm trung bình
+            </Button>
+          );
+        },
+        cell: ({ row }) => {
+          return Number(row.getValue("avgScore")).toFixed(1);
+        },
+      },
+      {
+        accessorKey: "lastUploadTime",
+        header: () => {
+          return (
+            <Button
+              variant="ghost"
+              className="p-0 cursor-pointer"
+              onClick={() => sortingAndFiltering.handleSort("lastUploadTime")}
+            >
+              Thời gian upload cuối
+            </Button>
+          );
+        },
+        cell: ({ row }) => formatDate(row.getValue("lastUploadTime")),
+      },
+      {
+        accessorKey: "updatedAt",
+        header: () => {
+          return (
+            <Button
+              variant="ghost"
+              className="p-0 cursor-pointer"
+              onClick={() => sortingAndFiltering.handleSort("updatedAt")}
+            >
+              Cập nhật gần nhất
+            </Button>
+          );
+        },
+        cell: ({ row }) => formatDate(row.getValue("updatedAt")),
+      },
+      {
+        id: "actions",
+        header: "Thao tác",
+        cell: ({ row }) => {
+          const user = row.original;
+          return (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-danger px-6 hover:text-danger cursor-pointer"
+              onClick={() => openDeleteDialog(user._id)}
+            >
+              <Trash2 className="h-4 w-4" />
+              Xóa
+            </Button>
+          );
+        },
+      },
+    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [openDeleteDialog, formatDate]
+  );
 
-  // Xử lý tìm kiếm
-  const handleSearch = () => {
-    setCurrentPage(1); // Reset về trang đầu khi tìm kiếm
-  };
+  // Khởi tạo sorting và filtering
+  const sortingAndFiltering = useSortingAndFilteringUsers(data, columns);
+  const {
+    table,
+    globalFilter,
+    setGlobalFilter,
+    sortField,
+    sortOrder,
+    setSortField,
+    setSortOrder,
+    handleReset,
+  } = sortingAndFiltering;
 
-  // Xử lý reset
-  const handleReset = () => {
-    setSearch("");
-    setCurrentPage(1); // Reset về trang đầu
+  // Handler cho việc xóa User Profile
+  const onDelete = () => {
+    if (!deleteId) return;
+
+    const deletedUser = handleDelete(deleteId);
+    if (deletedUser) {
+      showNotification(
+        `Hồ sơ người dùng "${deletedUser.userId}" đã được xóa thành công`,
+        "success"
+      );
+    }
   };
 
   // Xử lý export Excel
   const handleExport = () => {
-    const ws = XLSX.utils.json_to_sheet(filteredData);
+    const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "UserProfiles");
     XLSX.writeFile(wb, "user_profiles.xlsx");
   };
 
-  // Chuyển đến trang cụ thể
-  const goToPage = (page: number) => {
-    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
-  };
+  // Render header actions
+  const headerActions = (
+    <div className="flex items-center space-x-2">
+      <Input
+        placeholder="Tìm kiếm..."
+        value={globalFilter}
+        onChange={(e) => setGlobalFilter(e.target.value)}
+        className="max-w-sm"
+      />
+      <Select
+        value={sortField}
+        onValueChange={(value) => {
+          setSortField(value);
+          sortingAndFiltering.handleSort(value);
+        }}
+      >
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="Sắp xếp theo" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="userId">User ID</SelectItem>
+          <SelectItem value="cvCount">Số lượng CV</SelectItem>
+          <SelectItem value="avgScore">Điểm trung bình</SelectItem>
+          <SelectItem value="lastUploadTime">Thời gian upload</SelectItem>
+        </SelectContent>
+      </Select>
+      <Select
+        value={sortOrder}
+        onValueChange={(value: "asc" | "desc") => {
+          setSortOrder(value);
+          sortingAndFiltering.handleSort(sortField);
+        }}
+      >
+        <SelectTrigger className="w-[150px]">
+          <SelectValue placeholder="Thứ tự sắp xếp" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="asc">Tăng dần</SelectItem>
+          <SelectItem value="desc">Giảm dần</SelectItem>
+        </SelectContent>
+      </Select>
+      <Button variant="outline" onClick={handleReset}>
+        Reset
+      </Button>
+      <Button variant="outline" onClick={handleExport}>
+        <Download className="mr-2 h-4 w-4" />
+        Xuất Excel
+      </Button>
+    </div>
+  );
 
   return (
-    <Card className="shadow-none">
-      <CardHeader>
-        <CardTitle>Hồ sơ người dùng</CardTitle>
-        <p className="text-sm text-muted-foreground">
-          Thông tin chi tiết hồ sơ người dùng
-        </p>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Thanh tìm kiếm và các nút chức năng */}
-        <div className="flex items-center gap-2">
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Tìm theo User ID..."
-            className="max-w-sm"
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+    <div className="relative">
+      <DataTableSection
+        title="Hồ sơ người dùng"
+        description="Danh sách người dùng của hệ thống"
+        headerActions={headerActions}
+      >
+        <div className="rounded-md border">
+          <DataTable
+            data={table.getRowModel().rows.map((row) => row.original)}
+            columns={columns}
+            tableCellClassName="text-base py-3"
+            tableHeadClassName="font-medium"
           />
-          <Button onClick={handleSearch} variant="default">
-            <Search className="mr-1 h-4 w-4" /> Tìm kiếm
-          </Button>
-          <Button onClick={handleReset} variant="secondary">
-            <RotateCcw className="mr-1 h-4 w-4" /> Reset
-          </Button>
-          <Button onClick={handleExport} variant="outline">
-            <FileDown className="mr-1 h-4 w-4" /> Xuất Excel
-          </Button>
         </div>
+      </DataTableSection>
 
-        {/* Bảng dữ liệu */}
-        <DataTable data={currentData} columns={columns} />
+      {/* Dialog xác nhận xóa */}
+      <Dialog open={isDialogOpen} onOpenChange={closeDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Bạn có chắc chắn muốn xóa?</DialogTitle>
+            <DialogDescription>
+              Hồ sơ người dùng này sẽ bị xóa vĩnh viễn và không thể khôi phục.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={closeDeleteDialog}>
+              Hủy
+            </Button>
+            <Button variant="destructive" onClick={onDelete}>
+              Xóa
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-        {/* Phân trang (chỉ hiển thị nếu có nhiều trang) */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between px-2">
-            <div className="text-sm text-muted-foreground">
-              Hiển thị {startIndex + 1}-
-              {Math.min(endIndex, filteredData.length)} trên{" "}
-              {filteredData.length} kết quả
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => goToPage(1)}
-                disabled={currentPage === 1}
-              >
-                <ChevronsLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => goToPage(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <span className="text-sm font-medium">
-                Trang {currentPage}/{totalPages}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => goToPage(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => goToPage(totalPages)}
-                disabled={currentPage === totalPages}
-              >
-                <ChevronsRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+      {/* Dialog thông báo thành công */}
+      <Dialog open={showAlert} onOpenChange={hideNotification}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-green-600">
+              <Check className="h-5 w-5" /> Thành công
+            </DialogTitle>
+            <DialogDescription>{alertMessage}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center">
+            <Button
+              variant="default"
+              className="bg-green-600 hover:bg-green-700"
+              onClick={hideNotification}
+            >
+              Đồng ý
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
