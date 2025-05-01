@@ -24,7 +24,7 @@ import {
 import useCvManagement, { CV } from "@/hooks/useCvManagement";
 import useSortingAndFiltering from "@/hooks/useSortingAndFiltering";
 import useAlertNotification from "@/hooks/useAlertNotification";
-import * as XLSX from "xlsx";
+import useExcel from "@/hooks/useExportExcel";
 
 export default function CvManagementTable() {
   // Sử dụng custom hooks
@@ -36,7 +36,7 @@ export default function CvManagementTable() {
     closeDeleteDialog,
     handleDelete,
   } = useCvManagement();
-
+  const { exportExcel } = useExcel();
   const { showAlert, alertMessage, showNotification, hideNotification } =
     useAlertNotification();
 
@@ -167,10 +167,12 @@ export default function CvManagementTable() {
   // Handler for exporting to Excel
   const handleExportExcel = () => {
     try {
-      const worksheet = XLSX.utils.json_to_sheet(data);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "CVs");
-      XLSX.writeFile(workbook, "cvs.xlsx");
+      const formattedData = data.map((cv) => ({
+        "Tên file": cv.fileName,
+        "Loại file": cv.fileType,
+        "Ngày tạo": new Date(cv.createdAt).toLocaleDateString("vi-VN"),
+      }));
+      exportExcel(formattedData, "cvs");
     } catch (error) {
       showNotification("Có lỗi khi xuất Excel", "error");
       console.error("Excel export error:", error);

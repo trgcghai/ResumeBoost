@@ -26,7 +26,7 @@ import useUserProfileManagement, {
 } from "@/hooks/useUserProfileManagement";
 import useSortingAndFilteringUsers from "@/hooks/useSortingAndFilteringUsers";
 import useAlertNotification from "@/hooks/useAlertNotification";
-import * as XLSX from "xlsx";
+import useExcel from "@/hooks/useExportExcel";
 
 export default function UserProfileTable() {
   // Sử dụng custom hooks
@@ -39,7 +39,7 @@ export default function UserProfileTable() {
     handleDelete,
     formatDate,
   } = useUserProfileManagement();
-
+  const { exportExcel } = useExcel();
   const { showAlert, alertMessage, showNotification, hideNotification } =
     useAlertNotification();
 
@@ -228,16 +228,7 @@ export default function UserProfileTable() {
         "Cập nhật gần nhất": formatDate(user.updatedAt),
       }));
 
-      const ws = XLSX.utils.json_to_sheet(exportData);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "UserProfiles");
-
-      // Generate file name with date
-      const date = new Date().toISOString().slice(0, 10);
-      const fileName = `user_profiles_${date}.xlsx`;
-
-      XLSX.writeFile(wb, fileName);
-      showNotification("Xuất Excel thành công", "success");
+      exportExcel(exportData, "user_profiles");
     } catch (error) {
       console.error("Error exporting to Excel:", error);
       showNotification("Xuất Excel thất bại", "error");
