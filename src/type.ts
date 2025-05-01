@@ -28,7 +28,7 @@ export interface Resume {
   public_id: string;
   resource_type: string;
   updatedAt: Timestamp;
-  userId: string;
+  user: { userId: string; username: string };
   width: number;
 }
 

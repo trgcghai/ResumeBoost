@@ -27,9 +27,29 @@ export const getColumnsConfig = ({
     ),
     cell: ({ row }) => (
       <div className="font-medium text-textDark">
-        {row.getValue("fileName")}
+        {(row.getValue("fileName") as string).replace(/\.[^.]+$/, "")}
       </div>
     ),
+  },
+  {
+    accessorKey: "username",
+    accessorFn: (row) => row.user?.username || "",
+    header: () => (
+      <Button
+        variant="ghost"
+        className="p-0 cursor-pointer text-textDark hover:text-main font-semibold"
+        onClick={() => handleSort("username")}
+      >
+        Chủ sở hữu
+      </Button>
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="font-medium text-textDark">
+          {row.original.user.username}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "format",

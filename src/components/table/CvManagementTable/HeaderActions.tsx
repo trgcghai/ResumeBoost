@@ -56,6 +56,7 @@ export function HeaderActions({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="fileName">Tên file</SelectItem>
+          <SelectItem value="username">Chủ sở hữu</SelectItem>
           <SelectItem value="fileType">Loại file</SelectItem>
           <SelectItem value="createdAt">Ngày tạo</SelectItem>
         </SelectContent>
