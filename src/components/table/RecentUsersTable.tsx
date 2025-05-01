@@ -61,7 +61,7 @@ export default function RecentUsersTable() {
       accessorKey: "createdAt",
       header: () => (
         <p className="p-0 cursor-pointer text-textDark hover:text-main font-semibold">
-          Thời gian upload cuối
+          Thời gian tạo
         </p>
       ),
       cell: ({ row }) => (
