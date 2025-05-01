@@ -1,13 +1,9 @@
-import { UserProfile } from "@/type";
-import { format } from "date-fns";
-import { Timestamp } from "firebase/firestore";
 import { useState } from "react";
 import useFetchAdminData from "./fetch/useFetchAdminData";
+import { UserProfile } from "@/type";
 
-export const useUserProfileManagement = (
-  initialData: UserProfile[] | [] = []
-) => {
-  const [data, setData] = useState<UserProfile[]>(initialData);
+export const useUserProfileManagement = (profiles: UserProfile[]) => {
+  const [data, setData] = useState(profiles);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { useDeleteProfile } = useFetchAdminData();
@@ -23,22 +19,23 @@ export const useUserProfileManagement = (
   };
 
   const handleDelete = async (userId: string) => {
-    return await deleteProfile(userId);
-  };
+    const res = await deleteProfile(userId);
 
-  const formatDate = (dateString: Timestamp) => {
-    return format(dateString.toDate(), "HH:mm dd/MM/yyyy");
+    if (res) {
+      setData(data.filter((item) => item.userId !== userId));
+    }
+
+    closeDeleteDialog();
+    return res;
   };
 
   return {
     data,
-    setData,
     deleteId,
     isDialogOpen,
     openDeleteDialog,
     closeDeleteDialog,
     handleDelete,
-    formatDate,
   };
 };
 

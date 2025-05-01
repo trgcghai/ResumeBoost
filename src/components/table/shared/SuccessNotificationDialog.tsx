@@ -1,4 +1,3 @@
-// src/components/CvManagementTable/SuccessNotificationDialog.tsx
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

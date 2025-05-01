@@ -23,8 +23,7 @@ export default function AdminDashboardCV() {
             <p className="text-gray-500">Đang tải dữ liệu...</p>
           </div>
         ) : (
-          resumes &&
-          resumes.length > 0 && <CvManagementTable resumes={resumes} />
+          resumes && <CvManagementTable resumes={resumes} />
         )}
       </div>
     </div>

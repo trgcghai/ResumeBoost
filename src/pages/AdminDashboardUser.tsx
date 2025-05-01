@@ -22,8 +22,7 @@ export default function AdminDashboardUser() {
             <p className="text-gray-500">Đang tải dữ liệu...</p>
           </div>
         ) : (
-          profiles &&
-          profiles.length > 0 && <UserProfileTable profiles={profiles} />
+          profiles && <UserProfileTable profiles={profiles} />
         )}
       </div>
     </div>

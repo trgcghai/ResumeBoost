@@ -23,7 +23,6 @@ export default function UserProfileTable({
     openDeleteDialog,
     closeDeleteDialog,
     handleDelete,
-    formatDate,
   } = useUserProfileManagement(profiles);
   const { exportExcel } = useExcel();
   const { showAlert, alertMessage, showNotification, hideNotification } =
@@ -32,12 +31,10 @@ export default function UserProfileTable({
   // Table columns
   const columns = getColumnsConfig({
     openDeleteDialog,
-    handleSort: (field: string) => sortingAndFiltering.handleSort(field),
-    formatDate,
+    handleSort: (field: string) => handleSort(field),
   });
 
   // Sorting and filtering
-  const sortingAndFiltering = useSortingAndFilteringUsers(data, columns);
   const {
     table,
     globalFilter,
@@ -47,17 +44,8 @@ export default function UserProfileTable({
     setSortField,
     setSortOrder,
     handleReset,
-  } = sortingAndFiltering;
-
-  // Handlers
-  const onDelete = async () => {
-    if (!deleteId) return;
-
-    const deletedUser = await handleDelete(deleteId);
-    if (deletedUser) {
-      showNotification(`Hồ sơ người dùng đã được xóa thành công`, "success");
-    }
-  };
+    handleSort,
+  } = useSortingAndFilteringUsers(data, columns);
 
   const handleExport = () => {
     try {
@@ -65,8 +53,8 @@ export default function UserProfileTable({
         "User ID": user.userId,
         "Số lượng CV": user.cvCount,
         "Điểm trung bình": Number(user.avgScore).toFixed(1),
-        "Thời gian upload cuối": formatDate(user.lastUploadTime),
-        "Cập nhật gần nhất": formatDate(user.updatedAt),
+        "Thời gian upload cuối": user.lastUploadTime,
+        "Cập nhật gần nhất": user.updatedAt,
       }));
 
       exportExcel(exportData, "user_profiles");
@@ -89,7 +77,7 @@ export default function UserProfileTable({
             setSortField={setSortField}
             sortOrder={sortOrder}
             setSortOrder={setSortOrder}
-            handleSort={sortingAndFiltering.handleSort}
+            handleSort={handleSort}
             handleReset={handleReset}
             handleExport={handleExport}
           />
@@ -108,7 +96,9 @@ export default function UserProfileTable({
       <DeleteConfirmationDialog
         isOpen={isDialogOpen}
         onClose={closeDeleteDialog}
-        onConfirm={onDelete}
+        onConfirm={() => {
+          handleDelete(deleteId || "");
+        }}
         message="Bạn có chắc chắn muốn xóa hồ sơ người dùng này không?"
       />
 

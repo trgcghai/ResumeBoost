@@ -1,4 +1,3 @@
-// src/components/CvManagementTable/DeleteConfirmationDialog.tsx
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

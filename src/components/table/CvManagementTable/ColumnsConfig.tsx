@@ -1,20 +1,18 @@
-// src/components/CvManagementTable/columnsConfig.ts
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { Timestamp } from "firebase/firestore";
 import { Resume } from "@/type";
+import { format } from "date-fns";
 
 interface ColumnsConfigProps {
   openDeleteDialog: (id: string) => void;
   handleSort: (field: string) => void;
-  formatDate: (date: Timestamp) => string;
 }
 
 export const getColumnsConfig = ({
   openDeleteDialog,
   handleSort,
-  formatDate,
 }: ColumnsConfigProps): ColumnDef<Resume>[] => [
   {
     accessorKey: "fileName",
@@ -65,7 +63,10 @@ export const getColumnsConfig = ({
     ),
     cell: ({ row }) => (
       <div className="text-textNormal">
-        {formatDate(row.getValue("createdAt"))}
+        {format(
+          (row.getValue("createdAt") as Timestamp).toDate(),
+          "HH:mm dd/MM/yyyy"
+        )}
       </div>
     ),
   },

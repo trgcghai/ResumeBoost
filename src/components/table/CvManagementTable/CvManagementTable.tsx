@@ -19,7 +19,6 @@ export default function CvManagementTable({ resumes }: { resumes: Resume[] }) {
     openDeleteDialog,
     closeDeleteDialog,
     handleDelete,
-    formatDate,
   } = useCvManagement(resumes);
   const { exportExcel } = useExcel();
   const { showAlert, alertMessage, showNotification, hideNotification } =
@@ -27,11 +26,9 @@ export default function CvManagementTable({ resumes }: { resumes: Resume[] }) {
 
   const columns = getColumnsConfig({
     openDeleteDialog,
-    handleSort: (field: string) => sortingAndFiltering.handleSort(field),
-    formatDate,
+    handleSort: (field: string) => handleSort(field),
   });
 
-  const sortingAndFiltering = useSortingAndFiltering(data, columns);
   const {
     table,
     globalFilter,
@@ -41,17 +38,8 @@ export default function CvManagementTable({ resumes }: { resumes: Resume[] }) {
     setSortField,
     setSortOrder,
     handleReset,
-  } = sortingAndFiltering;
-
-  // Handlers
-  const onDelete = async () => {
-    if (!deleteId) return;
-
-    const deletedCv = await handleDelete(deleteId);
-    if (deletedCv) {
-      showNotification(`CV đã được xóa thành công`, "success");
-    }
-  };
+    handleSort,
+  } = useSortingAndFiltering(data, columns);
 
   const handleExportExcel = () => {
     try {
@@ -80,7 +68,7 @@ export default function CvManagementTable({ resumes }: { resumes: Resume[] }) {
             setSortField={setSortField}
             sortOrder={sortOrder}
             setSortOrder={setSortOrder}
-            handleSort={sortingAndFiltering.handleSort}
+            handleSort={handleSort}
             handleReset={handleReset}
             handleExportExcel={handleExportExcel}
           />
@@ -99,7 +87,9 @@ export default function CvManagementTable({ resumes }: { resumes: Resume[] }) {
       <DeleteConfirmationDialog
         isOpen={isDialogOpen}
         onClose={closeDeleteDialog}
-        onConfirm={onDelete}
+        onConfirm={() => {
+          handleDelete(deleteId || "");
+        }}
         message="Bạn có chắc chắn muốn xóa CV này không?"
       />
 

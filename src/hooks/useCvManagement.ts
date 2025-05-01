@@ -1,11 +1,9 @@
-import { Resume } from "@/type";
-import { format } from "date-fns";
-import { Timestamp } from "firebase/firestore";
 import { useState } from "react";
 import useFetchAdminData from "./fetch/useFetchAdminData";
+import { Resume } from "@/type";
 
-export const useCvManagement = (initialData: Resume[] | [] = []) => {
-  const [data, setData] = useState<Resume[]>(initialData);
+export const useCvManagement = (resumes: Resume[]) => {
+  const [data, setData] = useState<Resume[]>(resumes);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { useDeleteResume } = useFetchAdminData();
@@ -21,22 +19,23 @@ export const useCvManagement = (initialData: Resume[] | [] = []) => {
   };
 
   const handleDelete = async (cvId: string) => {
-    return await deleteResume(cvId);
-  };
+    const res = await deleteResume(cvId);
 
-  const formatDate = (dateString: Timestamp) => {
-    return format(dateString.toDate(), "HH:mm dd/MM/yyyy");
+    if (res) {
+      setData(data.filter((cv) => cv.id !== cvId));
+    }
+
+    closeDeleteDialog();
+    return res;
   };
 
   return {
     data,
-    setData,
     deleteId,
     isDialogOpen,
     openDeleteDialog,
     closeDeleteDialog,
     handleDelete,
-    formatDate,
   };
 };
 

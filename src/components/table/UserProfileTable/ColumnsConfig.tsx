@@ -1,20 +1,18 @@
-// src/components/UserProfileTable/columnsConfig.ts
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { Timestamp } from "firebase/firestore";
 import { UserProfile } from "@/type";
+import { format } from "date-fns";
 
 interface ColumnsConfigProps {
   openDeleteDialog: (id: string) => void;
   handleSort: (field: string) => void;
-  formatDate: (date: Timestamp) => string;
 }
 
 export const getColumnsConfig = ({
   openDeleteDialog,
   handleSort,
-  formatDate,
 }: ColumnsConfigProps): ColumnDef<UserProfile>[] => [
   {
     accessorKey: "userId",
@@ -93,7 +91,10 @@ export const getColumnsConfig = ({
     ),
     cell: ({ row }) => (
       <div className="text-textNormal">
-        {formatDate(row.getValue("lastUploadTime"))}
+        {format(
+          (row.getValue("lastUploadTime") as Timestamp).toDate(),
+          "HH:mm dd/MM/yyyy"
+        )}
       </div>
     ),
   },
@@ -110,7 +111,10 @@ export const getColumnsConfig = ({
     ),
     cell: ({ row }) => (
       <div className="text-textNormal">
-        {formatDate(row.getValue("updatedAt"))}
+        {format(
+          (row.getValue("updatedAt") as Timestamp).toDate(),
+          "HH:mm dd/MM/yyyy"
+        )}
       </div>
     ),
   },
