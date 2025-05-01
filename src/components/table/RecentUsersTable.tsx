@@ -58,7 +58,7 @@ export default function RecentUsersTable() {
       ),
     },
     {
-      accessorKey: "lastUploadTime",
+      accessorKey: "createdAt",
       header: () => (
         <p className="p-0 cursor-pointer text-textDark hover:text-main font-semibold">
           Thời gian upload cuối
@@ -67,7 +67,7 @@ export default function RecentUsersTable() {
       cell: ({ row }) => (
         <div className="text-textNormal">
           {format(
-            (row.getValue("lastUploadTime") as Timestamp).toDate(),
+            (row.getValue("createdAt") as Timestamp).toDate(),
             "HH:mm dd/MM/yyyy"
           )}
         </div>
