@@ -10,7 +10,6 @@ import "./App.css";
 import RootLayout from "./layouts/RootLayout";
 import AuthLayout from "./layouts/AuthLayout";
 import AdminLayout from "./layouts/AdminLayout";
-
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import DetailCV from "./pages/DetailCV";
@@ -22,9 +21,10 @@ import { SignUpForm } from "./components/auth/SignUpForm.tsx";
 import { ProtectedLayout } from "./layouts/ProtectedLayout.tsx";
 import { RedirectIfAuthenticated } from "./components/RedirectIfAuthenticated.tsx";
 import { PersistGateWithAuth } from "./components/PersistGateWithAuth.tsx";
-import CvManagementPage from "./pages/AdminDashBoardCV.tsx";
 import { AdminProtectedLayout } from "./layouts/AdminProtectedLayout.tsx";
 import { UnauthorizedPage } from "./pages/UnauthorizedPage.tsx";
+import AdminDashboardUser from "./pages/AdminDashboardUser.tsx";
+import AdminDashboardCV from "./pages/AdminDashBoardCV.tsx";
 
 const router = createBrowserRouter([
   {
@@ -86,11 +86,11 @@ const router = createBrowserRouter([
           },
           {
             path: "users",
-            element: <div>User Management Page</div>,
+            element: <AdminDashboardUser />,
           },
           {
             path: "cvs",
-            element: <CvManagementPage />,
+            element: <AdminDashboardCV />,
           },
         ],
       },

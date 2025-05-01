@@ -5,7 +5,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { login, logout, persistComplete } from "@/store/slices/userSlice";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 // Component tải trang
 const LoadingScreen = () => (
@@ -32,18 +32,21 @@ export const PersistGateWithAuth = ({
       if (user) {
         try {
           // Lấy thông tin người dùng từ Firestore
-          const userProfileRef = doc(db, "user_profiles", user.uid);
-          const userProfileSnap = await getDoc(userProfileRef);
+          const userProfileCollectionRef = collection(db, "user_profiles");
+          const q = query(
+            userProfileCollectionRef,
+            where("userId", "==", user.uid)
+          );
 
+          const dataSnap = await getDocs(q);
           let role = "user";
           let isAdmin = false;
 
           // Ghi bằng dữ liệu từ Firestore
-          if (userProfileSnap.exists()) {
-            const userData = userProfileSnap.data();
+          if (!dataSnap.empty) {
+            const userData = dataSnap.docs[0].data();
             if (userData.role) {
               role = userData.role;
-              // Giả sử role "admin" đồng nghĩa với isAdmin = true
               isAdmin = role === "admin";
             }
           }

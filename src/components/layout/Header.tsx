@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/hover-card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 
@@ -25,13 +25,6 @@ const Header = () => {
     } catch (error) {
       console.error("Logout error:", error);
     }
-  };
-
-  const getUserInitials = () => {
-    return (
-      authUser?.displayName?.[0]?.toUpperCase() ||
-      authUser?.email?.[0]?.toUpperCase()
-    );
   };
 
   return (
@@ -75,7 +68,7 @@ const Header = () => {
                     alt={authUser?.email || "User"}
                   />
                   <AvatarFallback className="bg-main text-white">
-                    {getUserInitials()}
+                    <User className="h-8 w-8" />
                   </AvatarFallback>
                 </Avatar>
               </div>
@@ -85,7 +78,7 @@ const Header = () => {
                 <Avatar className="h-12 w-12">
                   <AvatarImage src={authUser?.photoURL || ""} />
                   <AvatarFallback className="bg-main text-white">
-                    {getUserInitials()}
+                    <User className="h-8 w-8" />
                   </AvatarFallback>
                 </Avatar>
                 <div className="space-y-1 flex-1">

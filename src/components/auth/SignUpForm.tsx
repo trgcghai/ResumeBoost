@@ -62,10 +62,11 @@ export function SignUpForm({
         displayName: data.username,
       });
 
-      const { uid } = result.user;
+      const { uid, displayName } = result.user;
 
       const res: responeType = (await createUserProfileWithRole({
         userId: uid,
+        displayName: displayName || data.username,
       })) as responeType;
       if (res.success) {
         console.log("User profile created successfully");

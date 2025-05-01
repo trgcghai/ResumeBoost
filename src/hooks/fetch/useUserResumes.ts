@@ -19,17 +19,15 @@ export function useUserResumes() {
 
       setLoading(true);
       try {
-        // Create query for resumes collection filtering by userId
         const resumesRef = collection(db, "resumes");
         const resumeQuery = query(
           resumesRef,
-          where("userId", "==", currentUser.uid),
+          where("user.userId", "==", currentUser.uid),
           orderBy("createdAt", "desc")
         );
 
         const resumeSnapshot = await getDocs(resumeQuery);
 
-        // create query for analyses collection filtering by userId
         const analysesRef = collection(db, "analyses");
         const analysesQuery = query(
           analysesRef,

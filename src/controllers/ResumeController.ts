@@ -25,8 +25,8 @@ export async function processResume({
       };
     }
 
-    const userId = auth.currentUser?.uid;
-    if (!userId) {
+    const { uid, displayName } = auth.currentUser!;
+    if (!uid) {
       console.log("User not authenticated");
       return {
         success: false,
@@ -51,7 +51,7 @@ export async function processResume({
       publicUrl: uploadResult?.url,
     };
     const resumeObject = {
-      userId,
+      user: { userId: uid, username: displayName },
       fileName,
       fileUrl,
       asset_folder: uploadResult?.asset_folder,
@@ -77,7 +77,7 @@ export async function processResume({
 
     // save jobdescription to firestore
     const jobDescriptionObject = {
-      userId,
+      userId: uid,
       content: jobDescription,
       createdAt: new Date(),
       updatedAt: new Date(),

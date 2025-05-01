@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import CustomBreadcrumb from "@/components/layout/CustomBreadcrumb";
-import { useUserResumes } from "@/hooks/useUserResumes";
+import { useUserResumes } from "@/hooks/fetch/useUserResumes";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
@@ -24,7 +24,6 @@ const Profile: React.FC = () => {
   const processedResumes: CardData[] = useMemo(() => {
     if (!data || data.length === 0) return [];
 
-    // First filter, then sort (to avoid sorting unnecessary items)
     return sortResumes(
       [...filterResumesByScore(data, scoreFilter)],
       orderFilter
@@ -35,15 +34,12 @@ const Profile: React.FC = () => {
     <>
       <CustomBreadcrumb />
       <div className="p-6 bg-white shadow rounded-lg">
-        {/* Overview Section */}
         <Overview />
 
-        {/* CV List Section */}
         <div>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold">Danh sách CV của bạn</h2>
 
-            {/* Filter Bar */}
             <div className="flex gap-4 items-center">
               <Select value={scoreFilter} onValueChange={setScoreFilter}>
                 <SelectTrigger className="w-[200px]">

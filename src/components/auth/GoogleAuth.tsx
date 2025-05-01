@@ -14,10 +14,11 @@ const GoogleAuth = () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
 
-      const { uid } = result.user;
+      const { uid, displayName } = result.user;
 
       const res: responeType = (await createUserProfileWithRole({
         userId: uid,
+        displayName: displayName || "",
       })) as responeType;
       if (res.success) {
         console.log(res.message);
