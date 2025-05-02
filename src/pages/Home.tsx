@@ -2,6 +2,7 @@ import FileUploader from "@/components/FileUploader";
 import LoaderDialog from "@/components/LoaderDialog";
 import { Button } from "@/components/ui/button";
 import { analyzeResume, processResume } from "@/controllers/ResumeController";
+import useFetchAdminData from "@/hooks/fetch/useFetchAdminData";
 import { useAppDispatch } from "@/hooks/redux";
 import {
   hideLoaderDialog,
@@ -31,6 +32,8 @@ const Home = () => {
   const [isUploading, setIsUploading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { useDeleteResume } = useFetchAdminData();
+  const { deleteResume } = useDeleteResume();
 
   const handleFileUpload = (uploadedFile: File) => {
     setFile(uploadedFile);
@@ -98,6 +101,8 @@ const Home = () => {
           "Có lỗi xảy ra khi phân tích CV, vui lòng thử lại sau."
         )
       );
+      // xóa resume đã upload nếu như phân tích không thành công
+      await deleteResume(uploadResult?.result?.createResumeResult?.id || "");
     }
   };
 
