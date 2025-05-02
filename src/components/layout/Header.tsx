@@ -30,7 +30,8 @@ const Header = () => {
   return (
     <header className="flex justify-between items-center bg-white px-6 py-4 shadow fixed top-0 left-0 right-0 z-10">
       <div className="flex items-center gap-7">
-        <Link to="/" className="text-xl font-bold">
+        <Link to="/" className="text-xl font-bold flex items-center gap-2">
+          <img src="/logo.png" alt="" className="w-10 rounded aspect-square" />
           ResumeBoost
         </Link>
         <nav className="flex space-x-4">

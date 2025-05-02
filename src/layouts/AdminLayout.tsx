@@ -33,7 +33,10 @@ const AdminLayout: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <header className="bg-white text-black px-6 py-4 shadow-md border border-b-gray-300/50 flex justify-between items-center">
-        <h1 className="text-xl font-bold">ResumeBoostAdmin</h1>
+        <h1 className="text-xl font-bold flex items-center gap-2">
+          <img src="/logo.png" alt="" className="w-10 rounded aspect-square" />
+          <p>ResumeBoost Admin</p>
+        </h1>
 
         {isAuthenticated && user && (
           <HoverCard openDelay={200} closeDelay={100}>
