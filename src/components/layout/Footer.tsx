@@ -5,9 +5,9 @@ import { Separator } from "../ui/separator";
 const Footer = () => {
   return (
     <footer className="bg-white text-sm text-textNormal py-4 border-t">
-      <div className="container max-w-[1200px] mx-auto">
+      <div className="container sm:px-0 md:px-4 lg:px-0 max-w-[1200px] mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8 px-4 sm:px-0">
-          <div>
+          <div className="md:row-span-2 lg:row-span-1">
             <img src="/logo.png" className="rounded-lg w-16" alt="" />
             <p className="mt-2 sm:w-4/5 text-justify w-full">
               <span className="font-bold">ResumeBoost</span> - Nền tảng đánh giá
