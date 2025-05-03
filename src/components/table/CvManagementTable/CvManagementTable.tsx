@@ -7,7 +7,6 @@ import DataTableSection from "../DataTableSection";
 import { HeaderActions } from "./HeaderActions";
 import DataTable from "../DataTable";
 import { DeleteConfirmationDialog } from "../shared/DeleteConfirmationDialog";
-import { SuccessNotificationDialog } from "../shared/SuccessNotificationDialog";
 import { Resume } from "@/type";
 import { format } from "date-fns";
 
@@ -21,8 +20,7 @@ export default function CvManagementTable({ resumes }: { resumes: Resume[] }) {
     handleDelete,
   } = useCvManagement(resumes);
   const { exportExcel } = useExcel();
-  const { showAlert, alertMessage, showNotification, hideNotification } =
-    useAlertNotification();
+  const { showNotification } = useAlertNotification();
 
   const columns = getColumnsConfig({
     openDeleteDialog,
@@ -91,12 +89,6 @@ export default function CvManagementTable({ resumes }: { resumes: Resume[] }) {
           handleDelete(deleteId || "");
         }}
         message="Bạn có chắc chắn muốn xóa CV này không?"
-      />
-
-      <SuccessNotificationDialog
-        isOpen={showAlert}
-        message={alertMessage}
-        onClose={hideNotification}
       />
     </div>
   );

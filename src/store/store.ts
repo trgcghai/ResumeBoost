@@ -1,19 +1,26 @@
 import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./slices/userSlice";
+import loaderDialogReducer from "./slices/loaderDialogSlice";
+import userInterfaceConfigReducer from "./slices/userInterfaceConfigSlice";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["user"], // chỉ lưu trữ reducer user
 };
 
 const persistedUserReducer = persistReducer(persistConfig, userReducer);
+const persistedUserInterfaceConfigReducer = persistReducer(
+  persistConfig,
+  userInterfaceConfigReducer
+);
 
 export const store = configureStore({
   reducer: {
     user: persistedUserReducer,
+    loaderDialog: loaderDialogReducer,
+    userInterfaceConfig: persistedUserInterfaceConfigReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

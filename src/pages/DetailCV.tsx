@@ -4,16 +4,19 @@ import AnalysisTab from "@/components/detailAnalysis/AnalysisTab";
 import SuggestionsTab from "@/components/detailAnalysis/SuggestionsTab";
 import CustomBreadcrumb from "@/components/layout/CustomBreadcrumb";
 import PDFDisplay from "@/components/pdf/PDFDisplay";
-import { useAnalysisData } from "@/hooks/useAnalyzeResult";
+import { useAnalysisData } from "@/hooks/fetch/useAnalyzeResult";
 import { useParams } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import OverallAnalysis from "@/components/detailAnalysis/OverallAnalysis";
 import LoadingSkeleton from "@/components/detailAnalysis/LoadingSkeleton";
+import useFetchAdminData from "@/hooks/fetch/useFetchAdminData";
 
 const DetailCV: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { analysisData, loading, error } = useAnalysisData(id);
+  const { useResumeById } = useFetchAdminData();
+  const { resume } = useResumeById(analysisData?.resumeId || "");
 
   return (
     <div className="">
@@ -34,7 +37,11 @@ const DetailCV: React.FC = () => {
         <div className="w-1/2 border rounded-lg p-4 flex flex-col gap-4">
           <h2 className="text-lg font-semibold">CV của bạn</h2>
           <div className="bg-bgNormal rounded-lg flex-1 p-2">
-            <PDFDisplay file="/dethi-dapan_tientien_2425-HK1.pdf" />
+            <PDFDisplay
+              file={
+                resume?.fileUrl.publicUrl || resume?.fileUrl.secureUrl || ""
+              }
+            />
           </div>
         </div>
 

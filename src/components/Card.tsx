@@ -13,7 +13,7 @@ interface CardProps {
 const Card: React.FC<CardProps> = ({ title, uploadTime, score, id }) => {
   return (
     <div className="border rounded-lg p-4">
-      <h3 className="text-lg font-semibold">{title}</h3>
+      <h3 className="text-lg font-semibold">{title.replace(/\.[^.]+$/, "")}</h3>
       <p className="text-textNormal">
         {format(uploadTime.toDate(), "HH:mm dd/MM/yyyy")}
       </p>

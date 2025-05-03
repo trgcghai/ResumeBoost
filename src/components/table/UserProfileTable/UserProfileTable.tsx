@@ -6,7 +6,6 @@ import DataTableSection from "../DataTableSection";
 import { HeaderActions } from "./HeaderActions";
 import DataTable from "../DataTable";
 import { DeleteConfirmationDialog } from "../shared/DeleteConfirmationDialog";
-import { SuccessNotificationDialog } from "../shared/SuccessNotificationDialog";
 import { UserProfile } from "@/type";
 import { getColumnsConfig } from "./ColumnsConfig";
 
@@ -26,8 +25,7 @@ export default function UserProfileTable({
     handleUpdateRole,
   } = useUserProfileManagement(profiles);
   const { exportExcel } = useExcel();
-  const { showAlert, alertMessage, showNotification, hideNotification } =
-    useAlertNotification();
+  const { showNotification } = useAlertNotification();
 
   // Table columns
   const columns = getColumnsConfig({
@@ -102,12 +100,6 @@ export default function UserProfileTable({
           handleDelete(deleteId || "");
         }}
         message="Bạn có chắc chắn muốn xóa hồ sơ người dùng này không?"
-      />
-
-      <SuccessNotificationDialog
-        isOpen={showAlert}
-        message={alertMessage}
-        onClose={hideNotification}
       />
     </div>
   );

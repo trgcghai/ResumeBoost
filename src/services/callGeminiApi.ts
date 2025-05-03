@@ -77,7 +77,7 @@ export async function callGeminiApi(
           { text: prompt },
           {
             inlineData: {
-              mimeType: "image/jpeg",
+              mimeType: "application/pdf",
               data: pdfBase64,
             },
           },

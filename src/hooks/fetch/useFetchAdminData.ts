@@ -14,6 +14,7 @@ import {
   orderBy,
   limit,
   getCountFromServer,
+  getDoc,
 } from "firebase/firestore";
 import { useEffect, useState, useCallback } from "react";
 
@@ -323,6 +324,36 @@ export default function useFetchAdminData() {
     return { scoreData, loading, error };
   }
 
+  function useResumeById(id: string) {
+    const [resume, setResume] = useState<Resume | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
+
+    useEffect(() => {
+      async function fetchResume() {
+        setLoading(true);
+        try {
+          const resumeRef = doc(db, "resumes", id);
+          const resumeDoc = await getDoc(resumeRef);
+
+          if (resumeDoc.exists()) {
+            setResume({ id: resumeDoc.id, ...resumeDoc.data() } as Resume);
+          } else {
+            setError(new Error("Resume not found"));
+          }
+        } catch (error) {
+          setError(error as Error);
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      fetchResume();
+    }, [id]);
+
+    return { resume, loading, error };
+  }
+
   return {
     useResume,
     useUserProfile,
@@ -331,5 +362,6 @@ export default function useFetchAdminData() {
     useUpdateUserRole,
     useOverview,
     useStatisticAnalyzeScore,
+    useResumeById,
   };
 }
