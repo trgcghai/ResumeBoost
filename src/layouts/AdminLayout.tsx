@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import Footer from "../components/layout/Footer";
 import AdminSidebar from "@/components/layout/AdminSidebar";
 import { auth } from "@/lib/firebase";
@@ -54,14 +54,14 @@ const AdminLayout: React.FC = () => {
               {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           ) : (
-            <div className="flex items-center gap-2">
+            <Link to={"/admin/dashboard"} className="flex items-center gap-2">
               <img
                 src="/logo.png"
                 alt=""
                 className="w-10 rounded aspect-square"
               />
               <p className="text-xl font-bold">ResumeBoost Admin</p>
-            </div>
+            </Link>
           )}
         </div>
 
