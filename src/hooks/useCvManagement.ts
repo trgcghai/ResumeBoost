@@ -6,8 +6,10 @@ export const useCvManagement = (resumes: Resume[]) => {
   const [data, setData] = useState<Resume[]>(resumes);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { useDeleteResume } = useFetchAdminData();
+  const { useDeleteResume, useUpdateUserProfileStatistics } =
+    useFetchAdminData();
   const { deleteResume } = useDeleteResume();
+  const { updateUserProfileStatistics } = useUpdateUserProfileStatistics();
 
   const openDeleteDialog = (id: string) => {
     setDeleteId(id);
@@ -20,6 +22,7 @@ export const useCvManagement = (resumes: Resume[]) => {
 
   const handleDelete = async (cvId: string) => {
     const res = await deleteResume(cvId);
+    await updateUserProfileStatistics(cvId);
 
     if (res) {
       setData(data.filter((cv) => cv.id !== cvId));

@@ -131,7 +131,22 @@ export default function useFetchAdminData() {
       setIsDeleting(true);
       try {
         const resumeRef = doc(db, "resumes", id);
+        const resumeDoc = await getDoc(resumeRef);
+        const resumeData = resumeDoc.data();
+
+        const analyzeRef = collection(db, "analyses");
+        const q = query(
+          analyzeRef,
+          where("resumeId", "==", id),
+          where("userId", "==", resumeData?.userId)
+        );
+        const analyzeSnapshot = await getDocs(q);
+        if (!analyzeSnapshot.empty) {
+          await deleteDoc(analyzeSnapshot.docs[0].ref);
+        }
+
         await deleteDoc(resumeRef);
+
         return true;
       } catch (error) {
         console.error("Error deleting resume:", error);
@@ -143,6 +158,28 @@ export default function useFetchAdminData() {
     }, []);
 
     return { deleteResume, isDeleting, error };
+  }
+
+  function useDeleteJobDescription() {
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
+
+    const deleteJobDescription = useCallback(async (id: string) => {
+      setIsDeleting(true);
+      try {
+        const jobDescriptionRef = doc(db, "job_descriptions", id);
+        await deleteDoc(jobDescriptionRef);
+        return true;
+      } catch (error) {
+        console.error("Error deleting job description:", error);
+        setError(error as Error);
+        return false;
+      } finally {
+        setIsDeleting(false);
+      }
+    }, []);
+
+    return { deleteJobDescription, isDeleting, error };
   }
 
   function useDeleteProfile() {
@@ -354,6 +391,102 @@ export default function useFetchAdminData() {
     return { resume, loading, error };
   }
 
+  function useUpdateUserProfileStatistics() {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
+
+    const updateUserProfileStatistics = useCallback(
+      async (resumeId: string) => {
+        setLoading(true);
+        try {
+          // Lấy thông tin CV
+          const resumeRef = doc(db, "resumes", resumeId);
+          const resumeDoc = await getDoc(resumeRef);
+          if (!resumeDoc.exists()) {
+            throw new Error("Resume not found");
+          }
+          const resumeData = resumeDoc.data();
+          const userId = resumeData.user.userId;
+
+          // Lấy thông tin người dùng
+          const profilesRef = collection(db, "user_profiles");
+          const profileQuery = query(
+            profilesRef,
+            where("userId", "==", resumeData.user.userId)
+          );
+          const profileSnap = await getDocs(profileQuery);
+
+          if (profileSnap.empty) {
+            throw new Error("User profile not found");
+          }
+
+          const profileRef = profileSnap.docs[0].ref;
+
+          // Lấy số lượng CV của người dùng
+          const resumesRef = collection(db, "resumes");
+          const resumeQuery = query(resumesRef, where("userId", "==", userId));
+          const resumeSnapshot = await getCountFromServer(resumeQuery);
+          const cvCount = resumeSnapshot.data().count;
+
+          let avgScore = 0;
+          let totalAnalyses = 0;
+
+          const resumesWithAnalysisQuery = query(
+            resumesRef,
+            where("userId", "==", userId),
+            where("analysisId", "!=", null)
+          );
+          const resumesWithAnalysisSnap = await getDocs(
+            resumesWithAnalysisQuery
+          );
+
+          if (!resumesWithAnalysisSnap.empty) {
+            let totalScore = 0;
+
+            // Lấy tất cả analysisId
+            const analysisIds = resumesWithAnalysisSnap.docs
+              .map((doc) => doc.data().analysisId)
+              .filter(Boolean);
+
+            // Lấy thông tin phân tích
+            for (const analysisId of analysisIds) {
+              const analysisRef = doc(db, "analyses", analysisId);
+              const analysisSnap = await getDoc(analysisRef);
+
+              if (analysisSnap.exists()) {
+                const analyzeData = analysisSnap.data();
+                const score = calAvgScore(analyzeData.scores) || 0;
+
+                totalScore += score;
+                totalAnalyses++;
+              }
+            }
+
+            // Tính điểm trung bình
+            avgScore = totalAnalyses > 0 ? totalScore / totalAnalyses : 0;
+          }
+
+          await updateDoc(profileRef, {
+            cvCount,
+            avgScore,
+            updatedAt: Timestamp.fromDate(new Date()),
+          });
+
+          return true;
+        } catch (error) {
+          console.error("Error updating user profile statistics:", error);
+          setError(error as Error);
+          return false;
+        } finally {
+          setLoading(false);
+        }
+      },
+      []
+    );
+
+    return { updateUserProfileStatistics, loading, error };
+  }
+
   return {
     useResume,
     useUserProfile,
@@ -363,5 +496,7 @@ export default function useFetchAdminData() {
     useOverview,
     useStatisticAnalyzeScore,
     useResumeById,
+    useDeleteJobDescription,
+    useUpdateUserProfileStatistics,
   };
 }
