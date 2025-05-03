@@ -82,7 +82,7 @@ const DetailCV: React.FC = () => {
           <div className="bg-bgNormal rounded-lg flex-1 p-1 sm:p-2 min-h-[60vh] lg:min-h-[80vh]">
             <PDFDisplay
               file={
-                resume?.fileUrl.publicUrl || resume?.fileUrl.secureUrl || ""
+                resume?.fileUrl.secureUrl || resume?.fileUrl.publicUrl || ""
               }
             />
           </div>
