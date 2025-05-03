@@ -69,9 +69,6 @@ const Header = () => {
             <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/">
               Home
             </NavItem>
-            <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/about">
-              About
-            </NavItem>
             <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/profile">
               Profile
             </NavItem>
