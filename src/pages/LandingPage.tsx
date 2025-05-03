@@ -26,9 +26,18 @@ const LandingPage = () => {
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
 
   // Check if elements are in view
-  const heroInView = useInView(heroRef, { once: true, amount: 0.3 });
-  const featuresInView = useInView(featuresRef, { once: true, amount: 0.3 });
-  const whyUsInView = useInView(whyUsRef, { once: true, amount: 0.3 });
+  const heroInView = useInView(heroRef, { 
+    once: true, 
+    amount: 0.1 
+  });
+  const featuresInView = useInView(featuresRef, { 
+    once: true, 
+    amount: 0.1 
+  });
+  const whyUsInView = useInView(whyUsRef, { 
+    once: true, 
+    amount: 0.1 
+  });
 
   // Features data
   const features = [
@@ -79,7 +88,7 @@ const LandingPage = () => {
       className="min-h-screen bg-gradient-to-b from-blue-50 to-white overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.8 }}
     >
       {/* Hero Section */}
       <motion.div
@@ -88,6 +97,7 @@ const LandingPage = () => {
         initial="hidden"
         animate={heroInView ? "visible" : "hidden"}
         variants={containerVariants}
+        viewport={{ once: true, amount: 0.1, margin: "-100px" }}
       >
         <div className="flex flex-col md:flex-row items-center gap-12">
           <motion.div
@@ -144,6 +154,7 @@ const LandingPage = () => {
         initial="hidden"
         animate={featuresInView ? "visible" : "hidden"}
         variants={containerVariants}
+        viewport={{ once: true, amount: 0.1, margin: "-100px" }}
       >
         <motion.h2
           className="text-3xl font-bold text-center mb-12"
@@ -197,6 +208,7 @@ const LandingPage = () => {
         initial="hidden"
         animate={whyUsInView ? "visible" : "hidden"}
         variants={containerVariants}
+        viewport={{ once: true, amount: 0.1, margin: "-100px" }}
       >
         <motion.h2
           className="text-3xl font-bold text-center mb-12"
