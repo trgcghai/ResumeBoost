@@ -6,10 +6,10 @@ const Footer = () => {
   return (
     <footer className="bg-white text-sm text-textNormal py-4 border-t">
       <div className="container max-w-[1200px] mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4 sm:px-0">
           <div>
             <img src="/logo.png" className="rounded-lg w-16" alt="" />
-            <p className="mt-2 w-4/5">
+            <p className="mt-2 sm:w-4/5 text-justify w-full">
               <span className="font-bold">ResumeBoost</span> - Nền tảng đánh giá
               CV miễn phí và chuyên nghiệp. Hãy để{" "}
               <span className="font-bold">ResumeBoost</span> đồng hành cùng bạn
@@ -63,7 +63,7 @@ const Footer = () => {
           </div>
         </div>
         <Separator className="my-4" />
-        <div className="text-center text-textLight flex items-center justify-between">
+        <div className="text-center text-textLight flex flex-col sm:flex-row gap-2 items-center justify-between">
           <p>© {new Date().getFullYear()} ResumeBoost. All rights reserved.</p>
           <p>
             <ul className="flex items-center gap-4">
