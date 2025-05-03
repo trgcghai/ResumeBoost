@@ -1,7 +1,7 @@
 import { useAppSelector } from "@/hooks/redux";
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const FileUploader = ({
   onFileUpload,
@@ -10,15 +10,21 @@ const FileUploader = ({
 }) => {
   const { user } = useAppSelector((state) => state.user);
   const navigate = useNavigate();
+  const location = useLocation();
+
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      if (!user) navigate("/auth/login");
+      if (!user) {
+        // Save current location before redirecting to login
+        navigate("/auth/login", { state: { from: location.pathname } });
+        return;
+      }
 
       if (acceptedFiles && acceptedFiles.length > 0) {
         onFileUpload(acceptedFiles[0]);
       }
     },
-    [navigate, onFileUpload, user]
+    [navigate, onFileUpload, user, location]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

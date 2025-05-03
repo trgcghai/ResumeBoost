@@ -25,6 +25,8 @@ import { AdminProtectedLayout } from "./layouts/AdminProtectedLayout.tsx";
 import { UnauthorizedPage } from "./pages/UnauthorizedPage.tsx";
 import AdminDashboardUser from "./pages/AdminDashboardUser.tsx";
 import AdminDashboardCV from "./pages/AdminDashBoardCV.tsx";
+import LandingPage from "./pages/LandingPage";
+import AboutUs from "./pages/AboutUs";
 
 const router = createBrowserRouter([
   {
@@ -33,7 +35,15 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
+        element: <LandingPage />,
+      },
+      {
+        path: "home",
         element: <Home />,
+      },
+      {
+        path: "about",
+        element: <AboutUs />,
       },
       {
         element: <ProtectedLayout />,

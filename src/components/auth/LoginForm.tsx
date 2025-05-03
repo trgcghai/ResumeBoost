@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -34,6 +34,7 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useAppDispatch();
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -44,8 +45,6 @@ export function LoginForm({
   });
 
   const onSubmit = async (data: LoginFormValues) => {
-    console.log("Form submitted", data);
-
     try {
       const result = await signInWithEmailAndPassword(
         auth,
@@ -57,9 +56,16 @@ export function LoginForm({
 
       dispatch(login({ email: email || "", id: uid, avatar: photoURL || "" }));
 
-      navigate("/");
+      // Get the return URL from location state, or default to home
+      const from = location.state?.from || "/home";
+      navigate(from, { replace: true });
     } catch (error) {
       console.log("Error signing in:", error);
+      // Handle login error
+      form.setError("root", {
+        type: "manual",
+        message: "Email hoặc mật khẩu không đúng",
+      });
     }
   };
 
@@ -77,6 +83,12 @@ export function LoginForm({
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {form.formState.errors.root && (
+                <p className="text-red-500 text-sm text-center">
+                  {form.formState.errors.root.message}
+                </p>
+              )}
+              
               <FormField
                 control={form.control}
                 name="email"
