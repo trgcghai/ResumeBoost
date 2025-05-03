@@ -69,6 +69,9 @@ const Header = () => {
             <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/">
               Home
             </NavItem>
+            <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/about">
+              About
+            </NavItem>
             <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/profile">
               Profile
             </NavItem>
@@ -147,6 +150,9 @@ const Header = () => {
           <div className="p-4 flex flex-col space-y-4">
             <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/">
               Home
+            </NavItem>
+            <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/about">
+              About
             </NavItem>
             <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/profile">
               Profile
