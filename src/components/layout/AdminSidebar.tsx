@@ -1,6 +1,11 @@
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { Home, Users, FileText, X } from "lucide-react";
+import { Home, Users, FileText, X, LogOut } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import { Button } from "../ui/button";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { logout } from "@/store/slices/userSlice";
+import { useAppDispatch } from "@/hooks/redux";
 
 interface AdminSidebarProps {
   isOpen: boolean;
@@ -9,6 +14,7 @@ interface AdminSidebarProps {
 
 const AdminSidebar = ({ isOpen, setIsOpen }: AdminSidebarProps) => {
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const dispatch = useAppDispatch();
   const sidebarItems = [
     { name: "Dashboard", icon: <Home size={20} />, path: "/admin/dashboard" },
     {
@@ -22,6 +28,16 @@ const AdminSidebar = ({ isOpen, setIsOpen }: AdminSidebarProps) => {
   const handleLinkClick = () => {
     if (isMobile) {
       setIsOpen(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth); // Đăng xuất khỏi Firebase
+
+      dispatch(logout()); // Cập nhật trạng thái đăng xuất trong Redux
+    } catch (error) {
+      console.error("Logout error:", error);
     }
   };
 
@@ -103,6 +119,20 @@ const AdminSidebar = ({ isOpen, setIsOpen }: AdminSidebarProps) => {
             </NavLink>
           ))}
         </div>
+
+        {isMobile && (
+          <div className="mt-8">
+            <Button
+              variant="default"
+              size="lg"
+              className="w-full justify-start text-white bg-danger hover:text-danger hover:bg-accent hover:border hover:border-textDark/50"
+              onClick={handleLogout}
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Đăng xuất
+            </Button>
+          </div>
+        )}
       </div>
     </>
   );

@@ -43,7 +43,7 @@ const AdminLayout: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="bg-white text-black px-6 py-4 shadow-md border border-b-gray-300/50 flex justify-between items-center">
+      <header className="bg-white text-black px-6 py-4 fixed top-0 right-0 left-0 z-10 border border-b-gray-300/70 flex justify-between items-center">
         <div className="flex items-center gap-2">
           {isMobile ? (
             <button
@@ -109,7 +109,7 @@ const AdminLayout: React.FC = () => {
           </HoverCard>
         )}
       </header>
-      <div className="flex flex-grow relative">
+      <div className="flex flex-grow relative mt-20">
         <AdminSidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
 
         <main
