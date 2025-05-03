@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Document background -->
+  <rect x="200" y="100" width="400" height="400" rx="10" fill="#F3F4F6" stroke="#E5E7EB" stroke-width="2"/>
+  
+  <!-- Document lines -->
+  <line x1="250" y1="150" x2="550" y2="150" stroke="#D1D5DB" stroke-width="2"/>
+  <line x1="250" y1="200" x2="550" y2="200" stroke="#D1D5DB" stroke-width="2"/>
+  <line x1="250" y1="250" x2="550" y2="250" stroke="#D1D5DB" stroke-width="2"/>
+  <line x1="250" y1="300" x2="550" y2="300" stroke="#D1D5DB" stroke-width="2"/>
+  <line x1="250" y1="350" x2="550" y2="350" stroke="#D1D5DB" stroke-width="2"/>
+  <line x1="250" y1="400" x2="550" y2="400" stroke="#D1D5DB" stroke-width="2"/>
+  
+  <!-- Checkmark -->
+  <path d="M300 200 L350 250 L450 150" stroke="#10B981" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Graph -->
+  <path d="M250 450 L300 400 L350 420 L400 380 L450 410 L500 370 L550 390" stroke="#3B82F6" stroke-width="4" fill="none"/>
+  
+  <!-- Stars -->
+  <path d="M300 300 L310 320 L330 320 L315 335 L320 355 L300 345 L280 355 L285 335 L270 320 L290 320 Z" fill="#F59E0B"/>
+  <path d="M400 300 L410 320 L430 320 L415 335 L420 355 L400 345 L380 355 L385 335 L370 320 L390 320 Z" fill="#F59E0B"/>
+  <path d="M500 300 L510 320 L530 320 L515 335 L520 355 L500 345 L480 355 L485 335 L470 320 L490 320 Z" fill="#F59E0B"/>
+</svg> 

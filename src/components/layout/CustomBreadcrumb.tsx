@@ -20,6 +20,7 @@ const pathMap: Record<string, string> = {
   cvs: "Danh sách cv",
   login: "Đăng nhập",
   signup: "Đăng ký",
+  about: "Về chúng tôi",
 };
 
 const CustomBreadcrumb = ({
