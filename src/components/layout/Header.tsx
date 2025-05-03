@@ -135,9 +135,9 @@ const Header = () => {
           aria-label="Toggle mobile menu"
         >
           {mobileMenuOpen ? (
-            <X className="h-6 w-6" />
+            <X className="text-textNormal h-6 w-6" />
           ) : (
-            <Menu className="h-6 w-6" />
+            <Menu className="text-textNormal h-6 w-6" />
           )}
         </button>
       </div>
@@ -147,9 +147,6 @@ const Header = () => {
           <div className="p-4 flex flex-col space-y-4">
             <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/">
               Home
-            </NavItem>
-            <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/about">
-              About
             </NavItem>
             <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/profile">
               Profile
