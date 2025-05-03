@@ -13,6 +13,7 @@ import {
   useReactTable,
   getSortedRowModel,
   SortingState,
+  getPaginationRowModel,
 } from "@tanstack/react-table";
 import { useState } from "react";
 
@@ -26,6 +27,8 @@ interface DataTableProps<TData, TValue = any> {
   tableClassName?: string;
   enableSorting?: boolean;
   enableMultiSort?: boolean;
+  pageSize?: number;
+  pagination?: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -38,6 +41,8 @@ export function DataTable<TData, TValue = any>({
   tableClassName,
   enableSorting = true,
   enableMultiSort = false,
+  pageSize = 10,
+  pagination = false,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const table = useReactTable({
@@ -49,8 +54,14 @@ export function DataTable<TData, TValue = any>({
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: pagination ? getPaginationRowModel() : undefined,
     enableSorting,
     enableMultiSort,
+    initialState: {
+      pagination: {
+        pageSize: pageSize,
+      },
+    },
   });
 
   return (

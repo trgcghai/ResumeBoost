@@ -8,6 +8,7 @@ import { DeleteConfirmationDialog } from "../shared/DeleteConfirmationDialog";
 import { UserProfile } from "@/type";
 import { getColumnsConfig } from "./ColumnsConfig";
 import { HeaderActions } from "../shared/HeaderActions";
+import TablePagination from "../TablePagination";
 
 export default function UserProfileTable({
   profiles,
@@ -97,7 +98,10 @@ export default function UserProfileTable({
             columns={columns}
             tableCellClassName="text-base py-3"
             tableHeadClassName="bg-muted/50"
+            pagination={true}
+            pageSize={10}
           />
+          <TablePagination table={table} />
         </div>
       </DataTableSection>
 
