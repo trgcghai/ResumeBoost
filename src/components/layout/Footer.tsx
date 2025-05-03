@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <footer className="bg-white text-sm text-textNormal py-4 border-t">
       <div className="container max-w-[1200px] mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4 sm:px-0">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8 px-4 sm:px-0">
           <div>
             <img src="/logo.png" className="rounded-lg w-16" alt="" />
             <p className="mt-2 sm:w-4/5 text-justify w-full">
@@ -59,6 +59,21 @@ const Footer = () => {
               <li>Trường Công Hải</li>
               <li>Huỳnh Thanh Liêm</li>
               <li>Trần Quốc Bảo</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-bold text-base mb-3">Liên kết nhanh</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to={"/"}>Trang chủ</Link>
+              </li>
+              <li>
+                <Link to={"/introduce/landing"}>Giới thiệu</Link>
+              </li>
+              <li>
+                <Link to={"/introduce/about"}>Thông tin về chúng tôi</Link>
+              </li>
             </ul>
           </div>
         </div>
