@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import Footer from "../components/layout/Footer";
 import AdminSidebar from "@/components/layout/AdminSidebar";
@@ -13,12 +13,19 @@ import {
 } from "@/components/ui/hover-card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { LogOut, User } from "lucide-react";
+import { LogOut, Menu, User, X } from "lucide-react";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 const AdminLayout: React.FC = () => {
   const authUser = auth.currentUser;
   const { user, isAuthenticated } = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
+
+  useEffect(() => {
+    setSidebarOpen(!isMobile);
+  }, [isMobile]);
 
   const handleLogout = async () => {
     try {
@@ -30,13 +37,33 @@ const AdminLayout: React.FC = () => {
     }
   };
 
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="bg-white text-black px-6 py-4 shadow-md border border-b-gray-300/50 flex justify-between items-center">
-        <h1 className="text-xl font-bold flex items-center gap-2">
-          <img src="/logo.png" alt="" className="w-10 rounded aspect-square" />
-          <p>ResumeBoost Admin</p>
-        </h1>
+      <header className="bg-white text-black px-6 py-4 fixed top-0 right-0 left-0 z-10 border border-b-gray-300/70 flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          {isMobile ? (
+            <button
+              onClick={toggleSidebar}
+              className="md:hidden p-1 rounded-md text-textDark hover:bg-gray-100"
+              aria-label="Toggle sidebar"
+            >
+              {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          ) : (
+            <div className="flex items-center gap-2">
+              <img
+                src="/logo.png"
+                alt=""
+                className="w-10 rounded aspect-square"
+              />
+              <p className="text-xl font-bold">ResumeBoost Admin</p>
+            </div>
+          )}
+        </div>
 
         {isAuthenticated && user && (
           <HoverCard openDelay={200} closeDelay={100}>
@@ -82,12 +109,12 @@ const AdminLayout: React.FC = () => {
           </HoverCard>
         )}
       </header>
-      <div className="flex flex-grow">
-        {/* Admin sidebar */}
-        <AdminSidebar />
+      <div className="flex flex-grow relative mt-20">
+        <AdminSidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
 
-        {/* Admin content area */}
-        <main className="flex-grow p-6 bg-gray-100">
+        <main
+          className={`flex-grow p-3 sm:p-6 bg-gray-100 transition-all duration-300`}
+        >
           <Outlet />
         </main>
       </div>

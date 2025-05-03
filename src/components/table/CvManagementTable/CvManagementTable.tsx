@@ -4,11 +4,11 @@ import useAlertNotification from "@/hooks/useAlertNotification";
 import useExcel from "@/hooks/useExportExcel";
 import { getColumnsConfig } from "./ColumnsConfig";
 import DataTableSection from "../DataTableSection";
-import { HeaderActions } from "./HeaderActions";
 import DataTable from "../DataTable";
 import { DeleteConfirmationDialog } from "../shared/DeleteConfirmationDialog";
 import { Resume } from "@/type";
 import { format } from "date-fns";
+import { HeaderActions } from "../shared/HeaderActions";
 
 export default function CvManagementTable({ resumes }: { resumes: Resume[] }) {
   const {
@@ -53,6 +53,13 @@ export default function CvManagementTable({ resumes }: { resumes: Resume[] }) {
     }
   };
 
+  const sortOptions = [
+    { label: "Tên file", value: "fileName" },
+    { label: "Chủ sở hữu", value: "username" },
+    { label: "Loại file", value: "fileType" },
+    { label: "Ngày tạo", value: "createdAt" },
+  ];
+
   return (
     <div className="relative">
       <DataTableSection
@@ -69,6 +76,7 @@ export default function CvManagementTable({ resumes }: { resumes: Resume[] }) {
             handleSort={handleSort}
             handleReset={handleReset}
             handleExportExcel={handleExportExcel}
+            sortOptions={sortOptions}
           />
         }
       >

@@ -23,15 +23,18 @@ export const ResumeGrid: React.FC<ResumeGridProps> = ({
   error,
 }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
       {loading &&
         Array(3)
           .fill(0)
           .map((_, index) => (
-            <div key={`skeleton-${index}`} className="border rounded-lg p-4">
+            <div
+              key={`skeleton-${index}`}
+              className="border rounded-lg p-3 md:p-4"
+            >
               <Skeleton className="h-6 w-3/4 mb-2" />
               <Skeleton className="h-4 w-1/2 mb-4" />
-              <Skeleton className="h-20 w-full rounded-md" />
+              <Skeleton className="h-16 md:h-20 w-full rounded-md" />
             </div>
           ))}
 
@@ -52,7 +55,6 @@ export const ResumeGrid: React.FC<ResumeGridProps> = ({
             </div>
           )}
 
-      {/* Reference element for infinite scroll */}
       {displayMode === "infiniteScroll" && currentPage < totalPages && (
         <div
           ref={bottomRef}
