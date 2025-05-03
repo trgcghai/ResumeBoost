@@ -65,7 +65,7 @@ const Footer = () => {
         <Separator className="my-4" />
         <div className="text-center text-textLight flex flex-col sm:flex-row gap-2 items-center justify-between">
           <p>© {new Date().getFullYear()} ResumeBoost. All rights reserved.</p>
-          <p>
+          <div>
             <ul className="flex items-center gap-4">
               {["Privacy Policy", "Terms of Service", "Cookies"].map(
                 (item, index) => {
@@ -79,7 +79,7 @@ const Footer = () => {
                 }
               )}
             </ul>
-          </p>
+          </div>
         </div>
       </div>
     </footer>
