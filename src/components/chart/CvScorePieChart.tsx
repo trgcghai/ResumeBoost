@@ -16,15 +16,17 @@ const COLORS = [
 ];
 
 interface CvScorePieChartProps {
-  data: {
-    name: string;
-    value: number;
-  }[];
+  data:
+    | {
+        name: string;
+        value: number;
+      }[]
+    | null;
 }
 
 export default function CvScorePieChart({ data }: CvScorePieChartProps) {
   const hasOnlyOneType = useMemo(
-    () => data.filter((item) => item.value > 0).length === 1,
+    () => data?.filter((item) => item.value > 0).length === 1,
     [data]
   );
 
@@ -86,9 +88,9 @@ export default function CvScorePieChart({ data }: CvScorePieChartProps) {
   };
 
   // Xử lý dữ liệu để loại bỏ các loại có giá trị 0
-  const filteredData = data.filter((item) => item.value > 0);
+  const filteredData = data?.filter((item) => item.value > 0);
 
-  if (filteredData.length === 0) {
+  if (filteredData?.length === 0) {
     return (
       <Card className="shadow-none">
         <CardHeader>
@@ -109,53 +111,57 @@ export default function CvScorePieChart({ data }: CvScorePieChartProps) {
         <p className="text-sm text-muted-foreground">Phân bố điểm CV</p>
       </CardHeader>
       <CardContent className="flex justify-center items-center h-[250px]">
-        <ResponsiveContainer width="80%" height="100%">
-          <PieChart>
-            <Pie
-              data={filteredData}
-              dataKey="value"
-              nameKey="name"
-              labelLine={false}
-              innerRadius={hasOnlyOneType ? 0 : 0}
-              outerRadius={hasOnlyOneType ? 80 : 80}
-              strokeWidth={hasOnlyOneType ? 0 : 1}
-              label={renderCustomizedLabel}
-            >
-              {filteredData.map((_, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={
-                    COLORS[
-                      filteredData[index].name === "Tốt"
-                        ? 0
-                        : filteredData[index].name === "Trung bình"
-                        ? 1
-                        : 2
-                    ]
-                  }
-                />
-              ))}
-            </Pie>
-            <Tooltip
-              formatter={(value) => [`${value}%`, "Tỉ lệ"]}
-              contentStyle={{
-                borderRadius: "8px",
-                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
-              }}
-            />
-            <Legend
-              formatter={renderColorfulLegendText}
-              layout="vertical"
-              verticalAlign="top"
-              align="right"
-              iconType="circle"
-              iconSize={12}
-              wrapperStyle={{
-                paddingTop: "15px",
-              }}
-            />
-          </PieChart>
-        </ResponsiveContainer>
+        {data ? (
+          <ResponsiveContainer width="80%" height="100%">
+            <PieChart>
+              <Pie
+                data={filteredData}
+                dataKey="value"
+                nameKey="name"
+                labelLine={false}
+                innerRadius={hasOnlyOneType ? 0 : 0}
+                outerRadius={hasOnlyOneType ? 80 : 80}
+                strokeWidth={hasOnlyOneType ? 0 : 1}
+                label={renderCustomizedLabel}
+              >
+                {filteredData?.map((_, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={
+                      COLORS[
+                        filteredData[index].name === "Tốt"
+                          ? 0
+                          : filteredData[index].name === "Trung bình"
+                          ? 1
+                          : 2
+                      ]
+                    }
+                  />
+                ))}
+              </Pie>
+              <Tooltip
+                formatter={(value) => [`${value}%`, "Tỉ lệ"]}
+                contentStyle={{
+                  borderRadius: "8px",
+                  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+                }}
+              />
+              <Legend
+                formatter={renderColorfulLegendText}
+                layout="vertical"
+                verticalAlign="top"
+                align="right"
+                iconType="circle"
+                iconSize={12}
+                wrapperStyle={{
+                  paddingTop: "15px",
+                }}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        ) : (
+          <p className="text-muted-foreground">Không có dữ liệu để hiển thị</p>
+        )}
       </CardContent>
     </Card>
   );

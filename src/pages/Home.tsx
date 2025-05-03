@@ -1,8 +1,10 @@
 import FileUploader from "@/components/FileUploader";
 import LoaderDialog from "@/components/LoaderDialog";
 import { Button } from "@/components/ui/button";
-import { analyzeResume, processResume } from "@/controllers/ResumeController";
+// import { processResume } from "@/controllers/ResumeController";
 import useFetchAdminData from "@/hooks/fetch/useFetchAdminData";
+import useAnalyzeResume from "@/hooks/fetch/useAnalyzeResume";
+import useProcessResume from "@/hooks/fetch/useProcessResume";
 import { useAppDispatch } from "@/hooks/redux";
 import {
   hideLoaderDialog,
@@ -35,6 +37,8 @@ const Home = () => {
   const { useDeleteResume, useDeleteJobDescription } = useFetchAdminData();
   const { deleteResume } = useDeleteResume();
   const { deleteJobDescription } = useDeleteJobDescription();
+  const { analyzeResume } = useAnalyzeResume();
+  const { processResume } = useProcessResume();
 
   const handleFileUpload = (uploadedFile: File) => {
     setFile(uploadedFile);
@@ -82,10 +86,10 @@ const Home = () => {
       const { id: jobDescriptionId } =
         uploadResult?.result?.createJobDescriptionResult ?? {};
 
-      const analyzeResult = (await analyzeResume({
+      const analyzeResult = await analyzeResume({
         resumeId: resumeId || "",
         jobDescriptionId: jobDescriptionId || "",
-      })) as response;
+      });
 
       if (analyzeResult?.success) {
         dispatch(hideLoaderDialog());

@@ -22,7 +22,9 @@ export const useCvManagement = (resumes: Resume[]) => {
 
   const handleDelete = async (cvId: string) => {
     const res = await deleteResume(cvId);
-    await updateUserProfileStatistics(cvId);
+    await updateUserProfileStatistics(
+      data.find((cv) => cv.id === cvId)?.user.userId || ""
+    );
 
     if (res) {
       setData(data.filter((cv) => cv.id !== cvId));

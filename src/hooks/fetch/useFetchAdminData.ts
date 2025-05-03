@@ -138,7 +138,7 @@ export default function useFetchAdminData() {
         const q = query(
           analyzeRef,
           where("resumeId", "==", id),
-          where("userId", "==", resumeData?.userId)
+          where("userId", "==", resumeData?.user.userId)
         );
         const analyzeSnapshot = await getDocs(q);
         if (!analyzeSnapshot.empty) {
@@ -277,11 +277,9 @@ export default function useFetchAdminData() {
   }
 
   function useStatisticAnalyzeScore() {
-    const [scoreData, setScoreData] = useState([
-      { name: "Tốt", value: 0 },
-      { name: "Trung bình", value: 0 },
-      { name: "Kém", value: 0 },
-    ]);
+    const [scoreData, setScoreData] = useState<
+      { name: string; value: number }[] | null
+    >(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
 
@@ -293,11 +291,7 @@ export default function useFetchAdminData() {
           const analyseSnapshot = await getDocs(analyseRef);
 
           if (analyseSnapshot.empty) {
-            setScoreData([
-              { name: "Tốt", value: 0 },
-              { name: "Trung bình", value: 0 },
-              { name: "Kém", value: 0 },
-            ]);
+            setScoreData(null);
             return;
           }
 
@@ -332,8 +326,6 @@ export default function useFetchAdminData() {
             { name: "Kém", value: poorPercentage },
           ];
 
-          // Đảm bảo tổng phần trăm là 100%
-          // Nếu bị thiếu thì cộng vào phần tử có giá trị lớn nhất
           const totalPercentage =
             goodPercentage + averagePercentage + poorPercentage;
           if (totalPercentage !== 100 && totalCount > 0) {
@@ -408,6 +400,8 @@ export default function useFetchAdminData() {
           const resumeData = resumeDoc.data();
           const userId = resumeData.user.userId;
 
+          console.log(userId);
+
           // Lấy thông tin người dùng
           const profilesRef = collection(db, "user_profiles");
           const profileQuery = query(
@@ -424,7 +418,10 @@ export default function useFetchAdminData() {
 
           // Lấy số lượng CV của người dùng
           const resumesRef = collection(db, "resumes");
-          const resumeQuery = query(resumesRef, where("userId", "==", userId));
+          const resumeQuery = query(
+            resumesRef,
+            where("user.userId", "==", userId)
+          );
           const resumeSnapshot = await getCountFromServer(resumeQuery);
           const cvCount = resumeSnapshot.data().count;
 
@@ -433,7 +430,7 @@ export default function useFetchAdminData() {
 
           const resumesWithAnalysisQuery = query(
             resumesRef,
-            where("userId", "==", userId),
+            where("user.userId", "==", userId),
             where("analysisId", "!=", null)
           );
           const resumesWithAnalysisSnap = await getDocs(

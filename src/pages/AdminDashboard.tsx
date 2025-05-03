@@ -62,7 +62,7 @@ const AdminDashboard = () => {
               <p className="text-gray-500">Đang tải dữ liệu...</p>
             </div>
           ) : (
-            scoreData && <CVScorePieChart data={scoreData} />
+            <CVScorePieChart data={scoreData} />
           )}
         </div>
 
