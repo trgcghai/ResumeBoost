@@ -28,19 +28,23 @@ const PDFControls: React.FC<PDFControlsProps> = ({
   resetView,
 }) => {
   return (
-    <div className="flex justify-between items-center p-2 bg-gray-100 rounded-t-lg">
-      <PageControls
-        currentPage={currentPage}
-        numPages={numPages}
-        changePage={changePage}
-      />
+    <div className="flex flex-col sm:flex-row sm:justify-between gap-2 p-2 bg-gray-100 rounded-t-lg">
+      <div className="flex justify-center sm:justify-start">
+        <PageControls
+          currentPage={currentPage}
+          numPages={numPages}
+          changePage={changePage}
+        />
+      </div>
 
-      <ViewControls
-        scale={scale}
-        adjustScale={adjustScale}
-        rotateDocument={rotateDocument}
-        resetView={resetView}
-      />
+      <div className="flex justify-center sm:justify-end">
+        <ViewControls
+          scale={scale}
+          adjustScale={adjustScale}
+          rotateDocument={rotateDocument}
+          resetView={resetView}
+        />
+      </div>
     </div>
   );
 };
@@ -57,26 +61,30 @@ const PageControls: React.FC<PageControlsProps> = ({
   changePage,
 }) => {
   return (
-    <div className="flex items-center space-x-2">
+    <div className="w-full flex items-center space-x-1 sm:space-x-2">
       <Button
         variant="outline"
         size="sm"
+        className="h-8 w-8 p-0 sm:h-9 sm:w-9 flex-1 sm:flex-none"
         disabled={currentPage <= 1}
         onClick={() => changePage(-1)}
       >
         <ChevronLeft className="h-4 w-4" />
+        <span className="sm:hidden">Trang trước</span>
       </Button>
 
-      <span className="text-sm">
+      <span className="text-xs sm:text-sm min-w-[60px] text-center">
         {currentPage} / {numPages || 1}
       </span>
 
       <Button
         variant="outline"
         size="sm"
+        className="h-8 w-8 p-0 sm:h-9 sm:w-9 flex-1 sm:flex-none"
         disabled={currentPage >= numPages}
         onClick={() => changePage(1)}
       >
+        <span className="sm:hidden">Trang sau</span>
         <ChevronRight className="h-4 w-4" />
       </Button>
     </div>
@@ -97,41 +105,53 @@ const ViewControls: React.FC<ViewControlsProps> = ({
   resetView,
 }) => {
   return (
-    <div className="flex items-center space-x-2">
-      <Button
-        variant="outline"
-        size="sm"
-        disabled={scale <= 0.5}
-        onClick={() => adjustScale(-0.1)}
-      >
-        <ZoomOut className="h-4 w-4" />
-      </Button>
+    <div className="w-full flex justify-between sm:justify-normal sm:space-x-2">
+      <div className="flex items-center space-x-1 sm:space-x-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 w-8 p-0 sm:h-9 sm:w-9"
+          disabled={scale <= 0.5}
+          onClick={() => adjustScale(-0.1)}
+        >
+          <ZoomOut className="h-4 w-4" />
+        </Button>
 
-      <span className="text-sm w-16 text-center">
-        {(scale * 100).toFixed(0)}%
-      </span>
+        <span className="text-xs sm:text-sm min-w-[50px] text-center">
+          {(scale * 100).toFixed(0)}%
+        </span>
 
-      <Button
-        variant="outline"
-        size="sm"
-        disabled={scale >= 3}
-        onClick={() => adjustScale(0.1)}
-      >
-        <ZoomIn className="h-4 w-4" />
-      </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 w-8 p-0 sm:h-9 sm:w-9"
+          disabled={scale >= 3}
+          onClick={() => adjustScale(0.1)}
+        >
+          <ZoomIn className="h-4 w-4" />
+        </Button>
+      </div>
 
-      <Button variant="outline" size="sm" onClick={rotateDocument}>
-        <RotateCw className="h-4 w-4" />
-      </Button>
+      <div className="flex items-center space-x-1 sm:space-x-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 w-8 p-0 sm:h-9 sm:w-9"
+          onClick={rotateDocument}
+        >
+          <RotateCw className="h-4 w-4" />
+        </Button>
 
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={resetView}
-        title="Đặt lại trạng thái xem"
-      >
-        <RefreshCw className="h-4 w-4" />
-      </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 w-8 p-0 sm:h-9 sm:w-9"
+          onClick={resetView}
+          title="Đặt lại trạng thái xem"
+        >
+          <RefreshCw className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   );
 };

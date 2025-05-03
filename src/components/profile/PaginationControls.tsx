@@ -24,20 +24,30 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
 }) => {
   if (displayMode !== "pagination" || totalPages <= 1) return null;
 
-  return (
-    <Pagination className="mt-6">
-      <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious
-            onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
-            className={
-              currentPage <= 1
-                ? "pointer-events-none opacity-50"
-                : "cursor-pointer"
-            }
-          />
-        </PaginationItem>
+  const renderResponsivePagination = () => {
+    const isMobile = window.innerWidth < 640;
 
+    if (isMobile) {
+      return (
+        <>
+          <PaginationItem>
+            <PaginationLink isActive>{currentPage}</PaginationLink>
+          </PaginationItem>
+
+          {currentPage < totalPages && (
+            <PaginationItem>
+              <PaginationLink onClick={() => handlePageChange(currentPage + 1)}>
+                {currentPage + 1}
+              </PaginationLink>
+            </PaginationItem>
+          )}
+        </>
+      );
+    }
+
+    // On larger screens, show more page numbers
+    return (
+      <>
         {/* First page */}
         {currentPage > 2 && (
           <PaginationItem>
@@ -50,7 +60,7 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
         {/* Ellipsis */}
         {currentPage > 3 && (
           <PaginationItem>
-            <PaginationEllipsis />
+            <PaginationLink>...</PaginationLink>
           </PaginationItem>
         )}
 
@@ -80,7 +90,7 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
         {/* Ellipsis */}
         {currentPage < totalPages - 2 && (
           <PaginationItem>
-            <PaginationLink>...</PaginationLink>
+            <PaginationEllipsis />
           </PaginationItem>
         )}
 
@@ -92,6 +102,25 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
             </PaginationLink>
           </PaginationItem>
         )}
+      </>
+    );
+  };
+
+  return (
+    <Pagination className="mt-4">
+      <PaginationContent className="overflow-x-auto flex-nowrap min-w-full justify-center">
+        <PaginationItem>
+          <PaginationPrevious
+            onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+            className={
+              currentPage <= 1
+                ? "pointer-events-none opacity-50"
+                : "cursor-pointer"
+            }
+          />
+        </PaginationItem>
+
+        {renderResponsivePagination()}
 
         <PaginationItem>
           <PaginationNext

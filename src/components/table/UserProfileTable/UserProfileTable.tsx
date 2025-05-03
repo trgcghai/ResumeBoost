@@ -3,11 +3,11 @@ import useSortingAndFilteringUsers from "@/hooks/useSortingAndFilteringUsers";
 import useAlertNotification from "@/hooks/useAlertNotification";
 import useExcel from "@/hooks/useExportExcel";
 import DataTableSection from "../DataTableSection";
-import { HeaderActions } from "./HeaderActions";
 import DataTable from "../DataTable";
 import { DeleteConfirmationDialog } from "../shared/DeleteConfirmationDialog";
 import { UserProfile } from "@/type";
 import { getColumnsConfig } from "./ColumnsConfig";
+import { HeaderActions } from "../shared/HeaderActions";
 
 export default function UserProfileTable({
   profiles,
@@ -47,7 +47,7 @@ export default function UserProfileTable({
     handleSort,
   } = useSortingAndFilteringUsers(data, columns);
 
-  const handleExport = () => {
+  const handleExportExcel = () => {
     try {
       const exportData = data.map((user: UserProfile) => ({
         "User ID": user.userId,
@@ -64,6 +64,13 @@ export default function UserProfileTable({
     }
   };
 
+  const sortOptions = [
+    { label: "Username", value: "username" },
+    { label: "Số lượng CV", value: "cvCount" },
+    { label: "Điểm trung bình", value: "avgScore" },
+    { label: "Thời gian upload cuối", value: "lastUploadTime" },
+  ];
+
   return (
     <div className="relative">
       <DataTableSection
@@ -79,7 +86,8 @@ export default function UserProfileTable({
             setSortOrder={setSortOrder}
             handleSort={handleSort}
             handleReset={handleReset}
-            handleExport={handleExport}
+            handleExportExcel={handleExportExcel}
+            sortOptions={sortOptions}
           />
         }
       >

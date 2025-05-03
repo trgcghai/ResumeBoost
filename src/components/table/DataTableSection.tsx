@@ -19,7 +19,7 @@ export default function DataTableSection({
   return (
     <Card className={className}>
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 justify-between">
           <div>
             <CardTitle>{title}</CardTitle>
             {description && (

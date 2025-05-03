@@ -19,15 +19,17 @@ const PDFDisplay: React.FC<PDFDisplayProps> = ({ file }) => {
 
   return (
     <div className="flex flex-col h-full" ref={containerRef}>
-      <PDFControls
-        currentPage={pdfControls.currentPage}
-        numPages={pdfControls.numPages}
-        scale={pdfControls.scale}
-        changePage={pdfControls.changePage}
-        adjustScale={pdfControls.adjustScale}
-        rotateDocument={pdfControls.rotateDocument}
-        resetView={pdfControls.resetView}
-      />
+      <div className={`transition-all duration-200`}>
+        <PDFControls
+          currentPage={pdfControls.currentPage}
+          numPages={pdfControls.numPages}
+          scale={pdfControls.scale}
+          changePage={pdfControls.changePage}
+          adjustScale={pdfControls.adjustScale}
+          rotateDocument={pdfControls.rotateDocument}
+          resetView={pdfControls.resetView}
+        />
+      </div>
 
       <div className="overflow-hidden bg-gray-200 flex-grow rounded-b-lg relative">
         {pdfControls.loading && <PDFLoadingIndicator />}
