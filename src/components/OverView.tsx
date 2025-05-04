@@ -82,7 +82,7 @@ const Overview: React.FC = () => {
             Điểm trung bình
           </h3>
           <p className="text-lg sm:text-2xl font-bold ml-2">
-            {userProfile?.avgScore || 0}
+            {userProfile?.avgScore.toFixed(2) || 0}
           </p>
         </div>
 
