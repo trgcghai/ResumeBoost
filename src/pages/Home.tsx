@@ -96,7 +96,7 @@ const Home = () => {
         setFile(null);
         setJobDescription("");
 
-        navigate(`/details/${analyzeResult?.result?.analysisId}`);
+        navigate(`/app/details/${analyzeResult?.result?.analysisId}`);
       }
     } catch (error) {
       dispatch(
