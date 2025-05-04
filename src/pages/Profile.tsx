@@ -71,15 +71,17 @@ const Profile: React.FC = () => {
             </Alert>
           )}
 
-          <ResumeGrid
-            loading={loading}
-            visibleItems={visibleItems}
-            bottomRef={bottomRef}
-            displayMode={displayMode}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            error={error}
-          />
+          {visibleItems && (
+            <ResumeGrid
+              loading={loading}
+              visibleItems={visibleItems}
+              bottomRef={bottomRef}
+              displayMode={displayMode}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              error={error}
+            />
+          )}
 
           <PaginationControls
             currentPage={currentPage}

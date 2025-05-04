@@ -38,7 +38,7 @@ export const ResumeGrid: React.FC<ResumeGridProps> = ({
             </div>
           ))}
 
-      {visibleItems.length > 0
+      {visibleItems.length
         ? visibleItems.map((resume) => (
             <Card
               key={resume.resumeId}
@@ -51,7 +51,7 @@ export const ResumeGrid: React.FC<ResumeGridProps> = ({
         : !loading &&
           !error && (
             <div className="col-span-full text-center py-8">
-              <p className="text-gray-500">Không có resume nào !!</p>
+              <p className="text-gray-500">Không có cv nào !!</p>
             </div>
           )}
 
