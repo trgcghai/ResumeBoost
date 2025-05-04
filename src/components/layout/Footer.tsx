@@ -56,7 +56,7 @@ const Footer = () => {
           <div>
             <h3 className="font-bold text-base mb-3">Thành viên nhóm</h3>
             <ul className="space-y-2">
-              <li>Trường Công Hải</li>
+              <li>Trương Công Hải</li>
               <li>Huỳnh Thanh Liêm</li>
               <li>Trần Quốc Bảo</li>
             </ul>

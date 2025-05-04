@@ -28,6 +28,7 @@ import AdminDashboardCV from "./pages/AdminDashBoardCV.tsx";
 import LandingPage from "./pages/LandingPage";
 import AboutUs from "./pages/AboutUs";
 import IntroduceLayout from "./layouts/IntroduceLayout.tsx";
+import NotFound from "./pages/NotFound.tsx";
 
 const router = createBrowserRouter([
   {
@@ -121,6 +122,10 @@ const router = createBrowserRouter([
   {
     path: "unauthorized",
     element: <UnauthorizedPage />,
+  },
+  {
+    path: "*",
+    element: <NotFound />,
   },
 ]);
 
