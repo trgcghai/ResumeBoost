@@ -190,6 +190,10 @@ export default function useFetchAdminData() {
       setIsDeleting(true);
       try {
         const profileRef = doc(db, "user_profiles", id);
+        const profileSnap = await getDoc(profileRef);
+        if (!profileSnap.exists()) {
+          throw new Error("Profile not found");
+        }
         await deleteDoc(profileRef);
         return true;
       } catch (error) {

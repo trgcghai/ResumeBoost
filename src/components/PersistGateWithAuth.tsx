@@ -26,12 +26,10 @@ export const PersistGateWithAuth = ({
   const dispatch = useAppDispatch();
   const { isLoading } = useAppSelector((state) => state.user);
 
-  // Xử lý trạng thái auth và persistence
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
-          // Lấy thông tin người dùng từ Firestore
           const userProfileCollectionRef = collection(db, "user_profiles");
           const q = query(
             userProfileCollectionRef,
@@ -42,7 +40,6 @@ export const PersistGateWithAuth = ({
           let role = "user";
           let isAdmin = false;
 
-          // Ghi bằng dữ liệu từ Firestore
           if (!dataSnap.empty) {
             const userData = dataSnap.docs[0].data();
             if (userData.role) {
@@ -51,7 +48,6 @@ export const PersistGateWithAuth = ({
             }
           }
 
-          // Cập nhật Redux store
           dispatch(
             login({
               id: user.uid,
@@ -75,11 +71,9 @@ export const PersistGateWithAuth = ({
           );
         }
       } else {
-        // Không có user đăng nhập
         dispatch(logout());
       }
 
-      // Đánh dấu đã hoàn tất việc tải dữ liệu
       dispatch(persistComplete());
     });
 
@@ -87,7 +81,6 @@ export const PersistGateWithAuth = ({
     return () => unsubscribe();
   }, [dispatch]);
 
-  // Hiển thị loading screen khi đang tải dữ liệu
   if (isLoading) {
     return <LoadingScreen />;
   }
