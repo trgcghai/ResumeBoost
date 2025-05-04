@@ -16,7 +16,7 @@ export const UnauthorizedPage = () => {
           variant="default"
           size={"lg"}
           className="bg-main hover:bg-mainHover text-white cursor-pointer font-bold text-lg py-6 px-8"
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/app/home")}
         >
           Về Trang Chủ
         </Button>
