@@ -70,14 +70,14 @@ const Overview: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-        <div className="bg-white border rounded-lg p-3 sm:p-4 flex flex-row items-center justify-between">
+        <div className="bg-white border rounded-lg p-3 sm:p-4 flex md:flex-col lg:flex-row items-center justify-between">
           <h3 className="text-base sm:text-lg font-semibold">Tổng số CV</h3>
           <p className="text-lg sm:text-2xl font-bold ml-2">
             {userProfile?.cvCount || 0}
           </p>
         </div>
 
-        <div className="bg-white border rounded-lg p-3 sm:p-4 flex flex-row items-center justify-between">
+        <div className="bg-white border rounded-lg p-3 sm:p-4 flex md:flex-col lg:flex-row items-center justify-between">
           <h3 className="text-base sm:text-lg font-semibold">
             Điểm trung bình
           </h3>
@@ -87,7 +87,7 @@ const Overview: React.FC = () => {
         </div>
 
         <div className="bg-white border rounded-lg p-3 sm:p-4">
-          <div className="flex flex-row items-center justify-between">
+          <div className="flex md:flex-col lg:flex-row items-center justify-between">
             <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-0">
               CV gần nhất
             </h3>

@@ -32,7 +32,7 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
   const dispatch = useAppDispatch();
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-2">
+    <div className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-2`}>
       <div className="">
         <Select value={scoreFilter} onValueChange={setScoreFilter}>
           <SelectTrigger className="w-full sm:w-[180px] md:w-[200px]">
@@ -61,14 +61,18 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
         </Select>
       </div>
 
-      <div className="">
+      <div
+        className={`${
+          displayMode === "pagination" ? "" : "sm:col-span-1 md:col-span-2"
+        }`}
+      >
         <Select
           value={displayMode}
           onValueChange={(value) =>
             dispatch(setDisplayMode(value as "pagination" | "infiniteScroll"))
           }
         >
-          <SelectTrigger className="w-full sm:w-[180px] md:w-[200px]">
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="Kiểu hiển thị" />
           </SelectTrigger>
           <SelectContent>
