@@ -11,7 +11,7 @@ export const RedirectIfAuthenticated = () => {
   }
 
   // Get the return URL from location state, or default to profile
-  const from = location.state?.from || "/";
+  const from = location.state?.from || "/app/home";
 
   if (isAuthenticated) {
     // Redirect to the return URL if user is already authenticated
