@@ -1,7 +1,6 @@
 import FileUploader from "@/components/FileUploader";
 import LoaderDialog from "@/components/LoaderDialog";
 import { Button } from "@/components/ui/button";
-// import { processResume } from "@/controllers/ResumeController";
 import useFetchAdminData from "@/hooks/fetch/useFetchAdminData";
 import useAnalyzeResume from "@/hooks/fetch/useAnalyzeResume";
 import useProcessResume from "@/hooks/fetch/useProcessResume";

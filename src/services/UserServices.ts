@@ -1,12 +1,5 @@
 import { db } from "@/lib/firebase";
-import {
-  addDoc,
-  collection,
-  getDocs,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
+import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 
 /**
  * Create a user profile with role
@@ -57,64 +50,4 @@ export async function createUserProfile(
       error,
     };
   }
-}
-
-/**
- * Update user profile with new CV data
- * @param userId User ID
- * @param overallScore Overall score of the CV
- * @returns Success status
- */
-export async function updateUserProfileStats(
-  userId: string,
-  scores: {
-    format: number;
-    keywords: number;
-    relevance: number;
-    overall: number;
-  }
-) {
-  try {
-    const userRef = collection(db, "user_profiles");
-    const userQuery = query(userRef, where("userId", "==", userId));
-    const userDoc = await getDocs(userQuery);
-
-    if (userDoc.empty) {
-      console.log(`User profile not found for ${userId}`);
-      return false;
-    }
-
-    const userData = userDoc.docs[0].data();
-    if (!userData) return false;
-
-    const currentCvCount = userData.cvCount || 0;
-    const currentTotalScore = (userData.avgScore || 0) * currentCvCount;
-
-    const newAvgScore = Math.round(
-      (currentTotalScore + calAvgScore(scores)) / (currentCvCount + 1)
-    );
-
-    await updateDoc(userDoc.docs[0].ref, {
-      cvCount: currentCvCount + 1,
-      avgScore: newAvgScore,
-      lastUploadTime: new Date(),
-      updatedAt: new Date(),
-    });
-
-    return true;
-  } catch (error) {
-    console.log("Error updating user profile stats", error);
-    return false;
-  }
-}
-
-function calAvgScore(scores: {
-  format: number;
-  keywords: number;
-  relevance: number;
-  overall: number;
-}) {
-  return Math.round(
-    (scores.format + scores.keywords + scores.relevance + scores.overall) / 4
-  );
 }
