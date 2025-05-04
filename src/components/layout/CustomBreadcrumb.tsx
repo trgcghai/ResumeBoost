@@ -13,6 +13,7 @@ import React from "react";
 const pathMap: Record<string, string> = {
   "/": "Trang chủ",
   profile: "Hồ sơ",
+  app: "Ứng dụng",
   details: "Đánh giá chi tiết CV",
   admin: "Quản trị",
   dashboard: "Bảng điều khiển",

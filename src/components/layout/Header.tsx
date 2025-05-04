@@ -67,10 +67,10 @@ const Header = () => {
         <nav className="flex space-x-4">
           <nav className="hidden md:flex space-x-4 items-center">
             <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/app/home">
-              Home
+              Trang chủ
             </NavItem>
             <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/app/profile">
-              Profile
+              Hồ sơ người dùng
             </NavItem>
           </nav>
         </nav>
@@ -125,7 +125,7 @@ const Header = () => {
             to="/admin/dashboard"
             className="hidden md:block text-white bg-main rounded-lg px-4 py-1.5 hover:bg-mainHover"
           >
-            Admin Dashboard
+            Trang quản trị
           </Link>
         )}
 
@@ -146,17 +146,17 @@ const Header = () => {
         <div className="md:hidden fixed inset-0 top-[72px] bg-white z-20">
           <div className="p-4 flex flex-col space-y-4">
             <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/app/home">
-              Home
+              Trang chủ
             </NavItem>
             <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/app/profile">
-              Profile
+              Hồ sơ người dùng
             </NavItem>
             {user?.role === "admin" && (
               <NavItem
                 setMobileMenuOpen={setMobileMenuOpen}
                 to="/admin/dashboard"
               >
-                Admin Dashboard
+                Trang quản trị
               </NavItem>
             )}
 

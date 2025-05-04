@@ -16,7 +16,11 @@ const AdminSidebar = ({ isOpen, setIsOpen }: AdminSidebarProps) => {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const dispatch = useAppDispatch();
   const sidebarItems = [
-    { name: "Dashboard", icon: <Home size={20} />, path: "/admin/dashboard" },
+    {
+      name: "Bảng điều khiển",
+      icon: <Home size={20} />,
+      path: "/admin/dashboard",
+    },
     {
       name: "Quản lý người dùng",
       icon: <Users size={20} />,
