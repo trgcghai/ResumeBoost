@@ -22,6 +22,8 @@ const LandingPage = () => {
   });
 
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.25], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.25], [1, 0.8]);
 
   const heroInView = useInView(heroRef, {
     once: true,
@@ -137,7 +139,7 @@ const LandingPage = () => {
             <motion.div
               className="flex-1"
               variants={imageVariants}
-              style={{ y }}
+              style={{ y, opacity, scale, zIndex: 0 }}
             >
               <motion.img
                 src="https://img.freepik.com/free-vector/recruitment-agency-searching-job-candidates_1262-19873.jpg"
