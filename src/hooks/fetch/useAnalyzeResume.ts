@@ -144,7 +144,7 @@ const useAnalyzeResume = () => {
 
         // 5. Cập nhật thống kê người dùng sử dụng hook mới
         // Hook này nhận vào resumeId để tính toán lại tất cả thống kê
-        await updateUserProfileStatistics(resumeId);
+        await updateUserProfileStatistics(resumeData.user.userId);
 
         // 6. Cập nhật resumeData để thêm analysisId
         await setDoc(

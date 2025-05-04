@@ -15,6 +15,7 @@ import {
   limit,
   getCountFromServer,
   getDoc,
+  DocumentData,
 } from "firebase/firestore";
 import { useEffect, useState, useCallback } from "react";
 
@@ -391,99 +392,66 @@ export default function useFetchAdminData() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
 
-    const updateUserProfileStatistics = useCallback(
-      async (resumeId: string) => {
-        setLoading(true);
-        try {
-          // Lấy thông tin CV
-          const resumeRef = doc(db, "resumes", resumeId);
-          const resumeDoc = await getDoc(resumeRef);
-          if (!resumeDoc.exists()) {
-            throw new Error("Resume not found");
-          }
-          const resumeData = resumeDoc.data();
-          const userId = resumeData.user.userId;
+    const updateUserProfileStatistics = useCallback(async (userId: string) => {
+      setLoading(true);
+      try {
+        // Lấy thông tin người dùng
+        const profilesRef = collection(db, "user_profiles");
+        const profileQuery = query(profilesRef, where("userId", "==", userId));
+        const profileSnap = await getDocs(profileQuery);
 
-          console.log(userId);
-
-          // Lấy thông tin người dùng
-          const profilesRef = collection(db, "user_profiles");
-          const profileQuery = query(
-            profilesRef,
-            where("userId", "==", resumeData.user.userId)
-          );
-          const profileSnap = await getDocs(profileQuery);
-
-          if (profileSnap.empty) {
-            throw new Error("User profile not found");
-          }
-
-          const profileRef = profileSnap.docs[0].ref;
-
-          // Lấy số lượng CV của người dùng
-          const resumesRef = collection(db, "resumes");
-          const resumeQuery = query(
-            resumesRef,
-            where("user.userId", "==", userId)
-          );
-          const resumeSnapshot = await getCountFromServer(resumeQuery);
-          const cvCount = resumeSnapshot.data().count;
-
-          let avgScore = 0;
-          let totalAnalyses = 0;
-
-          const resumesWithAnalysisQuery = query(
-            resumesRef,
-            where("user.userId", "==", userId),
-            where("analysisId", "!=", null)
-          );
-          const resumesWithAnalysisSnap = await getDocs(
-            resumesWithAnalysisQuery
-          );
-
-          if (!resumesWithAnalysisSnap.empty) {
-            let totalScore = 0;
-
-            // Lấy tất cả analysisId
-            const analysisIds = resumesWithAnalysisSnap.docs
-              .map((doc) => doc.data().analysisId)
-              .filter(Boolean);
-
-            // Lấy thông tin phân tích
-            for (const analysisId of analysisIds) {
-              const analysisRef = doc(db, "analyses", analysisId);
-              const analysisSnap = await getDoc(analysisRef);
-
-              if (analysisSnap.exists()) {
-                const analyzeData = analysisSnap.data();
-                const score = calAvgScore(analyzeData.scores) || 0;
-
-                totalScore += score;
-                totalAnalyses++;
-              }
-            }
-
-            // Tính điểm trung bình
-            avgScore = totalAnalyses > 0 ? totalScore / totalAnalyses : 0;
-          }
-
-          await updateDoc(profileRef, {
-            cvCount,
-            avgScore,
-            updatedAt: Timestamp.fromDate(new Date()),
-          });
-
-          return true;
-        } catch (error) {
-          console.error("Error updating user profile statistics:", error);
-          setError(error as Error);
-          return false;
-        } finally {
-          setLoading(false);
+        if (profileSnap.empty) {
+          throw new Error("User profile not found");
         }
-      },
-      []
-    );
+
+        const profileRef = profileSnap.docs[0].ref;
+
+        // Lấy số lượng CV của người dùng
+        const resumesRef = collection(db, "resumes");
+        const resumeQuery = query(
+          resumesRef,
+          where("user.userId", "==", userId)
+        );
+        const resumeSnapshot = await getCountFromServer(resumeQuery);
+        const cvCount = resumeSnapshot.data().count;
+
+        let avgScore = 0;
+        let totalAnalyses = 0;
+
+        const analysesRef = collection(db, "analyses");
+        const analysesQuery = query(analysesRef, where("userId", "==", userId));
+        const analysesSnapshot = await getDocs(analysesQuery);
+
+        if (!analysesSnapshot.empty) {
+          let totalScore = 0;
+
+          analysesSnapshot.docs
+            .map((doc) => ({ id: doc.id, ...doc.data() }))
+            .forEach((doc: DocumentData) => {
+              const avgScore = calAvgScore(doc.scores) || 0;
+              totalScore += avgScore;
+              totalAnalyses++;
+            });
+
+          // Tính điểm trung bình
+          avgScore = totalAnalyses > 0 ? totalScore / totalAnalyses : 0;
+        }
+
+        await updateDoc(profileRef, {
+          cvCount,
+          avgScore,
+          updatedAt: Timestamp.fromDate(new Date()),
+        });
+
+        return true;
+      } catch (error) {
+        console.error("Error updating user profile statistics:", error);
+        setError(error as Error);
+        return false;
+      } finally {
+        setLoading(false);
+      }
+    }, []);
 
     return { updateUserProfileStatistics, loading, error };
   }
