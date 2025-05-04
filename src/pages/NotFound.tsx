@@ -26,7 +26,7 @@ export default function NotFound() {
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button asChild className="bg-main hover:bg-main/90">
-            <Link to="/">
+            <Link to="/app/home">
               <Home className="mr-2 h-4 w-4" />
               Về trang chủ
             </Link>

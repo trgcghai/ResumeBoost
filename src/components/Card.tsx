@@ -20,7 +20,7 @@ const Card: React.FC<CardProps> = ({ title, uploadTime, score, id }) => {
       <div className="flex justify-between items-center mt-2">
         <p className="text-main font-bold">{score}/100</p>
         <Link
-          to={`/details/${id}`}
+          to={`/app/details/${id}`}
           className="bg-main text-white px-4 py-2 rounded-lg hover:bg-mainHover"
         >
           Xem kết quả
