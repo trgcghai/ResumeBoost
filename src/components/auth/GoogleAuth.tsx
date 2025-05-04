@@ -1,25 +1,19 @@
 import { signInWithPopup } from "firebase/auth";
 import { Button } from "../ui/button";
 import { auth, googleProvider } from "@/lib/firebase";
-import { createUserProfileWithRole } from "@/controllers/UserController";
-
-interface responeType {
-  success: boolean;
-  message: string;
-  error?: object;
-}
+import useCreateUserProfile from "@/hooks/fetch/useCreateUserProfile";
 
 const GoogleAuth = () => {
+  const { createUserProfile } = useCreateUserProfile();
+
   const handleGoogleAuth = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
 
       const { uid, displayName } = result.user;
 
-      const res: responeType = (await createUserProfileWithRole({
-        userId: uid,
-        displayName: displayName || "",
-      })) as responeType;
+      const res = await createUserProfile(uid, displayName || "");
+
       if (res.success) {
         console.log(res.message);
       } else {

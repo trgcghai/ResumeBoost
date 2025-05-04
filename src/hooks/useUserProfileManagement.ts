@@ -20,11 +20,16 @@ export const useUserProfileManagement = (profiles: UserProfile[]) => {
     setIsDialogOpen(false);
   };
 
-  const handleDelete = async (userId: string) => {
-    const res = await deleteProfile(userId);
+  const handleDelete = async (profileId: string) => {
+    const res = await deleteProfile(profileId);
+    console.log(res);
 
     if (res) {
-      setData(data.filter((item) => item.userId !== userId));
+      console.log(profileId);
+
+      console.log(data.filter((item) => item.id != profileId));
+
+      setData(data.filter((item) => item.id !== profileId));
     }
 
     closeDeleteDialog();

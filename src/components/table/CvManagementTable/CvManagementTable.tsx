@@ -9,6 +9,7 @@ import { DeleteConfirmationDialog } from "../shared/DeleteConfirmationDialog";
 import { Resume } from "@/type";
 import { format } from "date-fns";
 import { HeaderActions } from "../shared/HeaderActions";
+import TablePagination from "../TablePagination";
 
 export default function CvManagementTable({ resumes }: { resumes: Resume[] }) {
   const {
@@ -86,7 +87,10 @@ export default function CvManagementTable({ resumes }: { resumes: Resume[] }) {
             columns={columns}
             tableCellClassName="text-base py-3"
             tableHeadClassName="bg-muted/50"
+            pagination={true}
+            pageSize={10}
           />
+          <TablePagination table={table} />
         </div>
       </DataTableSection>
 

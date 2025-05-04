@@ -5,9 +5,9 @@ import { Separator } from "../ui/separator";
 const Footer = () => {
   return (
     <footer className="bg-white text-sm text-textNormal py-4 border-t">
-      <div className="container max-w-[1200px] mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4 sm:px-0">
-          <div>
+      <div className="container sm:px-0 md:px-4 lg:px-0 max-w-[1200px] mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8 px-4 sm:px-0">
+          <div className="md:row-span-2 lg:row-span-1">
             <img src="/logo.png" className="rounded-lg w-16" alt="" />
             <p className="mt-2 sm:w-4/5 text-justify w-full">
               <span className="font-bold">ResumeBoost</span> - Nền tảng đánh giá
@@ -61,11 +61,26 @@ const Footer = () => {
               <li>Trần Quốc Bảo</li>
             </ul>
           </div>
+
+          <div>
+            <h3 className="font-bold text-base mb-3">Liên kết nhanh</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link to={"/"}>Trang chủ</Link>
+              </li>
+              <li>
+                <Link to={"/introduce/landing"}>Giới thiệu</Link>
+              </li>
+              <li>
+                <Link to={"/introduce/about"}>Thông tin về chúng tôi</Link>
+              </li>
+            </ul>
+          </div>
         </div>
         <Separator className="my-4" />
         <div className="text-center text-textLight flex flex-col sm:flex-row gap-2 items-center justify-between">
           <p>© {new Date().getFullYear()} ResumeBoost. All rights reserved.</p>
-          <p>
+          <div>
             <ul className="flex items-center gap-4">
               {["Privacy Policy", "Terms of Service", "Cookies"].map(
                 (item, index) => {
@@ -79,7 +94,7 @@ const Footer = () => {
                 }
               )}
             </ul>
-          </p>
+          </div>
         </div>
       </div>
     </footer>

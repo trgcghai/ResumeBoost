@@ -7,6 +7,7 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
   ColumnDef,
+  getPaginationRowModel,
 } from "@tanstack/react-table";
 
 export const useSortingAndFiltering = <T>(
@@ -44,6 +45,7 @@ export const useSortingAndFiltering = <T>(
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,

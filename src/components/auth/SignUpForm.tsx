@@ -23,21 +23,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import GoogleAuth from "./GoogleAuth";
-import { createUserProfileWithRole } from "@/controllers/UserController";
 import { signUpSchema } from "@/lib/schemas/auth";
+import useCreateUserProfile from "@/hooks/fetch/useCreateUserProfile";
 
 type SignUpFormValues = z.infer<typeof signUpSchema>;
-
-interface responeType {
-  success: boolean;
-  message: string;
-  error?: object;
-}
 
 export function SignUpForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const { createUserProfile } = useCreateUserProfile();
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -64,10 +59,8 @@ export function SignUpForm({
 
       const { uid, displayName } = result.user;
 
-      const res: responeType = (await createUserProfileWithRole({
-        userId: uid,
-        displayName: displayName || data.username,
-      })) as responeType;
+      const res = await createUserProfile(uid, displayName || "");
+
       if (res.success) {
         console.log("User profile created successfully");
       } else {

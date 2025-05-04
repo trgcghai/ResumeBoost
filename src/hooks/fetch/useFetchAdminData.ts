@@ -15,6 +15,7 @@ import {
   limit,
   getCountFromServer,
   getDoc,
+  DocumentData,
 } from "firebase/firestore";
 import { useEffect, useState, useCallback } from "react";
 
@@ -131,7 +132,22 @@ export default function useFetchAdminData() {
       setIsDeleting(true);
       try {
         const resumeRef = doc(db, "resumes", id);
+        const resumeDoc = await getDoc(resumeRef);
+        const resumeData = resumeDoc.data();
+
+        const analyzeRef = collection(db, "analyses");
+        const q = query(
+          analyzeRef,
+          where("resumeId", "==", id),
+          where("userId", "==", resumeData?.user.userId)
+        );
+        const analyzeSnapshot = await getDocs(q);
+        if (!analyzeSnapshot.empty) {
+          await deleteDoc(analyzeSnapshot.docs[0].ref);
+        }
+
         await deleteDoc(resumeRef);
+
         return true;
       } catch (error) {
         console.error("Error deleting resume:", error);
@@ -145,6 +161,28 @@ export default function useFetchAdminData() {
     return { deleteResume, isDeleting, error };
   }
 
+  function useDeleteJobDescription() {
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
+
+    const deleteJobDescription = useCallback(async (id: string) => {
+      setIsDeleting(true);
+      try {
+        const jobDescriptionRef = doc(db, "job_descriptions", id);
+        await deleteDoc(jobDescriptionRef);
+        return true;
+      } catch (error) {
+        console.error("Error deleting job description:", error);
+        setError(error as Error);
+        return false;
+      } finally {
+        setIsDeleting(false);
+      }
+    }, []);
+
+    return { deleteJobDescription, isDeleting, error };
+  }
+
   function useDeleteProfile() {
     const [isDeleting, setIsDeleting] = useState(false);
     const [error, setError] = useState<Error | null>(null);
@@ -153,6 +191,10 @@ export default function useFetchAdminData() {
       setIsDeleting(true);
       try {
         const profileRef = doc(db, "user_profiles", id);
+        const profileSnap = await getDoc(profileRef);
+        if (!profileSnap.exists()) {
+          throw new Error("Profile not found");
+        }
         await deleteDoc(profileRef);
         return true;
       } catch (error) {
@@ -240,11 +282,9 @@ export default function useFetchAdminData() {
   }
 
   function useStatisticAnalyzeScore() {
-    const [scoreData, setScoreData] = useState([
-      { name: "Tốt", value: 0 },
-      { name: "Trung bình", value: 0 },
-      { name: "Kém", value: 0 },
-    ]);
+    const [scoreData, setScoreData] = useState<
+      { name: string; value: number }[] | null
+    >(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
 
@@ -256,11 +296,7 @@ export default function useFetchAdminData() {
           const analyseSnapshot = await getDocs(analyseRef);
 
           if (analyseSnapshot.empty) {
-            setScoreData([
-              { name: "Tốt", value: 0 },
-              { name: "Trung bình", value: 0 },
-              { name: "Kém", value: 0 },
-            ]);
+            setScoreData(null);
             return;
           }
 
@@ -295,8 +331,6 @@ export default function useFetchAdminData() {
             { name: "Kém", value: poorPercentage },
           ];
 
-          // Đảm bảo tổng phần trăm là 100%
-          // Nếu bị thiếu thì cộng vào phần tử có giá trị lớn nhất
           const totalPercentage =
             goodPercentage + averagePercentage + poorPercentage;
           if (totalPercentage !== 100 && totalCount > 0) {
@@ -354,6 +388,74 @@ export default function useFetchAdminData() {
     return { resume, loading, error };
   }
 
+  function useUpdateUserProfileStatistics() {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
+
+    const updateUserProfileStatistics = useCallback(async (userId: string) => {
+      setLoading(true);
+      try {
+        // Lấy thông tin người dùng
+        const profilesRef = collection(db, "user_profiles");
+        const profileQuery = query(profilesRef, where("userId", "==", userId));
+        const profileSnap = await getDocs(profileQuery);
+
+        if (profileSnap.empty) {
+          throw new Error("User profile not found");
+        }
+
+        const profileRef = profileSnap.docs[0].ref;
+
+        // Lấy số lượng CV của người dùng
+        const resumesRef = collection(db, "resumes");
+        const resumeQuery = query(
+          resumesRef,
+          where("user.userId", "==", userId)
+        );
+        const resumeSnapshot = await getCountFromServer(resumeQuery);
+        const cvCount = resumeSnapshot.data().count;
+
+        let avgScore = 0;
+        let totalAnalyses = 0;
+
+        const analysesRef = collection(db, "analyses");
+        const analysesQuery = query(analysesRef, where("userId", "==", userId));
+        const analysesSnapshot = await getDocs(analysesQuery);
+
+        if (!analysesSnapshot.empty) {
+          let totalScore = 0;
+
+          analysesSnapshot.docs
+            .map((doc) => ({ id: doc.id, ...doc.data() }))
+            .forEach((doc: DocumentData) => {
+              const avgScore = calAvgScore(doc.scores) || 0;
+              totalScore += avgScore;
+              totalAnalyses++;
+            });
+
+          // Tính điểm trung bình
+          avgScore = totalAnalyses > 0 ? totalScore / totalAnalyses : 0;
+        }
+
+        await updateDoc(profileRef, {
+          cvCount,
+          avgScore,
+          updatedAt: Timestamp.fromDate(new Date()),
+        });
+
+        return true;
+      } catch (error) {
+        console.error("Error updating user profile statistics:", error);
+        setError(error as Error);
+        return false;
+      } finally {
+        setLoading(false);
+      }
+    }, []);
+
+    return { updateUserProfileStatistics, loading, error };
+  }
+
   return {
     useResume,
     useUserProfile,
@@ -363,5 +465,7 @@ export default function useFetchAdminData() {
     useOverview,
     useStatisticAnalyzeScore,
     useResumeById,
+    useDeleteJobDescription,
+    useUpdateUserProfileStatistics,
   };
 }

@@ -135,9 +135,9 @@ const Header = () => {
           aria-label="Toggle mobile menu"
         >
           {mobileMenuOpen ? (
-            <X className="h-6 w-6" />
+            <X className="text-textNormal h-6 w-6" />
           ) : (
-            <Menu className="h-6 w-6" />
+            <Menu className="text-textNormal h-6 w-6" />
           )}
         </button>
       </div>

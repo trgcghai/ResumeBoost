@@ -1,8 +1,9 @@
 import FileUploader from "@/components/FileUploader";
 import LoaderDialog from "@/components/LoaderDialog";
 import { Button } from "@/components/ui/button";
-import { analyzeResume, processResume } from "@/controllers/ResumeController";
 import useFetchAdminData from "@/hooks/fetch/useFetchAdminData";
+import useAnalyzeResume from "@/hooks/fetch/useAnalyzeResume";
+import useProcessResume from "@/hooks/fetch/useProcessResume";
 import { useAppDispatch } from "@/hooks/redux";
 import {
   hideLoaderDialog,
@@ -32,8 +33,11 @@ const Home = () => {
   const [isUploading, setIsUploading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { useDeleteResume } = useFetchAdminData();
+  const { useDeleteResume, useDeleteJobDescription } = useFetchAdminData();
   const { deleteResume } = useDeleteResume();
+  const { deleteJobDescription } = useDeleteJobDescription();
+  const { analyzeResume } = useAnalyzeResume();
+  const { processResume } = useProcessResume();
 
   const handleFileUpload = (uploadedFile: File) => {
     setFile(uploadedFile);
@@ -47,30 +51,30 @@ const Home = () => {
 
     setIsUploading(true);
     dispatch(showLoaderDialog("Đang phân tích CV của bạn..."));
-
+    let uploadResult: response | undefined;
     try {
       const fileBase64 = await readFileAsBase64(file);
 
-      const uploadResult = (await processResume({
+      uploadResult = (await processResume({
         fileBase64,
         fileName: file.name,
         jobDescription,
       })) as response;
 
-      console.log("Upload result:", uploadResult);
-
       if (uploadResult?.success) {
-        setFile(null);
-        setJobDescription("");
-
         await handleAnalyze(uploadResult);
       }
     } catch (error) {
       console.error("Error uploading file:", error);
       dispatch(
         showLoaderDialogWithError(
-          "Có lỗi xảy ra khi tải CV lên, vui lòng thử lại sau."
+          "Có lỗi xảy ra khi tải lên và phân tích CV, vui lòng thử lại sau."
         )
+      );
+
+      await deleteResume(uploadResult?.result?.createResumeResult?.id || "");
+      await deleteJobDescription(
+        uploadResult?.result?.createJobDescriptionResult?.id || ""
       );
     }
   };
@@ -81,10 +85,10 @@ const Home = () => {
       const { id: jobDescriptionId } =
         uploadResult?.result?.createJobDescriptionResult ?? {};
 
-      const analyzeResult = (await analyzeResume({
+      const analyzeResult = await analyzeResume({
         resumeId: resumeId || "",
         jobDescriptionId: jobDescriptionId || "",
-      })) as response;
+      });
 
       if (analyzeResult?.success) {
         dispatch(hideLoaderDialog());
@@ -95,14 +99,12 @@ const Home = () => {
         navigate(`/details/${analyzeResult?.result?.analysisId}`);
       }
     } catch (error) {
-      console.error("Error analyzing resume:", error);
       dispatch(
         showLoaderDialogWithError(
           "Có lỗi xảy ra khi phân tích CV, vui lòng thử lại sau."
         )
       );
-      // xóa resume đã upload nếu như phân tích không thành công
-      await deleteResume(uploadResult?.result?.createResumeResult?.id || "");
+      throw error;
     }
   };
 
