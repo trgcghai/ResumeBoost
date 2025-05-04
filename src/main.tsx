@@ -33,10 +33,34 @@ import NotFound from "./pages/NotFound.tsx";
 const router = createBrowserRouter([
   {
     path: "/",
+    element: <IntroduceLayout />,
+    children: [
+      {
+        index: true,
+        element: <Navigate to="/landing" replace />,
+      },
+      {
+        index: true,
+        path: "landing",
+        element: <LandingPage />,
+      },
+      {
+        path: "about",
+        element: <AboutUs />,
+      },
+    ],
+  },
+  {
+    path: "/app",
     element: <RootLayout />,
     children: [
       {
         index: true,
+        element: <Navigate to="/app/home" replace />,
+      },
+      {
+        index: true,
+        path: "home",
         element: <Home />,
       },
       {
@@ -51,25 +75,6 @@ const router = createBrowserRouter([
             element: <DetailCV />,
           },
         ],
-      },
-    ],
-  },
-  {
-    path: "/introduce",
-    element: <IntroduceLayout />,
-    children: [
-      {
-        index: true,
-        element: <Navigate to="/introduce/landing" replace />,
-      },
-      {
-        index: true,
-        path: "landing",
-        element: <LandingPage />,
-      },
-      {
-        path: "about",
-        element: <AboutUs />,
       },
     ],
   },

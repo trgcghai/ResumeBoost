@@ -4,7 +4,7 @@ import { auth } from "@/lib/firebase";
 import { logout } from "@/store/slices/userSlice";
 import { signOut } from "firebase/auth";
 import { LogOut, Menu, User, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   HoverCard,
@@ -14,16 +14,21 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "../ui/button";
 
-const AdminHeader = () => {
+const AdminHeader = ({
+  sidebarOpen,
+  setSidebarOpen,
+}: {
+  sidebarOpen: boolean;
+  setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
   const authUser = auth.currentUser;
   const { user, isAuthenticated } = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
 
   useEffect(() => {
     setSidebarOpen(!isMobile);
-  }, [isMobile]);
+  }, [isMobile, setSidebarOpen]);
 
   const handleLogout = async () => {
     try {

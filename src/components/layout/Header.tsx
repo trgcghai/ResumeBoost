@@ -66,10 +66,10 @@ const Header = () => {
         </div>
         <nav className="flex space-x-4">
           <nav className="hidden md:flex space-x-4 items-center">
-            <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/">
+            <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/app/home">
               Home
             </NavItem>
-            <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/profile">
+            <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/app/profile">
               Profile
             </NavItem>
           </nav>
@@ -145,10 +145,10 @@ const Header = () => {
       {mobileMenuOpen && (
         <div className="md:hidden fixed inset-0 top-[72px] bg-white z-20">
           <div className="p-4 flex flex-col space-y-4">
-            <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/">
+            <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/app/home">
               Home
             </NavItem>
-            <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/profile">
+            <NavItem setMobileMenuOpen={setMobileMenuOpen} to="/app/profile">
               Profile
             </NavItem>
             {user?.role === "admin" && (

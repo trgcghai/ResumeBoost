@@ -15,7 +15,7 @@ const AdminLayout: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <AdminHeader />
+      <AdminHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
       <div className="flex flex-grow relative mt-20">
         <AdminSidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />

@@ -15,8 +15,8 @@ const IntroduceHeader = () => {
   }, [isMobile]);
 
   const navItems = [
-    { label: "Trang chủ", path: "/introduce/landing" },
-    { label: "Về chúng tôi", path: "/introduce/about" },
+    { label: "Trang chủ", path: "/landing" },
+    { label: "Về chúng tôi", path: "/about" },
   ];
 
   const toggleMenu = () => {

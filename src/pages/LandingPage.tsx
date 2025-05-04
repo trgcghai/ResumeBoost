@@ -126,7 +126,7 @@ const LandingPage = () => {
                   whileTap="tap"
                 >
                   <Link
-                    to="/"
+                    to="/app/home"
                     className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                   >
                     Bắt đầu ngay <ArrowRight className="ml-2" />

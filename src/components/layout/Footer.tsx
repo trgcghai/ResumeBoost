@@ -66,13 +66,13 @@ const Footer = () => {
             <h3 className="font-bold text-base mb-3">Liên kết nhanh</h3>
             <ul className="space-y-2">
               <li>
-                <Link to={"/"}>Trang chủ</Link>
+                <Link to={"/app"}>Trang chủ</Link>
               </li>
               <li>
-                <Link to={"/introduce/landing"}>Giới thiệu</Link>
+                <Link to={"/landing"}>Giới thiệu</Link>
               </li>
               <li>
-                <Link to={"/introduce/about"}>Thông tin về chúng tôi</Link>
+                <Link to={"/about"}>Thông tin về chúng tôi</Link>
               </li>
             </ul>
           </div>
