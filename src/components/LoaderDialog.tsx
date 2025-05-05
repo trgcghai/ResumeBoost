@@ -20,7 +20,7 @@ export function LoaderDialog() {
             <p className="text-center text-muted-foreground">{message}</p>
             <Button
               variant="outline"
-              className="text-white bg-main hover:bg-mainHover w-full"
+              className="text-white bg-main hover:bg-mainHover hover:text-white w-full cursor-pointer"
               onClick={() => dispatch(hideLoaderDialog())}
             >
               Đóng
