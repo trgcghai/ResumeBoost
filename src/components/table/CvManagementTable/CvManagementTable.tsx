@@ -45,7 +45,7 @@ export default function CvManagementTable({ resumes }: { resumes: Resume[] }) {
       const formattedData = data.map((cv: Resume) => ({
         "Tên file": cv.fileName,
         "Loại file": cv.format,
-        "Ngày tạo": format(cv.createdAt.toDate(), "dd/MM/yyyy"),
+        "Ngày tạo": format(cv.createdAt.toDate(), "HH:mm dd/MM/yyyy"),
       }));
       exportExcel(formattedData, "cvs");
     } catch (error) {

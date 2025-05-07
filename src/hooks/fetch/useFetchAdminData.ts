@@ -440,6 +440,7 @@ export default function useFetchAdminData() {
         await updateDoc(profileRef, {
           cvCount,
           avgScore,
+          lastUploadTime: Timestamp.fromDate(new Date()),
           updatedAt: Timestamp.fromDate(new Date()),
         });
 

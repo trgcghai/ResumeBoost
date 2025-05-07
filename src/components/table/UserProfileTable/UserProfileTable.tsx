@@ -9,6 +9,7 @@ import { UserProfile } from "@/type";
 import { getColumnsConfig } from "./ColumnsConfig";
 import { HeaderActions } from "../shared/HeaderActions";
 import TablePagination from "../TablePagination";
+import { format } from "date-fns";
 
 export default function UserProfileTable({
   profiles,
@@ -54,8 +55,14 @@ export default function UserProfileTable({
         "User ID": user.userId,
         "Số lượng CV": user.cvCount,
         "Điểm trung bình": Number(user.avgScore).toFixed(1),
-        "Thời gian upload cuối": user.lastUploadTime,
-        "Cập nhật gần nhất": user.updatedAt,
+        "Thời gian upload cuối": format(
+          user.lastUploadTime.toDate(),
+          "HH:mm dd/MM/yyyy"
+        ),
+        "Cập nhật gần nhất": format(
+          user.updatedAt.toDate(),
+          "HH:mm dd/MM/yyyy"
+        ),
       }));
 
       exportExcel(exportData, "user_profiles");
